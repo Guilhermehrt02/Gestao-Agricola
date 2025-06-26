@@ -13,6 +13,10 @@ namespace Infrastructure.Persistence.Context
         public DbSet<Expense> Expenses { get; set; }
 
         public DbSet<Revenue> Revenues { get; set; }
+        public DbSet<Diagnosis> Diagnoses { get; set; }
+        public DbSet<Plot> Plots { get; set; }
+        public DbSet<Farm> Farms { get; set; }
+        public DbSet<Harvest> Harvests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -116,6 +120,101 @@ namespace Infrastructure.Persistence.Context
 
                 entity.Property(e => e.ReceiptUrl)
                     .HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<Diagnosis>(entity =>
+            {
+                entity.HasKey(d => d.Id);
+
+                entity.Property(d => d.UploadType)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(d => d.PhotoUrl)
+                    .HasMaxLength(500);
+
+                entity.Property(d => d.Date)
+                    .IsRequired();
+
+                entity.Property(d => d.Status)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(d => d.Result)
+                    .HasMaxLength(1000);
+
+                entity.Property(d => d.Latitude)
+                    .HasPrecision(10, 8);
+
+                entity.Property(d => d.Longitude)
+                    .HasPrecision(11, 8);
+            });
+
+            modelBuilder.Entity<Plot>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+
+                entity.Property(p => p.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(p => p.Description)
+                    .HasMaxLength(500);
+
+                entity.Property(p => p.Area)
+                    .IsRequired();
+
+                entity.Property(p => p.Latitude)
+                    .HasPrecision(10, 8);
+
+                entity.Property(p => p.Longitude)
+                    .HasPrecision(11, 8);
+
+                entity.Property(p => p.CreatedAt)
+                    .IsRequired();
+
+                entity.Property(p => p.UpdatedAt)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<Farm>(entity =>
+            {
+                entity.HasKey(f => f.Id);
+
+                entity.Property(f => f.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(f => f.Location)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(f => f.CreatedAt)
+                    .IsRequired();
+
+                entity.Property(f => f.UpdatedAt)
+                    .IsRequired();
+            });
+
+            modelBuilder.Entity<Harvest>(entity =>
+            {
+                entity.HasKey(h => h.Id);
+
+                entity.Property(h => h.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(h => h.StartDate)
+                    .IsRequired();
+
+                entity.Property(h => h.EndDate)
+                    .IsRequired();
+
+                entity.Property(h => h.CreatedAt)
+                    .IsRequired();
+
+                entity.Property(h => h.UpdatedAt)
+                    .IsRequired();
             });
         }
     }

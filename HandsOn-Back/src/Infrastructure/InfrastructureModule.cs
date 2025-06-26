@@ -55,6 +55,10 @@ namespace Infrastructure
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IExpenseRepository, ExpenseRepository>();
             services.AddScoped<IRevenueRepository, RevenueRepository>();
+            services.AddScoped<IFarmRepository, FarmRepository>();
+            services.AddScoped<IHarvestRepository, HarvestRepository>();
+            services.AddScoped<IDiagnosisRepository, DiagnosisRepository>();
+            services.AddScoped<IPlotRepository, PlotRepository>();
 
             return services;
         }
