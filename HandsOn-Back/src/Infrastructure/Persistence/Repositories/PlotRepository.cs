@@ -10,11 +10,18 @@ namespace Infrastructure.Persistence.Repositories
     {
         private readonly UsersDbContext _context = context;
 
-        public async Task<Plot?> GetByIdAsync(Guid userId, Guid plotId)
+        public async Task<Plot?> GetByIdAsync(Guid plotId)
         {
             return await _context.Plots
                 .Where(p => p.Id == plotId)
                 .FirstOrDefaultAsync();
+        }
+        
+        public async Task<IEnumerable<Plot>> GetAllByFarmIdAsync(Guid farmId)
+        {
+            return await _context.Plots
+                .Where(p => p.FarmId == farmId)
+                .ToListAsync();
         }
 
         public async Task<Plot> AddAsync(Plot plot)

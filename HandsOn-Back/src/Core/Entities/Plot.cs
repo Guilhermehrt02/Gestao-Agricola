@@ -24,13 +24,15 @@ namespace Core.Entities
             Longitude = longitude;
         }
 
-        public void Update(string? name, double? area, string? description, double? latitude = null, double? longitude = null)
+        public void Update(string? name, Guid? farmId, double? area, string? description, double? latitude = null, double? longitude = null)
         {
             Name = name ?? Name;
+            FarmId = farmId ?? FarmId; 
             Area = area ?? Area;
+            Description = description ?? Description;
             Latitude = latitude ?? Latitude;
             Longitude = longitude ?? Longitude;
-            Description = description ?? Description;
+            UpdatedAt = DateTime.Now; 
         }
     }
 }

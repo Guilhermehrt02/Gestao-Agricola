@@ -23,8 +23,8 @@ namespace Application
             services.AddScoped<IUploadServices, UploadServices>();
             services.AddScoped<IFarmServices, FarmServices>();
             services.AddScoped<IHarvestServices, HarvestServices>();
+            services.AddScoped<IPlotServices, PlotServices>();
             // services.AddScoped<IDiagnosisServices, DiagnosisServices>();
-            // services.AddScoped<IPlotServices, PlotServices>();
             
             return services;
         }
