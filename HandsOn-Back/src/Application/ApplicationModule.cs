@@ -21,6 +21,11 @@ namespace Application
             services.AddScoped<IRevenueServices, RevenueServices>();
             services.AddScoped<IReportServices, ReportServices>();
             services.AddScoped<IUploadServices, UploadServices>();
+            services.AddScoped<IFarmServices, FarmServices>();
+            services.AddScoped<IHarvestServices, HarvestServices>();
+            // services.AddScoped<IDiagnosisServices, DiagnosisServices>();
+            // services.AddScoped<IPlotServices, PlotServices>();
+            
             return services;
         }
     }
