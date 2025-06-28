@@ -26,6 +26,7 @@ namespace Core.Entities
             StartDate = startDate ?? StartDate;
             EndDate = endDate ?? EndDate;
             FarmId = farmId ?? FarmId;
+            UpdatedAt = DateTime.Now;
         }
     }
 }

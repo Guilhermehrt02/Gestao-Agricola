@@ -22,6 +22,7 @@ namespace Core.Entities
         {
             Name = name ?? Name;
             Location = location ?? Location;
+            UpdatedAt = DateTime.Now;
         }
     }
 }
