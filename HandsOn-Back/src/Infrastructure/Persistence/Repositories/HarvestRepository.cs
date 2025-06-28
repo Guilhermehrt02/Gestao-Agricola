@@ -10,11 +10,18 @@ namespace Infrastructure.Persistence.Repositories
     {
         private readonly UsersDbContext _context = context;
 
-        public async Task<Harvest?> GetByIdAsync(Guid userId, Guid harvestId)
+        public async Task<Harvest?> GetByIdAsync(Guid harvestId)
         {
             return await _context.Harvests
                 .Where(h => h.Id == harvestId)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Harvest>> GetAllByFarmIdAsync(Guid farmId)
+        {
+            return await _context.Harvests
+                .Where(h => h.FarmId == farmId)
+                .ToListAsync();
         }
 
         public async Task<Harvest> AddAsync(Harvest harvest)
