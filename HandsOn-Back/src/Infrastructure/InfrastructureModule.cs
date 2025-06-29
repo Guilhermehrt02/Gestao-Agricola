@@ -57,8 +57,8 @@ namespace Infrastructure
             services.AddScoped<IRevenueRepository, RevenueRepository>();
             services.AddScoped<IFarmRepository, FarmRepository>();
             services.AddScoped<IHarvestRepository, HarvestRepository>();
-            services.AddScoped<IDiagnosisRepository, DiagnosisRepository>();
             services.AddScoped<IPlotRepository, PlotRepository>();
+            // services.AddScoped<IDiagnosisRepository, DiagnosisRepository>();
 
             return services;
         }

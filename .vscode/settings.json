@@ -1,3 +1,4 @@
 {
-    "nxConsole.nxWorkspacePath": "HandsOn"
+    "nxConsole.nxWorkspacePath": "HandsOn",
+    "nxConsole.generateAiAgentRules": true
 }

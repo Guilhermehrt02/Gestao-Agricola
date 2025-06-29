@@ -5,9 +5,8 @@ namespace Application.InputModels.HarvestModels
     public class UpdateHarvestInputModel
     {
         [MaxLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
-        public string? Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
 
-        [Required(ErrorMessage = "FarmId is required.")]
         public Guid? FarmId { get; set; }
 
         public DateTime? StartDate { get; set; }

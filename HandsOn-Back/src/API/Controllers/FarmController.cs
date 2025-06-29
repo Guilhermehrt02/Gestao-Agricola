@@ -13,38 +13,38 @@ namespace API.Controllers
         private readonly IFarmServices _farmServices = farmServices;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllByUserIdAsync(Guid userId)
+        public async Task<IActionResult> GetAllByUserId(Guid userId)
         {
             var farms = await _farmServices.GetAllByUserIdAsync(userId);
             return Ok(farms);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var farm = await _farmServices.GetByIdAsync(id);
             return Ok(farm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync(CreateFarmInputModel inputModel)
+        public async Task<IActionResult> Create(CreateFarmInputModel inputModel)
         {
             var farm = await _farmServices.CreateAsync(inputModel);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = farm.Id }, farm);
+            return CreatedAtAction(nameof(GetById), new { id = farm.Id }, farm);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(Guid id, UpdateFarmInputModel inputModel)
+        public async Task<IActionResult> Update(Guid id, UpdateFarmInputModel inputModel)
         {
             var farm = await _farmServices.UpdateAsync(id, inputModel);
-            return farm is not null ? Ok(farm) : NotFound();
+            return Ok(farm);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var farm = await _farmServices.DeleteAsync(id);
-            return farm is not null ? NoContent() : NotFound();
+            return NoContent();
         }
     }
 }

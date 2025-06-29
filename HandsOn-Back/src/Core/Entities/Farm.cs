@@ -18,10 +18,12 @@ namespace Core.Entities
             Location = location;
         }
 
-        public void Update(string? name, string? location)
+        public void Update(string? name, string? location, Guid? userId = null)
         {
             Name = name ?? Name;
             Location = location ?? Location;
+            UserId = userId ?? UserId;
+            
             UpdatedAt = DateTime.Now;
         }
     }

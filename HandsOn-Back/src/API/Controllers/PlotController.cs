@@ -13,38 +13,38 @@ namespace API.Controllers
         private readonly IPlotServices _plotServices = plotServices;
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var plot = await _plotServices.GetByIdAsync(id);
             return Ok(plot);
         }
 
         [HttpGet("farm/{farmId}")]
-        public async Task<IActionResult> GetAllByFarmIdAsync(Guid farmId)
+        public async Task<IActionResult> GetAllByFarmId(Guid farmId)
         {
             var plots = await _plotServices.GetAllByFarmIdAsync(farmId);
             return Ok(plots);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync(CreatePlotInputModel inputModel)
+        public async Task<IActionResult> Create(CreatePlotInputModel inputModel)
         {
             var plot = await _plotServices.CreateAsync(inputModel);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = plot.Id }, plot);
+            return CreatedAtAction(nameof(GetById), new { id = plot.Id }, plot);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(Guid id, UpdatePlotInputModel inputModel)
+        public async Task<IActionResult> Update(Guid id, UpdatePlotInputModel inputModel)
         {
             var plot = await _plotServices.UpdateAsync(id, inputModel);
-            return plot is not null ? Ok(plot) : NotFound();
+            return Ok(plot);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var plot = await _plotServices.DeleteAsync(id);
-            return plot is not null ? NoContent() : NotFound();
+            return NoContent();
         }
     }
 }

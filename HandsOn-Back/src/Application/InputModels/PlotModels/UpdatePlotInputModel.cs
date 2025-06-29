@@ -5,7 +5,7 @@ namespace Application.InputModels.PlotModels
     public class UpdatePlotInputModel
     {
         [MaxLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
-        public string? Name { get; set; } = string.Empty;
+        public string? Name { get; set; }
 
         public Guid? FarmId { get; set; }
 

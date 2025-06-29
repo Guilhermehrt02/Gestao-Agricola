@@ -4,7 +4,6 @@ using Application.ViewModels;
 using Application.Exceptions;
 using Application.Validators;
 using Application.InputModels.FarmModels;
-using Core.Enums;
 
 namespace Application.Services
 {
@@ -47,7 +46,8 @@ namespace Application.Services
 
             farm.Update(
                 inputModel.Name,
-                inputModel.Location
+                inputModel.Location,
+                inputModel.UserId
             );
 
             await _farmRepository.UpdateAsync(farm);

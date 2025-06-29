@@ -13,38 +13,38 @@ namespace API.Controllers
         private readonly IHarvestServices _harvestServices = harvestServices;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllByFarmIdAsync(Guid farmId)
+        public async Task<IActionResult> GetAllByFarmId(Guid farmId)
         {
             var harvests = await _harvestServices.GetAllByFarmIdAsync(farmId);
             return Ok(harvests);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var harvest = await _harvestServices.GetByIdAsync(id);
             return Ok(harvest);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync(CreateHarvestInputModel inputModel)
+        public async Task<IActionResult> Create(CreateHarvestInputModel inputModel)
         {
             var harvest = await _harvestServices.CreateAsync(inputModel);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = harvest.Id }, harvest);
+            return CreatedAtAction(nameof(GetById), new { id = harvest.Id }, harvest);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(Guid id, UpdateHarvestInputModel inputModel)
+        public async Task<IActionResult> Update(Guid id, UpdateHarvestInputModel inputModel)
         {
             var harvest = await _harvestServices.UpdateAsync(id, inputModel);
-            return harvest is not null ? Ok(harvest) : NotFound();
+            return Ok(harvest);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var harvest = await _harvestServices.DeleteAsync(id);
-            return harvest is not null ? NoContent() : NotFound();
+            return NoContent();
         }
     }
 } 

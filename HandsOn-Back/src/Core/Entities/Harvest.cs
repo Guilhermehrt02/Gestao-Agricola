@@ -3,7 +3,7 @@ namespace Core.Entities
     public class Harvest //colheita
     {
         public Guid Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty; // Nome da colheita
         public Guid FarmId { get; set; } 
         public DateTime? StartDate { get; set; } 
         public DateTime? EndDate { get; set; } 
