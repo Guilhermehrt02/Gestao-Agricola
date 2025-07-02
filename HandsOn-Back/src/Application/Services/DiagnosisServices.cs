@@ -9,9 +9,10 @@ using Core.Enums;
 
 namespace Application.Services
 {
-    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository) : IDiagnosisServices
+    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository, IUploadServices uploadServices) : IDiagnosisServices
     {
         private readonly IDiagnosisRepository _diagnosisRepository = diagnosisRepository;
+        private readonly IUploadServices _uploadServices = uploadServices;
 
         public async Task<DiagnosisViewModel> GetByIdAsync(Guid id)
         {
@@ -70,6 +71,11 @@ namespace Application.Services
 
             var diagnosis = await _diagnosisRepository.GetByIdAsync(id) ?? throw new NotFoundException("Diagnosis not found");
 
+            if (!string.IsNullOrEmpty(inputModel.PhotoUrl) && !string.IsNullOrEmpty(diagnosis.PhotoUrl) && inputModel.PhotoUrl != diagnosis.PhotoUrl)
+            {
+                await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
+            }
+
             diagnosis.Update(
                 inputModel.UploadType,
                 inputModel.PhotoUrl,
@@ -89,7 +95,14 @@ namespace Application.Services
         public async Task<DiagnosisViewModel> DeleteAsync(Guid id)
         {
             var diagnosis = await _diagnosisRepository.GetByIdAsync(id) ?? throw new NotFoundException("Diagnosis not found");
+
+            if (!string.IsNullOrEmpty(diagnosis.PhotoUrl))
+            {
+                await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
+            }
+
             await _diagnosisRepository.DeleteAsync(diagnosis);
+            
             return DiagnosisViewModel.FromEntity(diagnosis);
         }
     }
