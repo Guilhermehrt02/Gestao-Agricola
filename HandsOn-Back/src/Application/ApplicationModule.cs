@@ -24,7 +24,7 @@ namespace Application
             services.AddScoped<IFarmServices, FarmServices>();
             services.AddScoped<IHarvestServices, HarvestServices>();
             services.AddScoped<IPlotServices, PlotServices>();
-            // services.AddScoped<IDiagnosisServices, DiagnosisServices>();
+            services.AddScoped<IDiagnosisServices, DiagnosisServices>();
             
             return services;
         }

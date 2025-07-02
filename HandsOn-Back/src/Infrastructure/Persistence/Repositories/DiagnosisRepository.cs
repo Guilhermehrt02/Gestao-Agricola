@@ -16,7 +16,28 @@ namespace Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Diagnosis?> GetByIdAsync(Guid userId, Guid diagnosisId)
+        public async Task<IEnumerable<Diagnosis>> GetAllByFarmIdAsync(Guid farmId)
+        {
+            return await _context.Diagnoses
+                .Where(d => d.FarmId == farmId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Diagnosis>> GetAllByPlotIdAsync(Guid plotId)
+        {
+            return await _context.Diagnoses
+                .Where(d => d.PlotId == plotId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Diagnosis>> GetAllByHarvestIdAsync(Guid harvestId)
+        {
+            return await _context.Diagnoses
+                .Where(d => d.HarvestId == harvestId)
+                .ToListAsync();
+        }
+
+        public async Task<Diagnosis?> GetByIdAsync(Guid diagnosisId)
         {
             return await _context.Diagnoses
                 .Where(d => d.Id == diagnosisId)

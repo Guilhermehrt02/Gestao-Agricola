@@ -131,6 +131,7 @@ namespace Infrastructure.Persistence.Context
                     .HasMaxLength(50);
 
                 entity.Property(d => d.PhotoUrl)
+                    .IsRequired()
                     .HasMaxLength(500);
 
                 entity.Property(d => d.Date)

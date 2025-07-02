@@ -9,11 +9,11 @@ namespace Core.Entities
         public Guid FarmId { get; set; } //ou melhor referenciar a uma Farm?
         public Guid HarvestId { get; set; } //ou melhor referenciar a uma Harvest?
         public Guid PlotId { get; set; } //ou melhor referenciar a uma Plot?
-        public UploadType UploadType { get; set; } //usuário pode escolher o tipo de upload?
-        public string? PhotoUrl { get; set; }
+        public UploadType UploadType { get; set; } 
+        public string PhotoUrl { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public DiagnosisStatus Status { get; set; } = DiagnosisStatus.Pending;
-        public string? Result { get; set; }
+        public string Result { get; set; } = string.Empty;
         public double? Latitude { get; set; }   // Coordenada GPS
         public double? Longitude { get; set; }  // Coordenada GPS
         public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -49,15 +49,23 @@ namespace Core.Entities
             string? uploadType,
             string? photoUrl,
             DateTime? date,
-            DiagnosisStatus? status,
-            string? result,
+            Guid? farmId = null,
+            Guid? userId = null,
+            Guid? harvestId = null,
+            Guid? plotId = null,
             double? latitude = null,
-            double? longitude = null
+            double? longitude = null,
+            string? result = null,
+            DiagnosisStatus? status = null
         )
         {
             UploadType = UploadTypeExtension.ToUploadType(uploadType ?? UploadType.ToFriendlyString());
             PhotoUrl = photoUrl ?? PhotoUrl;
             Date = date ?? Date;
+            FarmId = farmId ?? FarmId;
+            UserId = userId ?? UserId;
+            HarvestId = harvestId ?? HarvestId;
+            PlotId = plotId ?? PlotId;
             Status = status ?? Status;
             Result = result ?? Result;
             Latitude = latitude ?? Latitude;
