@@ -1,0 +1,89 @@
+<form
+    [formGroup]="diagnosisForm"
+    (ngSubmit)="onSubmit()"
+    class="w-full flex flex-col gap-2 mt-6"
+>
+    <div class="w-full max-w-md mx-auto flex flex-col gap-2 ">
+
+    <lib-input
+      [id]="'farmId'"
+      [label]="'Propriedade'"
+      [type]="'text'"
+      [fluid]="true"
+      [control]="farmId"
+      class="w-full"
+    ></lib-input>
+
+    <lib-input
+      [id]="'harvestId'"
+      [label]="'Colheita'"
+      [type]="'text'"
+      [fluid]="true"
+      [control]="harvestId"
+      class="w-full"
+    ></lib-input>
+    
+    <lib-input
+      [id]="'plotId'"
+      [label]="'Talhão'"
+      [type]="'text'"
+      [fluid]="true"
+      [control]="plotId"
+      class="w-full"
+    ></lib-input>
+
+    <lib-input
+      [id]="'date'"
+      [label]="'Data'"
+      [placeholder]="'31/03/2025'"
+      [type]="'date'"
+      [control]="date"
+      class="w-full"
+    />
+
+    <lib-select
+      [id]="'uploadType'"
+      [label]="'Tipo de Diagnóstico'"
+      [placeholder]="'Selecione um tipo de diagnóstico'"
+      [required]="true"
+      [fluid]="true"
+      [control]="uploadType"
+      [options]="uploadTypeOptions"
+      [filter]="true"
+      class="w-full"
+    ></lib-select>
+
+    <lib-input
+      [id]="'photoFile'"
+      [label]="'Foto (Arquivo)'"
+      [type]="'file'"
+      (fileSelected)="onFileSelected($event)"
+      class="w-full"
+    />
+
+    <lib-input
+      [id]="'latitude'"
+      [label]="'Latitude'"
+      [type]="'text'"
+      [fluid]="true"
+      [control]="latitude"
+      class="w-full"
+    ></lib-input>
+
+    <lib-input
+      [id]="'longitude'"
+      [label]="'Longitude'"
+      [type]="'text'"
+      [fluid]="true"
+      [control]="longitude"
+      class="w-full"
+    ></lib-input>
+
+  <lib-button
+    class="w-full max-w-96 mt-6 mx-auto"
+    [label]="submitLabel"
+    [type]="'submit'"
+    [fluid]="true"
+    [severity]="'primary'"
+    [loading]="loading"
+></lib-button>

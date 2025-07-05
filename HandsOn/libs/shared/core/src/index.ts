@@ -14,6 +14,7 @@ export * from './lib/models/report-data.model';
 export * from './lib/models/expense-data-chart.model';
 export * from './lib/models/report-input.model';
 export * from './lib/models/revenue-data-chart.model';
+export * from './lib/models/diagnosis.model';
 
 // services
 export * from './lib/services/authentication/authentication.service';
@@ -57,3 +58,5 @@ export * from './lib/enums/user-status.enum';
 export * from './lib/enums/expense-category.enum';
 export * from './lib/enums/revenue-source.enum';
 export * from './lib/enums/payment-method.enum';
+export * from './lib/enums/diagnosis-status.enum';
+export * from './lib/enums/diagnosis-uploadType.enum';

@@ -21,6 +21,7 @@
       "@farm/change-password": ["libs/feature/change-password/src/index.ts"],
       "@farm/core": ["libs/shared/core/src/index.ts"],
       "@farm/dashboard": ["libs/feature/dashboard/src/index.ts"],
+      "@farm/diagnosis": ["libs/feature/diagnosis/src/index.ts"],
       "@farm/environments": ["src/app/environments/app-config.token.ts"],
       "@farm/expense": [
         "libs/feature/finance/src/lib/finance/expense/src/index.ts"
