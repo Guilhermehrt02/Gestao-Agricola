@@ -1,0 +1,20 @@
+{
+  "name": "diagnosis",
+  "$schema": "../../../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/feature/diagnoses/src/lib/diagnoses/diagnosis/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/feature/diagnoses/src/lib/diagnoses/diagnosis/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

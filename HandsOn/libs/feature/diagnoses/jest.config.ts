@@ -1,8 +1,8 @@
 export default {
-  displayName: 'diagnosis',
+  displayName: 'diagnoses',
   preset: '../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../coverage/libs/feature/diagnosis',
+  coverageDirectory: '../../../coverage/libs/feature/diagnoses',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
