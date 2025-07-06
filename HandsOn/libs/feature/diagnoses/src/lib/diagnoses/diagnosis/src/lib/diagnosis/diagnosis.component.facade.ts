@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
-  Expense,
-  ExpenseFacade,
+  Diagnosis,
+  DiagnosisFacade,
   ConfirmationService,
   AuthenticationService,
   UploadFacade,
@@ -14,18 +14,18 @@ import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root',
 })
-export class ExpenseComponentFacade {
-  private expenseSubject = new BehaviorSubject<Expense | null>(null);
+export class DiagnosisComponentFacade {
+  private diagnosisSubject = new BehaviorSubject<Diagnosis | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
   id: string | undefined;
   isOwnProfile = false;
-  expense$: Observable<Expense | null> = this.expenseSubject.asObservable();
+  diagnosis$: Observable<Diagnosis | null> = this.diagnosisSubject.asObservable();
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
 
   constructor(
     private authenticationService: AuthenticationService,
-    private expenseFacade: ExpenseFacade,
+    private diagnosisFacade: DiagnosisFacade,
     private confirmationService: ConfirmationService,
     private uploadFacade: UploadFacade,
     private router: Router,
@@ -39,12 +39,12 @@ export class ExpenseComponentFacade {
 
     this.loadingSubject.next(true);
 
-    this.expenseFacade
-      .getExpenseById(id)
+    this.diagnosisFacade
+      .getDiagnosisById(id)
       .pipe(
         tap(
-          (expense) => {
-            this.expenseSubject.next(expense);
+          (diagnosis) => {
+            this.diagnosisSubject.next(diagnosis);
             this.loadingSubject.next(false);
           },
           (error) => {
@@ -57,18 +57,18 @@ export class ExpenseComponentFacade {
   }
 
   reset() {
-    this.expenseSubject.next(null);
+    this.diagnosisSubject.next(null);
     this.id = undefined;
   }
 
-  submit(expense: any) {
-    const receiptFile = expense.receiptFile;
+  submit(diagnosis: any) {
+    const receiptFile = diagnosis.receiptFile;
 
-    const finalizeSubmit = (updatedExpense: any) => {
+    const finalizeSubmit = (updatedDiagnosis: any) => {
       if (this.id) {
-        this.updateExpense(updatedExpense);
+        this.updateDiagnosis(updatedDiagnosis);
       } else {
-        this.addExpense(updatedExpense);
+        this.addDiagnosis(updatedDiagnosis);
       }
     };
 
@@ -77,45 +77,45 @@ export class ExpenseComponentFacade {
         next: (uploadResponse) => {
           const receiptUrl = uploadResponse.fileUrl;
 
-          const updatedExpense = {
-            ...expense,
+          const updatedDiagnosis = {
+            ...diagnosis,
             receiptUrl,
             receiptFile: null,
           };
 
-          finalizeSubmit(updatedExpense);
+          finalizeSubmit(updatedDiagnosis);
         },
         error: () => {
           this.loadingSubject.next(false);
         },
       });
     } else {
-      finalizeSubmit(expense);
+      finalizeSubmit(diagnosis);
     }
   }
 
-  addExpense(expense: Expense) {
+  addDiagnosis(diagnosis: Diagnosis) {
     this.loadingSubject.next(true);
 
-    this.expenseFacade.createExpense(expense).subscribe(() => {
-      this.router.navigate(['/app/finance/expenses']);
+    this.diagnosisFacade.createDiagnosis(diagnosis).subscribe(() => {
+      this.router.navigate(['/app/diagnosis']);
     });
   }
 
-  updateExpense(expense: Expense) {
+  updateDiagnosis(diagnosis: Diagnosis) {
     this.loadingSubject.next(true);
 
-    this.expenseFacade.updateExpense(expense).subscribe(() => {
-      this.router.navigate(['/app/finance/expenses']);
+    this.diagnosisFacade.updateDiagnosis(diagnosis).subscribe(() => {
+      this.router.navigate(['/app/diagnosis']);
     });
   }
 
-  deleteExpense(id: string) {
+  deleteDiagnosis(id: string) {
     this.confirmationService.confirm({
-      message: 'Você tem certeza que deseja excluir essa despesa?',
+      message: 'Você tem certeza que deseja excluir esse diagnóstico?',
       accept: () => {
-        this.expenseFacade.deleteExpense(id).subscribe(() => {
-          this.router.navigate(['/app/finance/expenses']);
+        this.diagnosisFacade.deleteDiagnosis(id).subscribe(() => {
+          this.router.navigate(['/app/diagnosis']);
         });
       },
     });

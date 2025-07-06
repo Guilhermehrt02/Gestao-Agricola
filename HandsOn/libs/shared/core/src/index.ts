@@ -25,6 +25,7 @@ export * from './lib/services/user/user.service';
 export * from './lib/services/expense/expense.service';
 export * from './lib/services/revenue/revenue.service';
 export * from './lib/services/reports/report.service';
+export * from './lib/services/diagnosis/diagnosis.service';
 
 // facades
 export * from './lib/facades/auth.facade';
@@ -33,6 +34,7 @@ export * from './lib/facades/expense.facade';
 export * from './lib/facades/revenue.facade';
 export * from './lib/facades/report.facade';
 export * from './lib/facades/upload.facade';
+export * from './lib/facades/diagnosis.facade';
 
 // guards
 export * from './lib/guards/authenticated/authenticated.guard';

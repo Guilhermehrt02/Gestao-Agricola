@@ -31,6 +31,11 @@ export const masterPageRoutes: Route[] = [
           import('@farm/finance').then((m) => m.financeRoutes),
       },
       {
+        path: 'diagnoses',
+        loadChildren: () =>
+          import('@farm/diagnoses').then((m) => m.diagnosesRoutes),
+      },
+      {
         path: '**',
         redirectTo: 'not-found',
       },

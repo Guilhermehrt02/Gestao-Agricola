@@ -1,16 +1,16 @@
 export interface Diagnosis {
     id: string;
     userId: string;
-    farmId: string; // or reference to a Farm
-    harvestId: string; // or reference to a Harvest
-    plotId: string; // or reference to a Plot
+    farmId: string; 
+    harvestId: string;
+    plotId: string;
     uploadType: string | number;
     photoUrl: string;
     date: Date;
     status: string | number;
     result: string;
-    latitude?: number; // GPS coordinate
-    longitude?: number; // GPS coordinate
+    latitude?: number;
+    longitude?: number;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -2,37 +2,37 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Expense} from '../models/expense.model';
+import { Diagnosis} from '../models/diagnosis.model';
 import { NotificationService } from '../services/notification/notification.service';
-import { ExpenseService } from '../services/expense/expense.service';
+import { DiagnosisService } from '../services/diagnosis/diagnosis.service';
 
 @Injectable({
     providedIn: 'root',
 })
 
-export class ExpenseFacade {
-    private expenseSubject = new BehaviorSubject<Expense[] | null>(null);
+export class DiagnosisFacade {
+    private diagnosisSubject = new BehaviorSubject<Diagnosis[] | null>(null);
     private loadingSubject = new BehaviorSubject<boolean>(true);
 
-    expense$: Observable<Expense[] | null> = this.expenseSubject.asObservable();
+    diagnosis$: Observable<Diagnosis[] | null> = this.diagnosisSubject.asObservable();
     loading$: Observable<boolean> = this.loadingSubject.asObservable();
 
     constructor(
-        private expenseService: ExpenseService,
+        private diagnosisService: DiagnosisService,
         private notificationService: NotificationService,
     ) {}
 
-    getAllExpenses(): Observable<Expense[]> {
-        return this.expenseService.getAllExpenses().pipe(
+    getAllDiagnoses(): Observable<Diagnosis[]> {
+        return this.diagnosisService.getAllDiagnoses().pipe(
             tap({
-                next: (expenses) => {
-                    this.expenseSubject.next(expenses);
+                next: (diagnoses) => {
+                    this.diagnosisSubject.next(diagnoses);
                     this.loadingSubject.next(false);
                 },
                 error: () => {
                     this.notificationService.error(
                         'Erro!',
-                        'Não foi possível carregar as despesas!'
+                        'Não foi possível carregar os diagnósticos!'
                     );
                     this.loadingSubject.next(false);
                 }
@@ -40,71 +40,71 @@ export class ExpenseFacade {
         )
     }
 
-    getExpenseById(id: string): Observable<Expense> {
-        return this.expenseService.getExpenseById(id).pipe(
+    getDiagnosisById(id: string): Observable<Diagnosis> {
+        return this.diagnosisService.getDiagnosisById(id).pipe(
             tap({
                 error: () => {
                     this.notificationService.error(
                         'Erro!',
-                        'Não foi possível carregar a despesa!'
-                    );
-                }
-            })
-        );
-    }
-    
-    createExpense(expense: Expense): Observable<Expense> {
-        return this.expenseService.createExpense(expense).pipe(
-            tap({
-                next: () => {
-                    this.notificationService.success(
-                        'Sucesso!',
-                        'Despesa criada com sucesso!'
-                    );
-                },
-                error: () => {
-                    this.notificationService.error(
-                        'Erro!',
-                        'Não foi possível criar a despesa!'
+                        'Não foi possível carregar o diagnóstico!'
                     );
                 }
             })
         );
     }
 
-    updateExpense(expense: Expense): Observable<Expense> {
-        return this.expenseService.updateExpense(expense).pipe(
+    createDiagnosis(diagnosis: Diagnosis): Observable<Diagnosis> {
+        return this.diagnosisService.createDiagnosis(diagnosis).pipe(
             tap({
                 next: () => {
                     this.notificationService.success(
                         'Sucesso!',
-                        'Despesa atualizada com sucesso!'
+                        'Diagnóstico criado com sucesso!'
                     );
                 },
                 error: () => {
                     this.notificationService.error(
                         'Erro!',
-                        'Não foi possível atualizar a despesa!'
+                        'Não foi possível criar o diagnóstico!'
                     );
                 }
             })
         );
     }
-    
-    deleteExpense(id: string): Observable<void> {
-        return this.expenseService.deleteExpense(id).pipe(
+
+    updateDiagnosis(diagnosis: Diagnosis): Observable<Diagnosis> {
+        return this.diagnosisService.updateDiagnosis(diagnosis).pipe(
             tap({
                 next: () => {
                     this.notificationService.success(
                         'Sucesso!',
-                        'Despesa excluída com sucesso!'
+                        'Diagnóstico atualizado com sucesso!'
                     );
-                    this.getAllExpenses();
                 },
                 error: () => {
                     this.notificationService.error(
                         'Erro!',
-                        'Não foi possível excluir a despesa!'
+                        'Não foi possível atualizar o diagnóstico!'
+                    );
+                }
+            })
+        );
+    }
+
+    deleteDiagnosis(id: string): Observable<void> {
+        return this.diagnosisService.deleteDiagnosis(id).pipe(
+            tap({
+                next: () => {
+                    this.notificationService.success(
+                        'Sucesso!',
+                        'Diagnóstico excluído com sucesso!'
+                    );
+                    this.getAllDiagnoses();
+                },
+                error: () => {
+                    this.notificationService.error(
+                        'Erro!',
+                        'Não foi possível excluir o diagnóstico!'
                     );
                 }
             })
