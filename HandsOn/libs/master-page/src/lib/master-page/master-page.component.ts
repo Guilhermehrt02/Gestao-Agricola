@@ -53,6 +53,24 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     const menuItems: MenuItem[] = [];
 
     menuItems.push({
+      label: 'Diagnósticos',
+      icon: 'pi pi-fw pi-stethoscope',
+      styleClass: 'cursor-pointer',
+      items: [
+        {
+          label: 'Cadastrar',
+          icon: 'pi pi-fw pi-plus',
+          routerLink: '/app/diagnoses/diagnosis/create',
+        },
+        // {
+        //   label: 'Gerenciar',
+        //   icon: 'pi pi-fw pi-list',
+        //   routerLink: '/app/diagnostics',
+        // },
+      ],
+    });
+
+    menuItems.push({
       label: 'finance',
       icon: 'pi pi-fw pi-money-bill',
       styleClass: 'cursor-pointer',

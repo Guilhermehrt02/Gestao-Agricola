@@ -21,10 +21,9 @@ import {
   SelectComponent,
   SelectOption,
 } from '../../components/select/select.component';
-import {
-  Diagnosis,
-  DiagnosisUploadTypeLabels,
-} from '@farm/core';
+import { Diagnosis, DiagnosisUploadTypeLabels } from '@farm/core';
+import * as EXIF from 'exifreader';
+import { MapSelectorComponent } from '../map-selector/map-selector';
 
 @Component({
   selector: 'lib-diagnosis-form',
@@ -34,7 +33,8 @@ import {
     ReactiveFormsModule,
     InputComponent,
     ButtonComponent,
-    SelectComponent
+    SelectComponent,
+    MapSelectorComponent,
   ],
   templateUrl: './diagnosis-form.html',
   styleUrl: './diagnosis-form.css',
@@ -49,23 +49,43 @@ export class DiagnosisForm implements OnInit, OnChanges {
   diagnosisForm: FormGroup;
   photoFile: File | null = null;
 
-  uploadTypeOptions: SelectOption[] = Object.entries(DiagnosisUploadTypeLabels).map(
-    ([value, label]) => ({ value, label })
-  );
+  initialMapCoords: { lat: number; lng: number } | null = null;
+
+  uploadTypeOptions: SelectOption[] = Object.entries(
+    DiagnosisUploadTypeLabels,
+  ).map(([value, label]) => ({ value, label }));
 
   constructor() {
     this.diagnosisForm = new FormGroup({
       id: new FormControl('', { validators: [], updateOn: 'blur' }),
-      farmId: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      harvestId: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      plotId: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      uploadType: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      photoUrl: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      date: new FormControl(new Date(), { validators: [Validators.required, this.dateNotInFutureValidator()], updateOn: 'blur' }),
+      farmId: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      harvestId: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      plotId: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      uploadType: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      photoUrl: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      date: new FormControl(new Date(), {
+        validators: [Validators.required, this.dateNotInFutureValidator()],
+        updateOn: 'blur',
+      }),
       status: new FormControl('', { validators: [], updateOn: 'blur' }),
       result: new FormControl('', { validators: [], updateOn: 'blur' }),
       latitude: new FormControl(null, { validators: [], updateOn: 'blur' }),
-      longitude: new FormControl(null, { validators: [], updateOn: 'blur' })
+      longitude: new FormControl(null, { validators: [], updateOn: 'blur' }),
     });
   }
 
@@ -82,8 +102,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
 
     if (this.loading) {
       this.diagnosisForm.disable();
-    }
-    else {
+    } else {
       this.diagnosisForm.enable();
     }
   }
@@ -123,7 +142,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
     if (!this.diagnosis) return;
 
     const selectedUploadType = this.uploadTypeOptions.find(
-      (option) => this.diagnosis && option.value === this.diagnosis.uploadType
+      (option) => this.diagnosis && option.value === this.diagnosis.uploadType,
     );
 
     const formattedDate = this.formatDateToInput(this.diagnosis.date);
@@ -165,8 +184,34 @@ export class DiagnosisForm implements OnInit, OnChanges {
     this.diagnosisSubmit.emit(formData);
   }
 
-  onFileSelected(file: File | null) {
+  async onFileSelected(file: File | null) {
     this.photoFile = file;
+    if (!file) return;
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const tags = EXIF.load(arrayBuffer);
+
+      const lat = this.extractDecimalFromExif(
+        tags['GPSLatitude'],
+        tags['GPSLatitudeRef'],
+      );
+      const lon = this.extractDecimalFromExif(
+        tags['GPSLongitude'],
+        tags['GPSLongitudeRef'],
+      );
+
+      if (lat !== null && lon !== null) {
+        this.latitude.setValue(lat);
+        this.longitude.setValue(lon);
+        this.initialMapCoords = { lat, lng: lon };
+      } else {
+        this.initialMapCoords = null;
+      }
+    } catch (err) {
+      console.error('Erro ao extrair EXIF:', err);
+      this.getUserLocation();
+    }
   }
 
   private formatDateToInput(date: string | Date): string {
@@ -186,5 +231,43 @@ export class DiagnosisForm implements OnInit, OnChanges {
       }
       return null;
     };
+  }
+
+  private extractDecimalFromExif(coord: any, ref: any): number | null {
+    if (!coord || !ref || typeof coord.description !== 'number') return null;
+
+    let decimal = coord.description;
+
+    const direction = ref?.value?.[0];
+
+    if (direction === 'S' || direction === 'W') {
+      decimal = -decimal;
+    }
+
+    return parseFloat(decimal.toFixed(6));
+  }
+
+  getUserLocation(): void {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          this.initialMapCoords = { lat, lng };
+        },
+        (err) => {
+          console.warn('Erro ao obter localização do usuário:', err);
+          this.initialMapCoords = { lat: 0, lng: 0 };
+        },
+      );
+    } else {
+      this.initialMapCoords = { lat: 0, lng: 0 };
+    }
+  }
+
+  onMapCoordinatesSelected(coords: { lat: number; lng: number }) {
+    this.latitude.setValue(coords.lat);
+    this.longitude.setValue(coords.lng);
   }
 }
