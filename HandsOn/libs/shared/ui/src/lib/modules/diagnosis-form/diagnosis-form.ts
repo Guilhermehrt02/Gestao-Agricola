@@ -49,7 +49,9 @@ export class DiagnosisForm implements OnInit, OnChanges {
   diagnosisForm: FormGroup;
   photoFile: File | null = null;
 
-  initialMapCoords: { lat: number; lng: number } | null = null;
+  showLocationSection = false;
+  locationMessage = '';
+  initialMapCoords = { lat: 0, lng: 0 };
 
   uploadTypeOptions: SelectOption[] = Object.entries(
     DiagnosisUploadTypeLabels,
@@ -205,12 +207,25 @@ export class DiagnosisForm implements OnInit, OnChanges {
         this.latitude.setValue(lat);
         this.longitude.setValue(lon);
         this.initialMapCoords = { lat, lng: lon };
+        this.showLocationSection = true;
+        this.locationMessage = '';
       } else {
-        this.initialMapCoords = null;
+        this.latitude.reset();
+        this.longitude.reset();
+        this.initialMapCoords = { lat: 0, lng: 0 };
+        this.showLocationSection = false;
+
+        this.locationMessage =
+          'Não foi possível obter a localização da imagem. Ative a localização do celular ao tirar a foto.';
+
+        // this.getUserLocation();
+        // this.showLocationSection = true; 
       }
     } catch (err) {
       console.error('Erro ao extrair EXIF:', err);
+      this.locationMessage = 'Erro ao ler os dados da imagem.';
       this.getUserLocation();
+      this.showLocationSection = true;
     }
   }
 

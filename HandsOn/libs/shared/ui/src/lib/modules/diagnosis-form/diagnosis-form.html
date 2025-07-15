@@ -60,23 +60,37 @@
       class="w-full"
     />
 
-    <lib-input
-      [id]="'latitude'"
-      [label]="'Latitude'"
-      [type]="'text'"
-      [fluid]="true"
-      [control]="latitude"
-      class="w-full"
-    ></lib-input>
+    <!-- Mensagem de localização -->
+    <p *ngIf="locationMessage" class="text-yellow-500 text-sm mt-2 px-2">
+      {{ locationMessage }}
+    </p>
 
-    <lib-input
-      [id]="'longitude'"
-      [label]="'Longitude'"
-      [type]="'text'"
-      [fluid]="true"
-      [control]="longitude"
-      class="w-full"
-    ></lib-input>
+    <!-- Mapa e campos de latitude/longitude -->
+    <div *ngIf="showLocationSection" class="w-full flex flex-col gap-4 mt-4">
+      <lib-map-selector
+        [initialCoords]="initialMapCoords"
+        (coordinatesSelected)="onMapCoordinatesSelected($event)"
+        class="w-full"
+      ></lib-map-selector>
+
+      <lib-input
+        [id]="'latitude'"
+        [label]="'Latitude'"
+        [type]="'text'"
+        [fluid]="true"
+        [control]="latitude"
+        class="w-full"
+      ></lib-input>
+
+      <lib-input
+        [id]="'longitude'"
+        [label]="'Longitude'"
+        [type]="'text'"
+        [fluid]="true"
+        [control]="longitude"
+        class="w-full"
+      ></lib-input>
+    </div>
 
     <lib-button
       class="w-full max-w-96 mt-6 mx-auto"
@@ -88,12 +102,12 @@
     ></lib-button>
   </div>
 
-  <div class="w-full px-4">
+  <!-- <div class="w-full px-4">
     <h2 class="text-lg font-medium mb-2">Localização no Mapa</h2>
     <lib-map-selector
       [initialCoords]="initialMapCoords"
       (coordinatesSelected)="onMapCoordinatesSelected($event)"
       class="rounded shadow"
     ></lib-map-selector>
-  </div>
+  </div> -->
 </form>
