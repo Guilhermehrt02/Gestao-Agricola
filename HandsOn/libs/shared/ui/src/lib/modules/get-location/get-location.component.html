@@ -1,0 +1,10 @@
+<lib-button
+  label="Obter Localização Atual"
+  type="button"
+  [fluid]="true"
+  [severity]="'secondary'"
+  [loading]="loading"
+  (click)="detectLocation()"
+></lib-button>
+
+<p *ngIf="error" class="text-red-600 text-sm mt-2">{{ error }}</p>

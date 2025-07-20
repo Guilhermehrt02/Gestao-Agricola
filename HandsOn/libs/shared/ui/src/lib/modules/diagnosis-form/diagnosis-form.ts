@@ -21,10 +21,8 @@ import {
   SelectComponent,
   SelectOption,
 } from '../../components/select/select.component';
-import {
-  Diagnosis,
-  DiagnosisUploadTypeLabels,
-} from '@farm/core';
+import { Diagnosis, DiagnosisUploadTypeLabels } from '@farm/core';
+import { GetLocationComponent } from '../get-location/get-location.component';
 
 @Component({
   selector: 'lib-diagnosis-form',
@@ -34,7 +32,8 @@ import {
     ReactiveFormsModule,
     InputComponent,
     ButtonComponent,
-    SelectComponent
+    SelectComponent,
+    GetLocationComponent,
   ],
   templateUrl: './diagnosis-form.html',
   styleUrl: './diagnosis-form.css',
@@ -49,23 +48,41 @@ export class DiagnosisForm implements OnInit, OnChanges {
   diagnosisForm: FormGroup;
   photoFile: File | null = null;
 
-  uploadTypeOptions: SelectOption[] = Object.entries(DiagnosisUploadTypeLabels).map(
-    ([value, label]) => ({ value, label })
-  );
+  uploadTypeOptions: SelectOption[] = Object.entries(
+    DiagnosisUploadTypeLabels,
+  ).map(([value, label]) => ({ value, label }));
 
   constructor() {
     this.diagnosisForm = new FormGroup({
       id: new FormControl('', { validators: [], updateOn: 'blur' }),
-      farmId: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      harvestId: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      plotId: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      uploadType: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      photoUrl: new FormControl('', { validators: [Validators.required], updateOn: 'blur' }),
-      date: new FormControl(new Date(), { validators: [Validators.required, this.dateNotInFutureValidator()], updateOn: 'blur' }),
+      farmId: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      harvestId: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      plotId: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      uploadType: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      photoUrl: new FormControl('', {
+        validators: [Validators.required],
+        updateOn: 'blur',
+      }),
+      date: new FormControl(new Date(), {
+        validators: [Validators.required, this.dateNotInFutureValidator()],
+        updateOn: 'blur',
+      }),
       status: new FormControl('', { validators: [], updateOn: 'blur' }),
       result: new FormControl('', { validators: [], updateOn: 'blur' }),
       latitude: new FormControl(null, { validators: [], updateOn: 'blur' }),
-      longitude: new FormControl(null, { validators: [], updateOn: 'blur' })
+      longitude: new FormControl(null, { validators: [], updateOn: 'blur' }),
     });
   }
 
@@ -82,8 +99,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
 
     if (this.loading) {
       this.diagnosisForm.disable();
-    }
-    else {
+    } else {
       this.diagnosisForm.enable();
     }
   }
@@ -123,7 +139,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
     if (!this.diagnosis) return;
 
     const selectedUploadType = this.uploadTypeOptions.find(
-      (option) => this.diagnosis && option.value === this.diagnosis.uploadType
+      (option) => this.diagnosis && option.value === this.diagnosis.uploadType,
     );
 
     const formattedDate = this.formatDateToInput(this.diagnosis.date);
@@ -186,5 +202,10 @@ export class DiagnosisForm implements OnInit, OnChanges {
       }
       return null;
     };
+  }
+
+  onLocationDetected(location: { latitude: number; longitude: number }) {
+    this.latitude.setValue(location.latitude);
+    this.longitude.setValue(location.longitude);
   }
 }

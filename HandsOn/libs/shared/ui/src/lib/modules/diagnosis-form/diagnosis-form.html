@@ -61,6 +61,8 @@
       class="w-full"
     />
 
+    <lib-get-location (locationDetected)="onLocationDetected($event)"></lib-get-location>
+
     <lib-input
       [id]="'latitude'"
       [label]="'Latitude'"
