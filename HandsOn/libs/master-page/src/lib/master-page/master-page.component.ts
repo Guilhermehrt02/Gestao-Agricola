@@ -54,7 +54,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
     menuItems.push({
       label: 'Diagnósticos',
-      icon: 'pi pi-fw pi-stethoscope',
+      icon: 'pi pi-fw pi-search',
       styleClass: 'cursor-pointer',
       items: [
         {

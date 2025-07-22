@@ -60,18 +60,7 @@
       class="w-full"
     />
 
-    <!-- Mensagem de localização -->
-    <p *ngIf="locationMessage" class="text-yellow-500 text-sm mt-2 px-2">
-      {{ locationMessage }}
-    </p>
-
-    <!-- Mapa e campos de latitude/longitude -->
-    <div *ngIf="showLocationSection" class="w-full flex flex-col gap-4 mt-4">
-      <lib-map-selector
-        [initialCoords]="initialMapCoords"
-        (coordinatesSelected)="onMapCoordinatesSelected($event)"
-        class="w-full"
-      ></lib-map-selector>
+    <lib-get-location (locationDetected)="onLocationDetected($event)"></lib-get-location>
 
       <lib-input
         [id]="'latitude'"

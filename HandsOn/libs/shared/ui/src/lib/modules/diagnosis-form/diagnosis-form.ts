@@ -22,8 +22,7 @@ import {
   SelectOption,
 } from '../../components/select/select.component';
 import { Diagnosis, DiagnosisUploadTypeLabels } from '@farm/core';
-import * as EXIF from 'exifreader';
-import { MapSelectorComponent } from '../map-selector/map-selector';
+import { GetLocationComponent } from '../get-location/get-location.component';
 
 @Component({
   selector: 'lib-diagnosis-form',
@@ -34,12 +33,11 @@ import { MapSelectorComponent } from '../map-selector/map-selector';
     InputComponent,
     ButtonComponent,
     SelectComponent,
-    MapSelectorComponent,
+    GetLocationComponent,
   ],
   templateUrl: './diagnosis-form.html',
   styleUrl: './diagnosis-form.css',
 })
-export class DiagnosisForm implements OnInit, OnChanges {
   @Input() diagnosis: Diagnosis | undefined;
   @Input() loading = false;
   @Input() submitLabel = 'Cadastrar';
@@ -48,10 +46,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
 
   diagnosisForm: FormGroup;
   photoFile: File | null = null;
-
-  showLocationSection = false;
-  locationMessage = '';
-  initialMapCoords = { lat: 0, lng: 0 };
 
   uploadTypeOptions: SelectOption[] = Object.entries(
     DiagnosisUploadTypeLabels,
@@ -248,41 +242,8 @@ export class DiagnosisForm implements OnInit, OnChanges {
     };
   }
 
-  private extractDecimalFromExif(coord: any, ref: any): number | null {
-    if (!coord || !ref || typeof coord.description !== 'number') return null;
-
-    let decimal = coord.description;
-
-    const direction = ref?.value?.[0];
-
-    if (direction === 'S' || direction === 'W') {
-      decimal = -decimal;
-    }
-
-    return parseFloat(decimal.toFixed(6));
-  }
-
-  getUserLocation(): void {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-
-          this.initialMapCoords = { lat, lng };
-        },
-        (err) => {
-          console.warn('Erro ao obter localização do usuário:', err);
-          this.initialMapCoords = { lat: 0, lng: 0 };
-        },
-      );
-    } else {
-      this.initialMapCoords = { lat: 0, lng: 0 };
-    }
-  }
-
-  onMapCoordinatesSelected(coords: { lat: number; lng: number }) {
-    this.latitude.setValue(coords.lat);
-    this.longitude.setValue(coords.lng);
+  onLocationDetected(location: { latitude: number; longitude: number }) {
+    this.latitude.setValue(location.latitude);
+    this.longitude.setValue(location.longitude);
   }
 }

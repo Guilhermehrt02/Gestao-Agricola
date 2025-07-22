@@ -4,6 +4,7 @@ export interface Environment {
   // Google
   clientId: string;
   redirectUri: string;
+  googleMapsApiKey: string;
 
   // JWT
   jwtToken: string;

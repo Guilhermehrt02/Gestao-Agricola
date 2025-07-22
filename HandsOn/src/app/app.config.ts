@@ -65,6 +65,7 @@ function environmentFactory(): Environment {
     clientId: '',
     redirectUri: '',
     apiUrl: '',
+    googleMapsApiKey: '',
   };
 
   try {
