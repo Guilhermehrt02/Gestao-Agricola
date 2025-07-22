@@ -26,6 +26,7 @@ export * from './lib/services/expense/expense.service';
 export * from './lib/services/revenue/revenue.service';
 export * from './lib/services/reports/report.service';
 export * from './lib/services/diagnosis/diagnosis.service';
+export * from './lib/services/google-maps/google-maps.service';
 
 // facades
 export * from './lib/facades/auth.facade';
@@ -53,6 +54,7 @@ export { BYPASS_INTERCEPTORS } from './lib/interceptors/authentication/authentic
 
 // utils
 export * from './lib/utils/form-validators';
+export * from './lib/utils/google-maps-loader';
 
 // enums
 export * from './lib/enums/user-roles.enum';
