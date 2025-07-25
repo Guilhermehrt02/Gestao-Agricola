@@ -21,7 +21,13 @@ import {
   SelectComponent,
   SelectOption,
 } from '../../components/select/select.component';
-import { Diagnosis, DiagnosisUploadTypeLabels } from '@farm/core';
+import {
+  Diagnosis,
+  DiagnosisUploadTypeLabels,
+  Farm,
+  Harvest,
+  Plot,
+} from '@farm/core';
 import { GetLocationComponent } from '../get-location/get-location.component';
 
 @Component({
@@ -38,11 +44,16 @@ import { GetLocationComponent } from '../get-location/get-location.component';
   templateUrl: './diagnosis-form.html',
   styleUrl: './diagnosis-form.css',
 })
+export class DiagnosisForm implements OnInit, OnChanges {
   @Input() diagnosis: Diagnosis | undefined;
+  @Input() farms: Farm[] | undefined;
+  @Input() harvests: Harvest[] | undefined;
+  @Input() plots: Plot[] | undefined;
   @Input() loading = false;
   @Input() submitLabel = 'Cadastrar';
 
   @Output() diagnosisSubmit = new EventEmitter<any>();
+  @Output() farmSelected = new EventEmitter<string>();
 
   diagnosisForm: FormGroup;
   photoFile: File | null = null;
@@ -134,6 +145,42 @@ import { GetLocationComponent } from '../get-location/get-location.component';
     return this.diagnosisForm.get('longitude') as FormControl;
   }
 
+  get farmOptions(): SelectOption[] {
+    return (
+      this.farms?.map((farm) => ({
+        value: farm.id,
+        label: farm.name,
+      })) || []
+    );
+  }
+
+  get harvestOptions(): SelectOption[] {
+    return (
+      this.harvests?.map((h) => ({
+        value: h.id,
+        label: h.name,
+      })) ?? []
+    );
+  }
+
+  get plotOptions(): SelectOption[] {
+    return (
+      this.plots?.map((p) => ({
+        value: p.id,
+        label: p.name,
+      })) ?? []
+    );
+  }
+
+  onFarmSelected(farmId: string): void {
+    this.farmSelected.emit(farmId);
+
+    this.diagnosisForm.patchValue({
+      harvestId: null,
+      plotId: null,
+    });
+  }
+
   updateDiagnosisData(): void {
     if (!this.diagnosis) return;
 
@@ -142,6 +189,12 @@ import { GetLocationComponent } from '../get-location/get-location.component';
     );
 
     const formattedDate = this.formatDateToInput(this.diagnosis.date);
+
+    this.farmId.valueChanges.subscribe((farmId) => {
+      if (farmId) {
+        this.onFarmSelected(farmId);
+      }
+    });
 
     this.diagnosisForm.patchValue({
       farmId: this.diagnosis.farmId ?? '',
@@ -180,47 +233,8 @@ import { GetLocationComponent } from '../get-location/get-location.component';
     this.diagnosisSubmit.emit(formData);
   }
 
-  async onFileSelected(file: File | null) {
+  onFileSelected(file: File | null) {
     this.photoFile = file;
-    if (!file) return;
-
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const tags = EXIF.load(arrayBuffer);
-
-      const lat = this.extractDecimalFromExif(
-        tags['GPSLatitude'],
-        tags['GPSLatitudeRef'],
-      );
-      const lon = this.extractDecimalFromExif(
-        tags['GPSLongitude'],
-        tags['GPSLongitudeRef'],
-      );
-
-      if (lat !== null && lon !== null) {
-        this.latitude.setValue(lat);
-        this.longitude.setValue(lon);
-        this.initialMapCoords = { lat, lng: lon };
-        this.showLocationSection = true;
-        this.locationMessage = '';
-      } else {
-        this.latitude.reset();
-        this.longitude.reset();
-        this.initialMapCoords = { lat: 0, lng: 0 };
-        this.showLocationSection = false;
-
-        this.locationMessage =
-          'Não foi possível obter a localização da imagem. Ative a localização do celular ao tirar a foto.';
-
-        // this.getUserLocation();
-        // this.showLocationSection = true; 
-      }
-    } catch (err) {
-      console.error('Erro ao extrair EXIF:', err);
-      this.locationMessage = 'Erro ao ler os dados da imagem.';
-      this.getUserLocation();
-      this.showLocationSection = true;
-    }
   }
 
   private formatDateToInput(date: string | Date): string {

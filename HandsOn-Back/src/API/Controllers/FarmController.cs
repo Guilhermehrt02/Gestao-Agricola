@@ -13,9 +13,9 @@ namespace API.Controllers
         private readonly IFarmServices _farmServices = farmServices;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllByUserId(Guid userId)
+        public async Task<IActionResult> GetAll()
         {
-            var farms = await _farmServices.GetAllByUserIdAsync(userId);
+            var farms = await _farmServices.GetAllByUserIdAsync(User);
             return Ok(farms);
         }
 

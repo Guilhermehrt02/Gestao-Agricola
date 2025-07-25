@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CardComponent, DiagnosisForm } from '@farm/ui';
 import { DiagnosisComponentFacade } from './diagnosis.component.facade';
-import { Diagnosis } from '@farm/core';
+import { Diagnosis, Farm, Harvest, Plot } from '@farm/core';
 
 @Component({
   selector: 'lib-diagnosis',
@@ -16,6 +16,10 @@ export class DiagnosisComponent implements OnInit, OnDestroy {
   diagnosis: Diagnosis | undefined;
   loading = false;
 
+  farms: Farm[] = [];
+  harvests: Harvest[] = [];
+  plots: Plot[] = [];
+
   title = 'Criar Diagnóstico';
   description = 'Preencha os campos abaixo para criar um novo diagnóstico';
   submitLabel = 'Cadastrar';
@@ -24,11 +28,12 @@ export class DiagnosisComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line @angular-eslint/prefer-inject
     private route: ActivatedRoute,
     // eslint-disable-next-line @angular-eslint/prefer-inject
-    private facade: DiagnosisComponentFacade
+    public facade: DiagnosisComponentFacade,
   ) {}
 
   ngOnInit() {
     this.facade.reset();
+    this.facade.loadFarmOptions();
 
     this.id = this.route.snapshot.paramMap.get('id') || undefined;
 
@@ -60,4 +65,14 @@ export class DiagnosisComponent implements OnInit, OnDestroy {
     this.facade.submit(diagnosis);
   }
 
+  onFarmSelected(farmId: string): void {
+    this.facade.loadHarvests(farmId);
+    this.facade.loadPlots(farmId);
+
+    this.harvests = [];
+    this.plots = [];
+
+    this.facade.harvests$.subscribe((harvests) => (this.harvests = harvests ?? []));
+    this.facade.plots$.subscribe((plots) => (this.plots = plots ?? []));
+  }
 }

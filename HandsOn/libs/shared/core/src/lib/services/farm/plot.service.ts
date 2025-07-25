@@ -1,0 +1,22 @@
+import { Injectable } from '@angular/core';
+import { RequestService } from '../request/request.service';
+import { HttpContext } from '@angular/common/http';
+import { BYPASS_INTERCEPTORS } from '../../interceptors/authentication/authentication.interceptor';
+import { catchError } from 'rxjs';
+import { Plot } from '../../models/plot.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PlotService extends RequestService {
+    httpOptionsBypassInterceptor = {
+        ...this.httpOptions,
+        context: new HttpContext().set(BYPASS_INTERCEPTORS, false),
+    };
+
+    getPlotsByFarm(farmId: string) {
+        return this.httpClient
+            .get<Plot[]>(`${this.apiUrl}/plots/farm/${farmId}`, this.httpOptionsBypassInterceptor)
+            .pipe(catchError(this.handleError));
+    }
+}

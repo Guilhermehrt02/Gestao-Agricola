@@ -8,6 +8,10 @@ import {
   ConfirmationService,
   AuthenticationService,
   UploadFacade,
+  Farm,
+  Harvest,
+  Plot,
+  FarmFacade,
 } from '@farm/core';
 import { Router } from '@angular/router';
 
@@ -18,10 +22,18 @@ export class DiagnosisComponentFacade {
   private diagnosisSubject = new BehaviorSubject<Diagnosis | null>(null);
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
+  private farmsSubject = new BehaviorSubject<Farm[] | null>(null);
+  private harvestsSubject = new BehaviorSubject<Harvest[] | null>(null);
+  private plotsSubject = new BehaviorSubject<Plot[] | null>(null);
+
+  diagnosis$: Observable<Diagnosis | null> = this.diagnosisSubject.asObservable();
+  farms$: Observable<Farm[] | null> = this.farmsSubject.asObservable();
+  harvests$: Observable<Harvest[] | null> = this.harvestsSubject.asObservable();
+  plots$: Observable<Plot[] | null> = this.plotsSubject.asObservable();
+  loading$: Observable<boolean> = this.loadingSubject.asObservable();
+
   id: string | undefined;
   isOwnProfile = false;
-  diagnosis$: Observable<Diagnosis | null> = this.diagnosisSubject.asObservable();
-  loading$: Observable<boolean> = this.loadingSubject.asObservable();
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -29,6 +41,7 @@ export class DiagnosisComponentFacade {
     private confirmationService: ConfirmationService,
     private uploadFacade: UploadFacade,
     private router: Router,
+    private farmFacade: FarmFacade
   ) {}
 
   load(id: string) {
@@ -54,6 +67,24 @@ export class DiagnosisComponentFacade {
         ),
       )
       .subscribe();
+  }
+
+  loadFarmOptions() {
+    this.farmFacade.getFarms().subscribe(farms => {
+      this.farmsSubject.next(farms);
+    });
+  }
+
+  loadHarvests(farmId: string) {
+    this.farmFacade.getHarvestsByFarm(farmId).subscribe(harvests => {
+      this.harvestsSubject.next(harvests);
+    });
+  }
+
+  loadPlots(farmId: string) {
+    this.farmFacade.getPlotsByFarm(farmId).subscribe(plots => {
+      this.plotsSubject.next(plots);
+    });
   }
 
   reset() {

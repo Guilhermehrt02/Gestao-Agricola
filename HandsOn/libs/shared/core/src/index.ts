@@ -15,6 +15,9 @@ export * from './lib/models/expense-data-chart.model';
 export * from './lib/models/report-input.model';
 export * from './lib/models/revenue-data-chart.model';
 export * from './lib/models/diagnosis.model';
+export * from './lib/models/farm.model';
+export * from './lib/models/harvest.model';
+export * from './lib/models/plot.model';
 
 // services
 export * from './lib/services/authentication/authentication.service';
@@ -28,6 +31,7 @@ export * from './lib/services/reports/report.service';
 export * from './lib/services/diagnosis/diagnosis.service';
 export * from './lib/services/google-maps/google-maps.service';
 
+
 // facades
 export * from './lib/facades/auth.facade';
 export * from './lib/facades/user.facade';
@@ -36,6 +40,7 @@ export * from './lib/facades/revenue.facade';
 export * from './lib/facades/report.facade';
 export * from './lib/facades/upload.facade';
 export * from './lib/facades/diagnosis.facade';
+export * from './lib/facades/farm.facade';
 
 // guards
 export * from './lib/guards/authenticated/authenticated.guard';

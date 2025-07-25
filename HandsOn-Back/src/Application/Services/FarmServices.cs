@@ -4,7 +4,7 @@ using Application.ViewModels;
 using Application.Exceptions;
 using Application.Validators;
 using Application.InputModels.FarmModels;
-
+using System.Security.Claims;
 namespace Application.Services
 {
     public class FarmServices(IFarmRepository farmRepository) : IFarmServices
@@ -17,8 +17,10 @@ namespace Application.Services
             return FarmViewModel.FromEntity(farm);
         }
 
-        public async Task<IEnumerable<FarmViewModel>> GetAllByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<FarmViewModel>> GetAllByUserIdAsync(ClaimsPrincipal actionUser)
         {
+            var userId = Guid.Parse(actionUser.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NotFoundException("User not found"));
+            
             var farms = await _farmRepository.GetAllByUserIdAsync(userId);
             return farms.Select(FarmViewModel.FromEntity);
         }

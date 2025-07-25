@@ -1,23 +1,21 @@
 <lib-card class="">
-    <a [routerLink]="['/app/diagnosis']" class="absolute top-0 left-0 mt-2 ml-2">
-      <p class="description flex items-center gap-1 link">
-        <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
-      </p>
-    </a>
-  
-    <h1 class="title text-center">
-      {{ title }}
-    </h1>
-    <p class="description text-center mt-2">
-      {{ description }}
+  <a [routerLink]="['/app/diagnosis']" class="absolute top-0 left-0 mt-2 ml-2">
+    <p class="description flex items-center gap-1 link">
+      <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
     </p>
+  </a>
 
-    <lib-diagnosis-form
-        class="mt-6"
-        [loading]="loading"
-        [diagnosis]="diagnosis"
-        [submitLabel]="submitLabel"
-        (diagnosisSubmit)="onSubmit($event)"
-    ></lib-diagnosis-form>
+  <h1 class="title text-center">{{ title }}</h1>
+  <p class="description text-center mt-2">{{ description }}</p>
+
+  <lib-diagnosis-form
+    [loading]="loading"
+    [diagnosis]="diagnosis"
+    [submitLabel]="submitLabel"
+    [farms]="(facade.farms$ | async) ?? undefined"
+    [harvests]="(facade.harvests$ | async) ?? undefined"
+    [plots]="(facade.plots$ | async) ?? undefined"
+    (diagnosisSubmit)="onSubmit($event)"
+    (farmSelected)="onFarmSelected($event)"
+  ></lib-diagnosis-form>
 </lib-card>
-  
