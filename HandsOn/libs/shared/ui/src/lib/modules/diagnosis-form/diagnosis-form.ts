@@ -15,6 +15,7 @@ import {
   Validators,
   AbstractControl,
 } from '@angular/forms';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { ButtonComponent } from '../../components/button/button.component';
 import { InputComponent } from '../../components/input/input.component';
 import {
@@ -100,6 +101,14 @@ export class DiagnosisForm implements OnInit, OnChanges {
     if (this.diagnosis) {
       this.updateDiagnosisData();
     }
+
+    this.farmId.valueChanges.pipe(
+      distinctUntilChanged()
+    ).subscribe((farmId) => {
+      if (farmId) {
+        this.onFarmSelected(farmId);
+      }
+    });
   }
 
   ngOnChanges(): void {
@@ -189,12 +198,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
     );
 
     const formattedDate = this.formatDateToInput(this.diagnosis.date);
-
-    this.farmId.valueChanges.subscribe((farmId) => {
-      if (farmId) {
-        this.onFarmSelected(farmId);
-      }
-    });
 
     this.diagnosisForm.patchValue({
       farmId: this.diagnosis.farmId ?? '',

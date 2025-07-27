@@ -12,7 +12,7 @@ namespace API.Controllers
     {
         private readonly IHarvestServices _harvestServices = harvestServices;
 
-        [HttpGet("/farm/{farmId}")]
+        [HttpGet("farm/{farmId}")]
         public async Task<IActionResult> GetAllByFarmId(Guid farmId)
         {
             var harvests = await _harvestServices.GetAllByFarmIdAsync(farmId);

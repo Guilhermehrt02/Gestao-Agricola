@@ -16,7 +16,7 @@ export class PlotService extends RequestService {
 
     getPlotsByFarm(farmId: string) {
         return this.httpClient
-            .get<Plot[]>(`${this.apiUrl}/plots/farm/${farmId}`, this.httpOptionsBypassInterceptor)
+            .get<Plot[]>(`${this.apiUrl}/plot/farm/${farmId}`, this.httpOptionsBypassInterceptor)
             .pipe(catchError(this.handleError));
     }
 }

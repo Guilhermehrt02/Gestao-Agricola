@@ -65,9 +65,9 @@ export class DiagnosisComponent implements OnInit, OnDestroy {
     this.facade.submit(diagnosis);
   }
 
-  onFarmSelected(farmId: string): void {
-    this.facade.loadHarvests(farmId);
-    this.facade.loadPlots(farmId);
+  onFarmSelected(farm: any): void {
+    this.facade.loadHarvests(farm.value);
+    this.facade.loadPlots(farm.value);
 
     this.harvests = [];
     this.plots = [];
