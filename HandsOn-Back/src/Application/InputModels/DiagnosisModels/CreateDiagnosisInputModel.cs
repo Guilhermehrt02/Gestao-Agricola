@@ -5,9 +5,6 @@ namespace Application.InputModels.DiagnosisModels
 {
     public class CreateDiagnosisInputModel
     {
-        [Required(ErrorMessage = "UserId is required.")]
-        public Guid UserId { get; set; }
-
         [Required(ErrorMessage = "FarmId is required.")]
         public Guid FarmId { get; set; }
 

@@ -50,7 +50,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateDiagnosisInputModel inputModel)
         {
-            var diagnosis = await _diagnosisServices.CreateAsync(inputModel);
+            var diagnosis = await _diagnosisServices.CreateAsync(User, inputModel);
             return CreatedAtAction(nameof(GetById), new { id = diagnosis.Id }, diagnosis);
         }
 

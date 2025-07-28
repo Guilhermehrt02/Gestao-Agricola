@@ -93,7 +93,7 @@ export class DiagnosisComponentFacade {
   }
 
   submit(diagnosis: any) {
-    const receiptFile = diagnosis.receiptFile;
+    const photoFile = diagnosis.photoFile;
 
     const finalizeSubmit = (updatedDiagnosis: any) => {
       if (this.id) {
@@ -103,15 +103,15 @@ export class DiagnosisComponentFacade {
       }
     };
 
-    if (receiptFile) {
-      this.uploadFacade.uploadFile(receiptFile).subscribe({
+    if (photoFile) {
+      this.uploadFacade.uploadFile(photoFile).subscribe({
         next: (uploadResponse) => {
-          const receiptUrl = uploadResponse.fileUrl;
+          const photoUrl = uploadResponse.fileUrl;
 
           const updatedDiagnosis = {
             ...diagnosis,
-            receiptUrl,
-            receiptFile: null,
+            photoUrl,
+            photoFile: null,
           };
 
           finalizeSubmit(updatedDiagnosis);
@@ -129,7 +129,7 @@ export class DiagnosisComponentFacade {
     this.loadingSubject.next(true);
 
     this.diagnosisFacade.createDiagnosis(diagnosis).subscribe(() => {
-      this.router.navigate(['/app/diagnosis']);
+      this.router.navigate(['/app/diagnoses']);
     });
   }
 
@@ -137,7 +137,7 @@ export class DiagnosisComponentFacade {
     this.loadingSubject.next(true);
 
     this.diagnosisFacade.updateDiagnosis(diagnosis).subscribe(() => {
-      this.router.navigate(['/app/diagnosis']);
+      this.router.navigate(['/app/diagnoses']);
     });
   }
 
@@ -146,7 +146,7 @@ export class DiagnosisComponentFacade {
       message: 'Você tem certeza que deseja excluir esse diagnóstico?',
       accept: () => {
         this.diagnosisFacade.deleteDiagnosis(id).subscribe(() => {
-          this.router.navigate(['/app/diagnosis']);
+          this.router.navigate(['/app/diagnoses']);
         });
       },
     });

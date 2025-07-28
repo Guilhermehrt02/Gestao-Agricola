@@ -82,10 +82,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
         validators: [Validators.required],
         updateOn: 'blur',
       }),
-      photoUrl: new FormControl('', {
-        validators: [Validators.required],
-        updateOn: 'blur',
-      }),
       date: new FormControl(new Date(), {
         validators: [Validators.required, this.dateNotInFutureValidator()],
         updateOn: 'blur',
@@ -106,7 +102,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
       distinctUntilChanged()
     ).subscribe((farmId) => {
       if (farmId) {
-        this.onFarmSelected(farmId);
+        this.onFarmSelected(farmId.value);
       }
     });
   }
@@ -134,9 +130,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
   }
   get uploadType(): FormControl {
     return this.diagnosisForm.get('uploadType') as FormControl;
-  }
-  get photoUrl(): FormControl {
-    return this.diagnosisForm.get('photoUrl') as FormControl;
   }
   get date(): FormControl {
     return this.diagnosisForm.get('date') as FormControl;
@@ -204,7 +197,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
       harvestId: this.diagnosis.harvestId ?? '',
       plotId: this.diagnosis.plotId ?? '',
       uploadType: selectedUploadType ?? '',
-      photoUrl: this.diagnosis.photoUrl ?? '',
       date: formattedDate,
       latitude: this.diagnosis.latitude ?? '',
       longitude: this.diagnosis.longitude ?? '',
@@ -213,17 +205,18 @@ export class DiagnosisForm implements OnInit, OnChanges {
 
   onSubmit(): void {
     if (this.diagnosisForm.invalid) {
-      return this.diagnosisForm.markAllAsTouched();
+      this.diagnosisForm.markAllAsTouched();
+      return ;
     }
 
     const formData = {
       id: this.diagnosis?.id || '',
       userId: this.diagnosis?.userId || '',
-      farmId: this.farmId.value,
-      harvestId: this.harvestId.value,
-      plotId: this.plotId.value,
+      farmId: this.farmId.value.value,
+      harvestId: this.harvestId.value.value,
+      plotId: this.plotId.value.value,
       uploadType: this.uploadType.value.value,
-      photoUrl: this.photoUrl.value,
+      photoFile: this.photoFile || null,
       date: this.date.value,
       status: this.status.value,
       result: this.result.value,

@@ -5,7 +5,7 @@ using Application.Exceptions;
 using Application.Validators;
 using Application.ViewModels;
 using Core.Enums;
-
+using System.Security.Claims;
 
 namespace Application.Services
 {
@@ -44,13 +44,15 @@ namespace Application.Services
             return diagnoses.Select(DiagnosisViewModel.FromEntity);
         }
 
-        public async Task<DiagnosisViewModel> CreateAsync(CreateDiagnosisInputModel inputModel)
+        public async Task<DiagnosisViewModel> CreateAsync(ClaimsPrincipal actionUser, CreateDiagnosisInputModel inputModel)
         {
+            var userId = Guid.Parse(actionUser.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NotFoundException("User not found"));
+
             InputModelValidator.Validate(inputModel);
 
             var diagnosis = new Diagnosis
             {
-                UserId = inputModel.UserId,
+                UserId = userId,
                 FarmId = inputModel.FarmId,
                 HarvestId = inputModel.HarvestId,
                 PlotId = inputModel.PlotId,

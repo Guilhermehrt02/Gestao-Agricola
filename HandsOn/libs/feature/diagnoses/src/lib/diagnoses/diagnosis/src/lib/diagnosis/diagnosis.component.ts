@@ -8,8 +8,8 @@ import { Diagnosis, Farm, Harvest, Plot } from '@farm/core';
 @Component({
   selector: 'lib-diagnosis',
   imports: [CommonModule, CardComponent, DiagnosisForm, RouterModule],
-  templateUrl: './diagnosis.html',
-  styleUrl: './diagnosis.css',
+  templateUrl: './diagnosis.component.html',
+  styleUrl: './diagnosis.component.css',
 })
 export class DiagnosisComponent implements OnInit, OnDestroy {
   id: string | undefined;
@@ -65,9 +65,9 @@ export class DiagnosisComponent implements OnInit, OnDestroy {
     this.facade.submit(diagnosis);
   }
 
-  onFarmSelected(farm: any): void {
-    this.facade.loadHarvests(farm.value);
-    this.facade.loadPlots(farm.value);
+  onFarmSelected(farmId: string): void {
+    this.facade.loadHarvests(farmId);
+    this.facade.loadPlots(farmId);
 
     this.harvests = [];
     this.plots = [];
