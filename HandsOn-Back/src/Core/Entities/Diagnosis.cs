@@ -6,16 +6,16 @@ namespace Core.Entities
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public Guid FarmId { get; set; } //ou melhor referenciar a uma Farm?
-        public Guid HarvestId { get; set; } //ou melhor referenciar a uma Harvest?
-        public Guid PlotId { get; set; } //ou melhor referenciar a uma Plot?
-        public UploadType UploadType { get; set; } 
+        public Farm Farm { get; set; } = new Farm();
+        public Harvest Harvest { get; set; } = new Harvest();
+        public Plot Plot { get; set; } = new Plot();
+        public UploadType UploadType { get; set; }
         public string PhotoUrl { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public DiagnosisStatus Status { get; set; } = DiagnosisStatus.Pending;
         public string Result { get; set; } = string.Empty;
-        public double? Latitude { get; set; }   // Coordenada GPS
-        public double? Longitude { get; set; }  // Coordenada GPS
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
@@ -23,9 +23,9 @@ namespace Core.Entities
 
         public Diagnosis(
             Guid userId,
-            Guid farmId,
-            Guid harvestId,
-            Guid plotId,
+            Farm farm,
+            Harvest harvest,
+            Plot plot,
             string uploadType,
             string photoUrl,
             DateTime? date,
@@ -34,9 +34,9 @@ namespace Core.Entities
         )
         {
             UserId = userId;
-            FarmId = farmId;
-            HarvestId = harvestId;
-            PlotId = plotId;
+            Farm = farm;
+            Harvest = harvest;
+            Plot = plot;
             UploadType = UploadTypeExtension.ToUploadType(uploadType);
             PhotoUrl = photoUrl;
             Date = date ?? DateTime.Now;
@@ -49,10 +49,10 @@ namespace Core.Entities
             string? uploadType,
             string? photoUrl,
             DateTime? date,
-            Guid? farmId = null,
+            Farm? farm = null,
             Guid? userId = null,
-            Guid? harvestId = null,
-            Guid? plotId = null,
+            Harvest? harvest = null,
+            Plot? plot = null,
             double? latitude = null,
             double? longitude = null,
             string? result = null,
@@ -62,10 +62,10 @@ namespace Core.Entities
             UploadType = UploadTypeExtension.ToUploadType(uploadType ?? UploadType.ToFriendlyString());
             PhotoUrl = photoUrl ?? PhotoUrl;
             Date = date ?? Date;
-            FarmId = farmId ?? FarmId;
+            Farm = farm ?? Farm;
             UserId = userId ?? UserId;
-            HarvestId = harvestId ?? HarvestId;
-            PlotId = plotId ?? PlotId;
+            Harvest = harvest ?? Harvest;
+            Plot = plot ?? Plot;
             Status = status ?? Status;
             Result = result ?? Result;
             Latitude = latitude ?? Latitude;

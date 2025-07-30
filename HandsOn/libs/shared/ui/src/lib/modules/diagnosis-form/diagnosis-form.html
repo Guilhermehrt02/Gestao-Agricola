@@ -5,24 +5,24 @@
 >
   <div class="w-full max-w-md mx-auto flex flex-col gap-2">
     <lib-select
-      [id]="'farmId'"
+      [id]="'farm'"
       [label]="'Propriedade'"
       [placeholder]="'Selecione uma propriedade'"
       [required]="true"
       [fluid]="true"
-      [control]="farmId"
+      [control]="farm"
       [options]="farmOptions"
       [filter]="true"
       class="w-full"
     />
 
     <lib-select
-      [id]="'harvestId'"
+      [id]="'harvest'"
       [label]="'Safra'"
       [placeholder]="'Selecione uma safra'"
       [required]="true"
       [fluid]="true"
-      [control]="harvestId"
+      [control]="harvest"
       [options]="harvestOptions"
       [filter]="true"
       [disabled]="!harvests?.length"
@@ -30,12 +30,12 @@
     />
 
     <lib-select
-      [id]="'plotId'"
+      [id]="'plot'"
       [label]="'Talhão'"
       [placeholder]="'Selecione um talhão'"
       [required]="true"
       [fluid]="true"
-      [control]="plotId"
+      [control]="plot"
       [options]="plotOptions"
       [filter]="true"
       [disabled]="!plots?.length"

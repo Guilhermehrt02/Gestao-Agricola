@@ -9,9 +9,13 @@ using System.Security.Claims;
 
 namespace Application.Services
 {
-    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository, IUploadServices uploadServices) : IDiagnosisServices
+    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository, IUploadServices uploadServices, IFarmRepository farmRepository, IHarvestRepository harvestRepository, IPlotRepository plotRepository) : IDiagnosisServices
     {
         private readonly IDiagnosisRepository _diagnosisRepository = diagnosisRepository;
+        private readonly IFarmRepository _farmRepository = farmRepository;
+        private readonly IHarvestRepository _harvestRepository = harvestRepository;
+        private readonly IPlotRepository _plotRepository = plotRepository;
+
         private readonly IUploadServices _uploadServices = uploadServices;
 
         public async Task<DiagnosisViewModel> GetByIdAsync(Guid id)
@@ -26,36 +30,29 @@ namespace Application.Services
             return diagnoses.Select(DiagnosisViewModel.FromEntity);
         }
 
-        public async Task<IEnumerable<DiagnosisViewModel>> GetAllByFarmIdAsync(Guid farmId)
-        {
-            var diagnoses = await _diagnosisRepository.GetAllByFarmIdAsync(farmId);
-            return diagnoses.Select(DiagnosisViewModel.FromEntity);
-        }
-
-        public async Task<IEnumerable<DiagnosisViewModel>> GetAllByPlotIdAsync(Guid plotId)
-        {
-            var diagnoses = await _diagnosisRepository.GetAllByPlotIdAsync(plotId);
-            return diagnoses.Select(DiagnosisViewModel.FromEntity);
-        }
-
-        public async Task<IEnumerable<DiagnosisViewModel>> GetAllByHarvestIdAsync(Guid harvestId)
-        {
-            var diagnoses = await _diagnosisRepository.GetAllByHarvestIdAsync(harvestId);
-            return diagnoses.Select(DiagnosisViewModel.FromEntity);
-        }
-
         public async Task<DiagnosisViewModel> CreateAsync(ClaimsPrincipal actionUser, CreateDiagnosisInputModel inputModel)
         {
             var userId = Guid.Parse(actionUser.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NotFoundException("User not found"));
 
             InputModelValidator.Validate(inputModel);
 
+            var farm = await _farmRepository.GetByIdAsync(inputModel.FarmId) ?? throw new NotFoundException("Farm not found");
+            var harvest = await _harvestRepository.GetByIdAsync(inputModel.HarvestId) ?? throw new NotFoundException("Harvest not found");
+            var plot = await _plotRepository.GetByIdAsync(inputModel.PlotId) ?? throw new NotFoundException("Plot not found");
+
+            if (harvest.FarmId != farm.Id)
+                throw new InvalidOperationException("The selected harvest does not belong to the selected farm.");
+
+            if (plot.FarmId != farm.Id)
+                throw new InvalidOperationException("The selected plot does not belong to the selected farm.");
+
+
             var diagnosis = new Diagnosis
             {
                 UserId = userId,
-                FarmId = inputModel.FarmId,
-                HarvestId = inputModel.HarvestId,
-                PlotId = inputModel.PlotId,
+                Farm = farm,
+                Harvest = harvest,
+                Plot = plot,
                 UploadType = UploadTypeExtension.ToUploadType(inputModel.UploadType),
                 PhotoUrl = inputModel.PhotoUrl,
                 Date = inputModel.Date,
@@ -71,9 +68,43 @@ namespace Application.Services
         {
             InputModelValidator.Validate(inputModel);
 
-            var diagnosis = await _diagnosisRepository.GetByIdAsync(id) ?? throw new NotFoundException("Diagnosis not found");
+            var diagnosis = await _diagnosisRepository.GetByIdAsync(id)
+                    ?? throw new NotFoundException("Diagnosis not found");
 
-            if (!string.IsNullOrEmpty(inputModel.PhotoUrl) && !string.IsNullOrEmpty(diagnosis.PhotoUrl) && inputModel.PhotoUrl != diagnosis.PhotoUrl)
+            Farm? farm = null;
+            Harvest? harvest = null;
+            Plot? plot = null;
+
+            if (inputModel.FarmId.HasValue)
+            {
+                farm = await _farmRepository.GetByIdAsync(inputModel.FarmId.Value)
+                       ?? throw new NotFoundException("Farm not found");
+            }
+
+            if (inputModel.HarvestId.HasValue)
+            {
+                harvest = await _harvestRepository.GetByIdAsync(inputModel.HarvestId.Value)
+                          ?? throw new NotFoundException("Harvest not found");
+            }
+
+            if (inputModel.PlotId.HasValue)
+            {
+                plot = await _plotRepository.GetByIdAsync(inputModel.PlotId.Value)
+                       ?? throw new NotFoundException("Plot not found");
+            }
+
+            if (farm != null)
+            {
+                if (harvest != null && harvest.FarmId != farm.Id)
+                    throw new InvalidOperationException("The selected harvest does not belong to the selected farm.");
+
+                if (plot != null && plot.FarmId != farm.Id)
+                    throw new InvalidOperationException("The selected plot does not belong to the selected farm.");
+            }
+
+            if (!string.IsNullOrEmpty(inputModel.PhotoUrl) &&
+                !string.IsNullOrEmpty(diagnosis.PhotoUrl) &&
+                inputModel.PhotoUrl != diagnosis.PhotoUrl)
             {
                 await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
             }
@@ -82,10 +113,10 @@ namespace Application.Services
                 inputModel.UploadType,
                 inputModel.PhotoUrl,
                 inputModel.Date,
-                inputModel.FarmId,
+                farm,
                 inputModel.UserId,
-                inputModel.HarvestId,
-                inputModel.PlotId,
+                harvest,
+                plot,
                 inputModel.Latitude,
                 inputModel.Longitude
             );
@@ -104,7 +135,7 @@ namespace Application.Services
             }
 
             await _diagnosisRepository.DeleteAsync(diagnosis);
-            
+
             return DiagnosisViewModel.FromEntity(diagnosis);
         }
     }

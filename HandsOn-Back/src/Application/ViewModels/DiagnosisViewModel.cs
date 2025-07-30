@@ -1,5 +1,8 @@
 using Core.Entities;
 using Core.Enums;
+using Application.ViewModels.FarmModels;
+using Application.ViewModels.HarvestModels;
+using Application.ViewModels.PlotModels;
 
 namespace Application.ViewModels
 {
@@ -7,12 +10,13 @@ namespace Application.ViewModels
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public Guid FarmId { get; set; }
-        public Guid HarvestId { get; set; }
-        public Guid PlotId { get; set; }
+        public FarmDataModel Farm { get; set; }
+        public HarvestDataModel Harvest { get; set; }
+        public PlotDataModel Plot { get; set; }
         public string? PhotoUrl { get; set; }
         public DateTime Date { get; set; }
         public string Status { get; set; } = String.Empty;
+        public string? UploadType { get; set; }
         public string? Result { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
@@ -25,12 +29,13 @@ namespace Application.ViewModels
             {
                 Id = diagnosis.Id,
                 UserId = diagnosis.UserId,
-                FarmId = diagnosis.FarmId,
-                HarvestId = diagnosis.HarvestId,
-                PlotId = diagnosis.PlotId,
+                Farm = FarmDataModel.FromEntity(diagnosis.Farm),
+                Harvest = HarvestDataModel.FromEntity(diagnosis.Harvest),
+                Plot = PlotDataModel.FromEntity(diagnosis.Plot),
                 PhotoUrl = diagnosis.PhotoUrl,
                 Date = diagnosis.Date,
                 Status = diagnosis.Status.ToFriendlyString(),
+                UploadType = diagnosis.UploadType.ToFriendlyString(),
                 Result = diagnosis.Result,
                 Latitude = diagnosis.Latitude,
                 Longitude = diagnosis.Longitude,

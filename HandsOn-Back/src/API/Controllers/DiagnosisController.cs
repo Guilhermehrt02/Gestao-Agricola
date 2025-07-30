@@ -26,27 +26,6 @@ namespace API.Controllers
             return Ok(diagnoses);
         }
 
-        [HttpGet("farm/{farmId}")]
-        public async Task<IActionResult> GetAllByFarmId(Guid farmId)
-        {
-            var diagnoses = await _diagnosisServices.GetAllByFarmIdAsync(farmId);
-            return Ok(diagnoses);
-        }
-
-        [HttpGet("plot/{plotId}")]
-        public async Task<IActionResult> GetAllByPlotId(Guid plotId)
-        {
-            var diagnoses = await _diagnosisServices.GetAllByPlotIdAsync(plotId);
-            return Ok(diagnoses);
-        }
-
-        [HttpGet("harvest/{harvestId}")]
-        public async Task<IActionResult> GetAllByHarvestId(Guid harvestId)
-        {
-            var diagnoses = await _diagnosisServices.GetAllByHarvestIdAsync(harvestId);
-            return Ok(diagnoses);
-        }
-
         [HttpPost]
         public async Task<IActionResult> Create(CreateDiagnosisInputModel inputModel)
         {

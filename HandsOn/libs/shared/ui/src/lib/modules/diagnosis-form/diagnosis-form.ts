@@ -5,6 +5,7 @@ import {
   OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -66,15 +67,15 @@ export class DiagnosisForm implements OnInit, OnChanges {
   constructor() {
     this.diagnosisForm = new FormGroup({
       id: new FormControl('', { validators: [], updateOn: 'blur' }),
-      farmId: new FormControl('', {
+      farm: new FormControl('', {
         validators: [Validators.required],
         updateOn: 'blur',
       }),
-      harvestId: new FormControl('', {
+      harvest: new FormControl('', {
         validators: [Validators.required],
         updateOn: 'blur',
       }),
-      plotId: new FormControl('', {
+      plot: new FormControl('', {
         validators: [Validators.required],
         updateOn: 'blur',
       }),
@@ -98,35 +99,38 @@ export class DiagnosisForm implements OnInit, OnChanges {
       this.updateDiagnosisData();
     }
 
-    this.farmId.valueChanges.pipe(
-      distinctUntilChanged()
-    ).subscribe((farmId) => {
-      if (farmId) {
-        this.onFarmSelected(farmId.value);
-      }
-    });
+    this.farm.valueChanges
+      .pipe(distinctUntilChanged())
+      .subscribe((farm) => {
+        if (farm) {
+          this.onFarmSelected(farm.value);
+        }
+      });
   }
 
-  ngOnChanges(): void {
-    if (this.diagnosis) {
-      this.updateDiagnosisData();
-    }
+  ngOnChanges(changes: SimpleChanges): void {
+  if (changes['diagnosis'] && changes['diagnosis'].currentValue !== changes['diagnosis'].previousValue) {
+    this.updateDiagnosisData();
+  }
 
+  if (changes['loading']) {
     if (this.loading) {
       this.diagnosisForm.disable();
     } else {
       this.diagnosisForm.enable();
     }
   }
+}
 
-  get farmId(): FormControl {
-    return this.diagnosisForm.get('farmId') as FormControl;
+
+  get farm(): FormControl {
+    return this.diagnosisForm.get('farm') as FormControl;
   }
-  get harvestId(): FormControl {
-    return this.diagnosisForm.get('harvestId') as FormControl;
+  get harvest(): FormControl {
+    return this.diagnosisForm.get('harvest') as FormControl;
   }
-  get plotId(): FormControl {
-    return this.diagnosisForm.get('plotId') as FormControl;
+  get plot(): FormControl {
+    return this.diagnosisForm.get('plot') as FormControl;
   }
   get uploadType(): FormControl {
     return this.diagnosisForm.get('uploadType') as FormControl;
@@ -174,12 +178,12 @@ export class DiagnosisForm implements OnInit, OnChanges {
     );
   }
 
-  onFarmSelected(farmId: string): void {
-    this.farmSelected.emit(farmId);
+  onFarmSelected(farm: string): void {
+    this.farmSelected.emit(farm);
 
     this.diagnosisForm.patchValue({
-      harvestId: null,
-      plotId: null,
+      harvest: null,
+      plot: null,
     });
   }
 
@@ -190,12 +194,27 @@ export class DiagnosisForm implements OnInit, OnChanges {
       (option) => this.diagnosis && option.value === this.diagnosis.uploadType,
     );
 
+    const selectedFarm = this.farmOptions.find(
+      (f) => this.diagnosis && f.value === this.diagnosis.farm.id,
+    );
+
+    const selectedHarvest = {
+      value: this.diagnosis?.harvest.id,
+      label: this.diagnosis?.harvest.name,
+    };
+
+    const selectedPlot = {
+      value: this.diagnosis?.plot.id,
+      label: this.diagnosis?.plot.name,
+    }
+
+
     const formattedDate = this.formatDateToInput(this.diagnosis.date);
 
     this.diagnosisForm.patchValue({
-      farmId: this.diagnosis.farmId ?? '',
-      harvestId: this.diagnosis.harvestId ?? '',
-      plotId: this.diagnosis.plotId ?? '',
+      farm: selectedFarm ?? '',
+      harvest: selectedHarvest ?? '',
+      plot: selectedPlot ?? '',
       uploadType: selectedUploadType ?? '',
       date: formattedDate,
       latitude: this.diagnosis.latitude ?? '',
@@ -206,15 +225,15 @@ export class DiagnosisForm implements OnInit, OnChanges {
   onSubmit(): void {
     if (this.diagnosisForm.invalid) {
       this.diagnosisForm.markAllAsTouched();
-      return ;
+      return;
     }
 
     const formData = {
       id: this.diagnosis?.id || '',
       userId: this.diagnosis?.userId || '',
-      farmId: this.farmId.value.value,
-      harvestId: this.harvestId.value.value,
-      plotId: this.plotId.value.value,
+      farmId: this.farm.value.value,
+      harvestId: this.harvest.value.value,
+      plotId: this.plot.value.value,
       uploadType: this.uploadType.value.value,
       photoFile: this.photoFile || null,
       date: this.date.value,
