@@ -21,19 +21,21 @@ import { GoogleMapsService } from '@farm/core';
 })
 export class GetLocationComponent implements AfterViewInit {
   @ViewChild('mapContainer', { static: false }) mapElementRef!: ElementRef;
-  
+
   @Output() locationDetected = new EventEmitter<{
     latitude: number;
     longitude: number;
   }>();
-  
+
   private readonly googleMapsService = inject(GoogleMapsService);
-  
+
   map!: google.maps.Map;
   marker!: google.maps.Marker;
 
   loading = false;
   error: string | null = null;
+
+  private drawnShapes: google.maps.MVCObject[] = [];
 
   async ngAfterViewInit(): Promise<void> {
     await this.googleMapsService.loadGoogleMaps();
@@ -67,30 +69,68 @@ export class GetLocationComponent implements AfterViewInit {
       zoom: 15,
     });
 
-    this.marker = new google.maps.Marker({
-      position: center,
-      map: this.map,
-      draggable: true,
+    const drawingManager = new google.maps.drawing.DrawingManager({
+      drawingMode: null,
+      drawingControl: true,
+      drawingControlOptions: {
+        position: google.maps.ControlPosition.TOP_CENTER,
+        drawingModes: [
+          google.maps.drawing.OverlayType.MARKER,
+          google.maps.drawing.OverlayType.POLYGON,
+        ],
+      },
+      polygonOptions: {
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        strokeWeight: 2,
+        editable: true,
+        draggable: true,
+      },
     });
 
-    this.emitCoords(lat, lng);
+    drawingManager.setMap(this.map);
 
-    this.map.addListener('click', (event: google.maps.MapMouseEvent) => {
-      const coords = event.latLng!;
-      this.marker.setPosition(coords);
-      this.emitCoords(coords.lat(), coords.lng());
-    });
+    const addShapeToList = (shape: google.maps.MVCObject) => {
+      this.drawnShapes.push(shape);
+    };
 
-    this.marker.addListener('dragend', () => {
-      const pos = this.marker.getPosition();
-      if (pos) this.emitCoords(pos.lat(), pos.lng());
-    });
+    // Polygon
+    google.maps.event.addListener(
+      drawingManager,
+      'polygoncomplete',
+      (polygon: google.maps.Polygon) => {
+        addShapeToList(polygon);
+        const path = polygon.getPath().getArray();
+        const coordinates = path.map((p) => ({ lat: p.lat(), lng: p.lng() }));
+        //console.log('Área desenhada:', coordinates);
+      },
+    );
+    
+    google.maps.event.addListener(
+    drawingManager,
+    'markercomplete',
+    (marker: google.maps.Marker) => {
+      // Remove marcadores anteriores
+      this.drawnShapes = this.drawnShapes.filter((shape) => {
+        if (shape instanceof google.maps.Marker) {
+          shape.setMap(null); 
+          return false; 
+        }
+        return true; 
+      });
+
+      addShapeToList(marker);
+
+      //console.log('Marcador desenhado:', marker.getPosition()?.toJSON());
+      console.log(this.drawnShapes);
+    },
+  );
+    
   }
 
   emitCoords(lat: number, lng: number): void {
     this.locationDetected.emit({ latitude: lat, longitude: lng });
   }
-
 
   async detectLocation(): Promise<void> {
     this.loading = true;
@@ -98,13 +138,10 @@ export class GetLocationComponent implements AfterViewInit {
 
     try {
       const coords = await this.getInitialCoordinates();
+
       this.map.setCenter(
         new google.maps.LatLng(coords.latitude, coords.longitude),
       );
-      this.marker.setPosition(
-        new google.maps.LatLng(coords.latitude, coords.longitude),
-      );
-      this.emitCoords(coords.latitude, coords.longitude);
     } catch (err) {
       this.error = 'Não foi possível obter sua localização.';
       console.error(err);
@@ -112,4 +149,14 @@ export class GetLocationComponent implements AfterViewInit {
       this.loading = false;
     }
   }
+  
+  clearDrawings(): void {
+    this.drawnShapes.forEach(shape => {
+      if ('setMap' in shape && typeof (shape as any).setMap === 'function') {
+        (shape as google.maps.Marker | google.maps.Polygon).setMap(null);
+      }
+    });
+    this.drawnShapes = [];
+  }
+
 }
