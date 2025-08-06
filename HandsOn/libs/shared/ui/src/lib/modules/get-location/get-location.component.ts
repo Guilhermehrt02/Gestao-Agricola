@@ -6,6 +6,9 @@ import {
   AfterViewInit,
   ViewChild,
   inject,
+  OnChanges,
+  Input,
+  SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Geolocation } from '@capacitor/geolocation';
@@ -19,7 +22,9 @@ import { GoogleMapsService } from '@farm/core';
   templateUrl: './get-location.component.html',
   styleUrls: ['./get-location.component.css'],
 })
-export class GetLocationComponent implements AfterViewInit {
+export class GetLocationComponent implements AfterViewInit, OnChanges {
+  @Input() setPositionFromParent?: { latitude: number; longitude: number };
+
   @ViewChild('mapContainer', { static: false }) mapElementRef!: ElementRef;
 
   @Output() locationDetected = new EventEmitter<{
@@ -105,27 +110,30 @@ export class GetLocationComponent implements AfterViewInit {
         //console.log('Área desenhada:', coordinates);
       },
     );
-    
+
     google.maps.event.addListener(
-    drawingManager,
-    'markercomplete',
-    (marker: google.maps.Marker) => {
-      // Remove marcadores anteriores
-      this.drawnShapes = this.drawnShapes.filter((shape) => {
-        if (shape instanceof google.maps.Marker) {
-          shape.setMap(null); 
-          return false; 
-        }
-        return true; 
-      });
+      drawingManager,
+      'markercomplete',
+      (marker: google.maps.Marker) => {
+        // limpa marcador anterior desenhado
+        if (this.marker) this.marker.setMap(null);
+        this.marker = marker;
+        this.marker.setDraggable(true);
+        this.marker.addListener('dragend', () => {
+          const pos = this.marker.getPosition();
+          if (pos) this.emitCoords(pos.lat(), pos.lng());
+        });
 
-      addShapeToList(marker);
+        const pos = marker.getPosition();
+        if (pos) this.emitCoords(pos.lat(), pos.lng());
 
-      //console.log('Marcador desenhado:', marker.getPosition()?.toJSON());
-      console.log(this.drawnShapes);
-    },
-  );
-    
+        // manter no drawnShapes se quiser histórico
+        this.drawnShapes = this.drawnShapes.filter(
+          (s) => !(s instanceof google.maps.Marker),
+        );
+        this.drawnShapes.push(marker);
+      },
+    );
   }
 
   emitCoords(lat: number, lng: number): void {
@@ -149,9 +157,9 @@ export class GetLocationComponent implements AfterViewInit {
       this.loading = false;
     }
   }
-  
+
   clearDrawings(): void {
-    this.drawnShapes.forEach(shape => {
+    this.drawnShapes.forEach((shape) => {
       if ('setMap' in shape && typeof (shape as any).setMap === 'function') {
         (shape as google.maps.Marker | google.maps.Polygon).setMap(null);
       }
@@ -159,4 +167,40 @@ export class GetLocationComponent implements AfterViewInit {
     this.drawnShapes = [];
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      changes['setPositionFromParent'] &&
+      this.setPositionFromParent &&
+      this.map
+    ) {
+      const { latitude, longitude } = this.setPositionFromParent;
+      this.placeOrMoveMarker(latitude, longitude, true);
+    }
+  }
+
+  public placeOrMoveMarker(lat: number, lng: number, emit = false) {
+    const position = new google.maps.LatLng(lat, lng);
+
+    if (this.marker) {
+      this.marker.setPosition(position);
+    } else {
+      this.marker = new google.maps.Marker({
+        position,
+        map: this.map,
+        draggable: true,
+      });
+
+      this.marker.addListener('dragend', () => {
+        const pos = this.marker.getPosition();
+        if (pos) {
+          this.emitCoords(pos.lat(), pos.lng());
+        }
+      });
+    }
+
+    this.map.setCenter(position);
+    if (emit) {
+      this.emitCoords(lat, lng);
+    }
+  }
 }

@@ -6,6 +6,7 @@ import {
   OnInit,
   Output,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -57,6 +58,8 @@ export class DiagnosisForm implements OnInit, OnChanges {
   @Output() diagnosisSubmit = new EventEmitter<any>();
   @Output() farmSelected = new EventEmitter<string>();
 
+  @ViewChild('locationComp') locationComp!: GetLocationComponent;
+
   diagnosisForm: FormGroup;
   photoFile: File | null = null;
 
@@ -99,29 +102,29 @@ export class DiagnosisForm implements OnInit, OnChanges {
       this.updateDiagnosisData();
     }
 
-    this.farm.valueChanges
-      .pipe(distinctUntilChanged())
-      .subscribe((farm) => {
-        if (farm) {
-          this.onFarmSelected(farm.value);
-        }
-      });
+    this.farm.valueChanges.pipe(distinctUntilChanged()).subscribe((farm) => {
+      if (farm) {
+        this.onFarmSelected(farm.value);
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-  if (changes['diagnosis'] && changes['diagnosis'].currentValue !== changes['diagnosis'].previousValue) {
-    this.updateDiagnosisData();
-  }
+    if (
+      changes['diagnosis'] &&
+      changes['diagnosis'].currentValue !== changes['diagnosis'].previousValue
+    ) {
+      this.updateDiagnosisData();
+    }
 
-  if (changes['loading']) {
-    if (this.loading) {
-      this.diagnosisForm.disable();
-    } else {
-      this.diagnosisForm.enable();
+    if (changes['loading']) {
+      if (this.loading) {
+        this.diagnosisForm.disable();
+      } else {
+        this.diagnosisForm.enable();
+      }
     }
   }
-}
-
 
   get farm(): FormControl {
     return this.diagnosisForm.get('farm') as FormControl;
@@ -150,7 +153,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
   get longitude(): FormControl {
     return this.diagnosisForm.get('longitude') as FormControl;
   }
-
   get farmOptions(): SelectOption[] {
     return (
       this.farms?.map((farm) => ({
@@ -159,7 +161,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
       })) || []
     );
   }
-
   get harvestOptions(): SelectOption[] {
     return (
       this.harvests?.map((h) => ({
@@ -168,7 +169,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
       })) ?? []
     );
   }
-
   get plotOptions(): SelectOption[] {
     return (
       this.plots?.map((p) => ({
@@ -206,8 +206,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
     const selectedPlot = {
       value: this.diagnosis?.plot.id,
       label: this.diagnosis?.plot.name,
-    }
-
+    };
 
     const formattedDate = this.formatDateToInput(this.diagnosis.date);
 
@@ -274,5 +273,13 @@ export class DiagnosisForm implements OnInit, OnChanges {
   onLocationDetected(location: { latitude: number; longitude: number }) {
     this.latitude.setValue(location.latitude);
     this.longitude.setValue(location.longitude);
+  }
+
+  markFromFields() {
+    const lat = parseFloat(this.latitude.value);
+    const lng = parseFloat(this.longitude.value);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      this.locationComp.placeOrMoveMarker(lat, lng, true);
+    }
   }
 }

@@ -70,10 +70,27 @@
       (fileSelected)="onFileSelected($event)"
       class="w-full"
     />
+    <lib-input
+      formControlName="latitude"
+      label="Latitude"
+      [type]="'number'"
+    ></lib-input>
 
+    <lib-input
+      formControlName="longitude"
+      label="Longitude"
+      [type]="'number'"
+    ></lib-input>
+    
+    <lib-button
+      label="Marcar no mapa"
+      (click)="markFromFields()"
+    ></lib-button>
     <lib-get-location
+      #locationComp
       (locationDetected)="onLocationDetected($event)"
     ></lib-get-location>
+    
 
     <lib-button
       class="w-full max-w-96 mt-6 mx-auto"
