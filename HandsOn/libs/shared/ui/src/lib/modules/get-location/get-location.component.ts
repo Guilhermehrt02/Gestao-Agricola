@@ -99,39 +99,139 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       this.drawnShapes.push(shape);
     };
 
-    // Polygon
+    // Utilitário para calcular o centro do polígono
+    function getPolygonCenter(
+      polygon: google.maps.Polygon,
+    ): google.maps.LatLng {
+      const bounds = new google.maps.LatLngBounds();
+      polygon.getPath().forEach((latLng) => bounds.extend(latLng));
+      return bounds.getCenter();
+    }
+
+    // POLYGON
     google.maps.event.addListener(
       drawingManager,
       'polygoncomplete',
       (polygon: google.maps.Polygon) => {
         addShapeToList(polygon);
-        const path = polygon.getPath().getArray();
-        const coordinates = path.map((p) => ({ lat: p.lat(), lng: p.lng() }));
-        //console.log('Área desenhada:', coordinates);
+        const label =
+          prompt('Nome do polígono:', 'Polígono sem nome') ||
+          'Polígono sem nome';
+        const centroid = getPolygonCenter(polygon);
+
+        const content = document.createElement('div');
+        content.style.backgroundColor = 'white';
+        content.style.color = 'black';
+        content.style.padding = '8px';
+        content.style.borderRadius = '4px';
+        content.style.border = '1px solid #ccc';
+        content.style.fontSize = '14px';
+        content.style.display = 'flex';
+        content.style.justifyContent = 'space-between';
+        content.style.alignItems = 'center';
+        content.style.gap = '8px';
+        content.style.maxWidth = '200px';
+
+        const title = document.createElement('span');
+        title.textContent = label;
+        title.style.flex = '1';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '×';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.backgroundColor = 'transparent';
+        closeBtn.style.border = '1px solid #ccc';
+        closeBtn.style.borderRadius = '4px';
+        closeBtn.style.fontSize = '16px';
+        closeBtn.style.padding = '0 6px';
+        closeBtn.style.color = 'black';
+
+        const infoWindow = new google.maps.InfoWindow({
+          content,
+          position: centroid,
+        });
+
+        closeBtn.onclick = () => infoWindow.close();
+
+        content.appendChild(title);
+        content.appendChild(closeBtn);
+
+        polygon.addListener('click', (e: google.maps.MapMouseEvent) => {
+          infoWindow.setPosition(e.latLng);
+          infoWindow.open(this.map);
+        });
+
+        infoWindow.open(this.map);
       },
     );
 
+    // MARKER
     google.maps.event.addListener(
       drawingManager,
       'markercomplete',
       (marker: google.maps.Marker) => {
-        // limpa marcador anterior desenhado
         if (this.marker) this.marker.setMap(null);
         this.marker = marker;
         this.marker.setDraggable(true);
-        this.marker.addListener('dragend', () => {
-          const pos = this.marker.getPosition();
-          if (pos) this.emitCoords(pos.lat(), pos.lng());
-        });
 
         const pos = marker.getPosition();
         if (pos) this.emitCoords(pos.lat(), pos.lng());
 
-        // manter no drawnShapes se quiser histórico
         this.drawnShapes = this.drawnShapes.filter(
           (s) => !(s instanceof google.maps.Marker),
         );
         this.drawnShapes.push(marker);
+
+        const label =
+          prompt('Nome do local ou ponto:', 'Ponto sem nome') ||
+          'Ponto sem nome';
+
+        const content = document.createElement('div');
+        content.style.backgroundColor = 'white';
+        content.style.color = 'black';
+        content.style.padding = '8px';
+        content.style.borderRadius = '4px';
+        content.style.border = '1px solid #ccc';
+        content.style.fontSize = '14px';
+        content.style.display = 'flex';
+        content.style.justifyContent = 'space-between';
+        content.style.alignItems = 'center';
+        content.style.gap = '8px';
+        content.style.maxWidth = '200px';
+
+        const title = document.createElement('span');
+        title.textContent = label;
+        title.style.flex = '1';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '×';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.backgroundColor = 'transparent';
+        closeBtn.style.border = '1px solid #ccc';
+        closeBtn.style.borderRadius = '4px';
+        closeBtn.style.fontSize = '16px';
+        closeBtn.style.padding = '0 6px';
+        closeBtn.style.color = 'black';
+
+        const infoWindow = new google.maps.InfoWindow({
+          content,
+        });
+
+        closeBtn.onclick = () => infoWindow.close();
+
+        content.appendChild(title);
+        content.appendChild(closeBtn);
+
+        marker.addListener('click', () => {
+          infoWindow.open(this.map, marker);
+        });
+
+        infoWindow.open(this.map, marker);
+
+        marker.addListener('dragend', () => {
+          const newPos = marker.getPosition();
+          if (newPos) this.emitCoords(newPos.lat(), newPos.lng());
+        });
       },
     );
   }
