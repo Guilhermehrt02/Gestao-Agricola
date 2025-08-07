@@ -32,6 +32,8 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     longitude: number;
   }>();
 
+  @Output() shapesDrawn = new EventEmitter<any[]>();
+
   private readonly googleMapsService = inject(GoogleMapsService);
 
   map!: google.maps.Map;
@@ -40,7 +42,8 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
   loading = false;
   error: string | null = null;
 
-  private drawnShapes: google.maps.MVCObject[] = [];
+  // private drawnShapes: google.maps.MVCObject[] = [];
+  drawnShapes: (google.maps.Polygon | google.maps.Marker)[] = [];
 
   async ngAfterViewInit(): Promise<void> {
     await this.googleMapsService.loadGoogleMaps();
@@ -95,8 +98,9 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
     drawingManager.setMap(this.map);
 
-    const addShapeToList = (shape: google.maps.MVCObject) => {
+    const addShapeToList = (shape: google.maps.Polygon | google.maps.Marker) => {
       this.drawnShapes.push(shape);
+      this.emitCurrentShapes();
     };
 
     // Utilitário para calcular o centro do polígono
@@ -114,9 +118,9 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       'polygoncomplete',
       (polygon: google.maps.Polygon) => {
         addShapeToList(polygon);
-        const label =
-          prompt('Nome do polígono:', 'Polígono sem nome') ||
-          'Polígono sem nome';
+
+        const label = prompt('Nome do polígono:', 'Polígono sem nome') || 'Polígono sem nome';
+
         const centroid = getPolygonCenter(polygon);
 
         const content = document.createElement('div');
@@ -137,7 +141,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         title.style.flex = '1';
 
         const closeBtn = document.createElement('button');
-        closeBtn.textContent = '×';
+        closeBtn.textContent = '❌';
         closeBtn.style.cursor = 'pointer';
         closeBtn.style.backgroundColor = 'transparent';
         closeBtn.style.border = '1px solid #ccc';
@@ -151,7 +155,12 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           position: centroid,
         });
 
-        closeBtn.onclick = () => infoWindow.close();
+        closeBtn.onclick = () => {
+          infoWindow.close();
+          polygon.setMap(null);
+          this.drawnShapes = this.drawnShapes.filter(s => s !== polygon);
+          this.emitCurrentShapes();
+        };
 
         content.appendChild(title);
         content.appendChild(closeBtn);
@@ -180,11 +189,10 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         this.drawnShapes = this.drawnShapes.filter(
           (s) => !(s instanceof google.maps.Marker),
         );
-        this.drawnShapes.push(marker);
 
-        const label =
-          prompt('Nome do local ou ponto:', 'Ponto sem nome') ||
-          'Ponto sem nome';
+        addShapeToList(marker);
+
+        const label = prompt('Nome do local ou ponto:', 'Ponto sem nome') || 'Ponto sem nome';
 
         const content = document.createElement('div');
         content.style.backgroundColor = 'white';
@@ -204,7 +212,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         title.style.flex = '1';
 
         const closeBtn = document.createElement('button');
-        closeBtn.textContent = '×';
+        closeBtn.textContent = '❌';
         closeBtn.style.cursor = 'pointer';
         closeBtn.style.backgroundColor = 'transparent';
         closeBtn.style.border = '1px solid #ccc';
@@ -217,7 +225,12 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           content,
         });
 
-        closeBtn.onclick = () => infoWindow.close();
+        closeBtn.onclick = () => {
+          infoWindow.close();
+          marker.setMap(null);
+          this.drawnShapes = this.drawnShapes.filter(s => s !== marker);
+          this.emitCurrentShapes();
+        };
 
         content.appendChild(title);
         content.appendChild(closeBtn);
@@ -265,6 +278,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       }
     });
     this.drawnShapes = [];
+    this.emitCurrentShapes();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -302,5 +316,9 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     if (emit) {
       this.emitCoords(lat, lng);
     }
+  }
+
+  private emitCurrentShapes() {
+    this.shapesDrawn.emit([...this.drawnShapes]);
   }
 }

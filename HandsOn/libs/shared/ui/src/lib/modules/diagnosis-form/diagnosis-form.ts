@@ -94,6 +94,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
       result: new FormControl('', { validators: [], updateOn: 'blur' }),
       latitude: new FormControl(null, { validators: [], updateOn: 'blur' }),
       longitude: new FormControl(null, { validators: [], updateOn: 'blur' }),
+      locationShapes: new FormControl([], { validators: [], updateOn: 'blur' }),
     });
   }
 
@@ -177,6 +178,9 @@ export class DiagnosisForm implements OnInit, OnChanges {
       })) ?? []
     );
   }
+  get locationShapes(): FormControl {
+    return this.diagnosisForm.get('locationShapes') as FormControl;
+  }
 
   onFarmSelected(farm: string): void {
     this.farmSelected.emit(farm);
@@ -242,6 +246,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
       longitude: this.longitude.value,
       createdAt: this.diagnosis?.createdAt || new Date(),
       updatedAt: new Date(),
+      locationShapes: this.locationShapes.value,
     };
 
     this.diagnosisSubmit.emit(formData);
@@ -281,5 +286,43 @@ export class DiagnosisForm implements OnInit, OnChanges {
     if (!isNaN(lat) && !isNaN(lng)) {
       this.locationComp.placeOrMoveMarker(lat, lng, true);
     }
+  }
+
+  onShapesDrawn(shapes: (google.maps.Polygon | google.maps.Marker)[]) {
+    const parsedShapes = shapes
+      .map((shape) => {
+        if (shape instanceof google.maps.Polygon) {
+          const path = shape.getPath();
+          const coordinates = Array.from(
+            { length: path.getLength() },
+            (_, i) => {
+              const latLng = path.getAt(i);
+              return { lat: latLng.lat(), lng: latLng.lng() };
+            },
+          );
+
+          return {
+            type: 'polygon',
+            label: (shape as any).customLabel ?? 'Área sem nome',
+            coordinates,
+          };
+        }
+
+        if (shape instanceof google.maps.Marker) {
+          const position = shape.getPosition();
+          return {
+            type: 'marker',
+            label: (shape as any).customLabel ?? 'Ponto sem nome',
+            coordinates: position
+              ? [{ lat: position.lat(), lng: position.lng() }]
+              : [],
+          };
+        }
+
+        return null;
+      })
+      .filter((s) => s !== null);
+
+    this.locationShapes?.setValue(parsedShapes);
   }
 }
