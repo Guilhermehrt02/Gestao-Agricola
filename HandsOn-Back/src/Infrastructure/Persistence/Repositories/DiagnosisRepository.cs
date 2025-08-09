@@ -46,5 +46,12 @@ namespace Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync();
             return result.Entity;
         }
+
+        public async Task DeleteLocationShapesByDiagnosisIdAsync(Guid diagnosisId)
+        {
+            var shapes = _context.LocationShapes.Where(ls => ls.DiagnosisId == diagnosisId);
+            _context.LocationShapes.RemoveRange(shapes);
+            await _context.SaveChangesAsync();
+        }
     }
 }

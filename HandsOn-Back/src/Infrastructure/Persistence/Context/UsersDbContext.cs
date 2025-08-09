@@ -18,6 +18,8 @@ namespace Infrastructure.Persistence.Context
         public DbSet<Farm> Farms { get; set; }
         public DbSet<Harvest> Harvests { get; set; }
 
+        public DbSet<LocationShape> LocationShapes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

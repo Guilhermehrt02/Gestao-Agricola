@@ -13,4 +13,5 @@ export interface Diagnosis {
     longitude?: number;
     createdAt: Date;
     updatedAt: Date;
+    locationShapes?: any;
 }

@@ -9,5 +9,6 @@ namespace Core.Repositories
         Task<Diagnosis> AddAsync(Diagnosis diagnosis);
         Task<Diagnosis> UpdateAsync(Diagnosis diagnosis);
         Task<Diagnosis> DeleteAsync(Diagnosis diagnosis);
+        Task DeleteLocationShapesByDiagnosisIdAsync(Guid diagnosisId);
     }
 }

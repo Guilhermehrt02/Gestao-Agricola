@@ -15,7 +15,7 @@
     [farms]="(facade.farms$ | async) ?? undefined"
     [harvests]="(facade.harvests$ | async) ?? undefined"
     [plots]="(facade.plots$ | async) ?? undefined"
-    (diagnosisSubmit)="onSubmit($event)"
     (farmSelected)="onFarmSelected($event)"
+    (diagnosisSubmit)="onSubmit($event)"
   ></lib-diagnosis-form>
 </lib-card>
