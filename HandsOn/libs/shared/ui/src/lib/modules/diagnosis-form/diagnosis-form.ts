@@ -30,6 +30,7 @@ import {
   Farm,
   Harvest,
   Plot,
+  LocationShapeData,
 } from '@farm/core';
 import { GetLocationComponent } from '../get-location/get-location.component';
 
@@ -213,6 +214,12 @@ export class DiagnosisForm implements OnInit, OnChanges {
     };
 
     const formattedDate = this.formatDateToInput(this.diagnosis.date);
+    const latLngFromFormOrMarker = 
+      this.diagnosis?.latitude && this.diagnosis?.longitude
+        ? { lat: this.diagnosis.latitude, lng: this.diagnosis.longitude }
+        : this.diagnosis?.locationShapes
+            ?.find((shape: LocationShapeData) => shape.type === 'marker')
+            ?.coordinates?.[0] || null;
 
     this.diagnosisForm.patchValue({
       farm: selectedFarm ?? '',
@@ -220,9 +227,11 @@ export class DiagnosisForm implements OnInit, OnChanges {
       plot: selectedPlot ?? '',
       uploadType: selectedUploadType ?? '',
       date: formattedDate,
-      latitude: this.diagnosis.latitude ?? '',
-      longitude: this.diagnosis.longitude ?? '',
+      latitude: latLngFromFormOrMarker?.lat || '',
+      longitude: latLngFromFormOrMarker?.lng || '',
+      locationShapes: this.diagnosis.locationShapes || [],
     });
+
   }
 
   onSubmit(): void {
@@ -288,41 +297,12 @@ export class DiagnosisForm implements OnInit, OnChanges {
     }
   }
 
-  onShapesDrawn(shapes: (google.maps.Polygon | google.maps.Marker)[]) {
-    const parsedShapes = shapes
-      .map((shape) => {
-        if (shape instanceof google.maps.Polygon) {
-          const path = shape.getPath();
-          const coordinates = Array.from(
-            { length: path.getLength() },
-            (_, i) => {
-              const latLng = path.getAt(i);
-              return { lat: latLng.lat(), lng: latLng.lng() };
-            },
-          );
-
-          return {
-            type: 'polygon',
-            label: (shape as any).customLabel ?? 'Área sem nome',
-            coordinates,
-          };
-        }
-
-        if (shape instanceof google.maps.Marker) {
-          const position = shape.getPosition();
-          return {
-            type: 'marker',
-            label: (shape as any).customLabel ?? 'Ponto sem nome',
-            coordinates: position
-              ? [{ lat: position.lat(), lng: position.lng() }]
-              : [],
-          };
-        }
-
-        return null;
-      })
-      .filter((s) => s !== null);
-
-    this.locationShapes?.setValue(parsedShapes);
+  onShapesDrawn(shapes: LocationShapeData[]) {
+    const shapesControl = this.diagnosisForm.get('locationShapes');
+    if (shapesControl) {
+      shapesControl.setValue(shapes);
+      shapesControl.markAsDirty();
+      shapesControl.updateValueAndValidity();
+    }
   }
 }

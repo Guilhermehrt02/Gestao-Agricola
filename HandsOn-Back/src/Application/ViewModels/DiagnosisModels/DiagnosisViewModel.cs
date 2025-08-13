@@ -22,6 +22,7 @@ namespace Application.ViewModels
         public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public List<LocationShapeViewModel>? LocationShapes { get; set; }
 
         public static DiagnosisViewModel FromEntity(Diagnosis diagnosis)
         {
@@ -40,7 +41,10 @@ namespace Application.ViewModels
                 Latitude = diagnosis.Latitude,
                 Longitude = diagnosis.Longitude,
                 CreatedAt = diagnosis.CreatedAt,
-                UpdatedAt = diagnosis.UpdatedAt
+                UpdatedAt = diagnosis.UpdatedAt,
+                LocationShapes = diagnosis.LocationShapes?
+                    .Select(LocationShapeViewModel.FromEntity)
+                    .ToList()
             };
         }
     }

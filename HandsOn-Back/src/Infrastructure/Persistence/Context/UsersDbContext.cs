@@ -219,6 +219,18 @@ namespace Infrastructure.Persistence.Context
                 entity.Property(h => h.UpdatedAt)
                     .IsRequired();
             });
+
+            modelBuilder.Entity<Diagnosis>()
+                .HasMany(d => d.LocationShapes)
+                .WithOne(ls => ls.Diagnosis)
+                .HasForeignKey(ls => ls.DiagnosisId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<LocationShape>()
+                .HasMany(ls => ls.Coordinates)
+                .WithOne(c => c.LocationShape)
+                .HasForeignKey(c => c.LocationShapeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

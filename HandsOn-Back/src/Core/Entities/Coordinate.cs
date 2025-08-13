@@ -7,5 +7,6 @@ namespace Core.Entities
         public double Lat { get; set; }
         public double Lng { get; set; }
         public Guid LocationShapeId { get; set; }
+        public LocationShape LocationShape { get; set; } = new LocationShape();
     }
 }

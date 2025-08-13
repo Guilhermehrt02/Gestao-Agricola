@@ -18,7 +18,7 @@ namespace Core.Entities
         public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
-        public LocationShape[]? LocationShapes { get; set; }
+        public List<LocationShape>? LocationShapes { get; set; }
 
         public Diagnosis() { }
 
@@ -32,7 +32,7 @@ namespace Core.Entities
             DateTime? date,
             double? latitude = null,
             double? longitude = null,
-            LocationShape[]? locationShapes = null
+            List<LocationShape>? locationShapes = null
         )
         {
             UserId = userId;
@@ -60,7 +60,7 @@ namespace Core.Entities
             double? longitude = null,
             string? result = null,
             DiagnosisStatus? status = null,
-            LocationShape[]? locationShapes = null
+            List<LocationShape>? locationShapes = null
         )
         {
             UploadType = UploadTypeExtension.ToUploadType(uploadType ?? UploadType.ToFriendlyString());

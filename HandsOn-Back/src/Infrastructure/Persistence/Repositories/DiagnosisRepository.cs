@@ -22,6 +22,8 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(x => x.Farm)
                 .Include(x => x.Harvest)
                 .Include(x => x.Plot)
+                .Include(x => x.LocationShapes)
+                    .ThenInclude(ls => ls.Coordinates)
                 .Where(d => d.Id == diagnosisId)
                 .FirstOrDefaultAsync();
         }

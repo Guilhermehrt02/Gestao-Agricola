@@ -46,8 +46,9 @@ namespace Application.Services
             if (plot.FarmId != farm.Id)
                 throw new InvalidOperationException("The selected plot does not belong to the selected farm.");
 
-            LocationShape[] locationShapes = Array.Empty<LocationShape>();
-            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Length > 0)
+            List<LocationShape> locationShapes = new List<LocationShape>();
+
+            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Count > 0)
             {
                 locationShapes = inputModel.LocationShapes.Select(shape => new LocationShape
                 {
@@ -57,8 +58,8 @@ namespace Application.Services
                     {
                         Lat = coord.Lat,
                         Lng = coord.Lng
-                    }).ToArray()
-                }).ToArray();
+                    }).ToList()
+                }).ToList();
             }
             
             var diagnosis = new Diagnosis
@@ -124,8 +125,8 @@ namespace Application.Services
                 await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
             }
 
-            LocationShape[]? locationShapes = null;
-            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Length > 0)
+            List<LocationShape>? locationShapes = null;
+            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Count > 0)
             {
                 await _diagnosisRepository.DeleteLocationShapesByDiagnosisIdAsync(diagnosis.Id);
 
@@ -137,8 +138,8 @@ namespace Application.Services
                     {
                         Lat = coord.Lat,
                         Lng = coord.Lng
-                    }).ToArray()
-                }).ToArray();
+                    }).ToList()
+                }).ToList();
 
             }
 
@@ -168,7 +169,7 @@ namespace Application.Services
                 await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
             }
 
-            if (diagnosis.LocationShapes != null && diagnosis.LocationShapes.Length > 0)
+            if (diagnosis.LocationShapes != null && diagnosis.LocationShapes.Count > 0)
             {
                 await _diagnosisRepository.DeleteLocationShapesByDiagnosisIdAsync(diagnosis.Id);
             }
