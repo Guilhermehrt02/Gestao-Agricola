@@ -46,6 +46,7 @@ namespace Core.Entities
             Latitude = latitude;
             Longitude = longitude;
             LocationShapes = locationShapes;
+            Result = string.Empty;
         }
 
         public void Update(
@@ -58,8 +59,6 @@ namespace Core.Entities
             Plot? plot = null,
             double? latitude = null,
             double? longitude = null,
-            string? result = null,
-            DiagnosisStatus? status = null,
             List<LocationShape>? locationShapes = null
         )
         {
@@ -70,8 +69,6 @@ namespace Core.Entities
             UserId = userId ?? UserId;
             Harvest = harvest ?? Harvest;
             Plot = plot ?? Plot;
-            Status = status ?? Status;
-            Result = result ?? Result;
             Latitude = latitude ?? Latitude;
             Longitude = longitude ?? Longitude;
             UpdatedAt = DateTime.Now;

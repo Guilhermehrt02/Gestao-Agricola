@@ -9,8 +9,6 @@ export interface Diagnosis {
     date: Date;
     status: string | number;
     result: string;
-    latitude?: number;
-    longitude?: number;
     createdAt: Date;
     updatedAt: Date;
     locationShapes?: any;

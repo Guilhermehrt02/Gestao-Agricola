@@ -153,7 +153,7 @@ namespace Application.Services
                 plot,
                 inputModel.Latitude,
                 inputModel.Longitude,
-                locationShapes != null ? System.Text.Json.JsonSerializer.Serialize(locationShapes) : null
+                locationShapes
             );
 
             await _diagnosisRepository.UpdateAsync(diagnosis);

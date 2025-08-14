@@ -214,12 +214,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
     };
 
     const formattedDate = this.formatDateToInput(this.diagnosis.date);
-    const latLngFromFormOrMarker = 
-      this.diagnosis?.latitude && this.diagnosis?.longitude
-        ? { lat: this.diagnosis.latitude, lng: this.diagnosis.longitude }
-        : this.diagnosis?.locationShapes
-            ?.find((shape: LocationShapeData) => shape.type === 'marker')
-            ?.coordinates?.[0] || null;
 
     this.diagnosisForm.patchValue({
       farm: selectedFarm ?? '',
@@ -227,8 +221,8 @@ export class DiagnosisForm implements OnInit, OnChanges {
       plot: selectedPlot ?? '',
       uploadType: selectedUploadType ?? '',
       date: formattedDate,
-      latitude: latLngFromFormOrMarker?.lat || '',
-      longitude: latLngFromFormOrMarker?.lng || '',
+      latitude: this.latitude ?? '',
+      longitude: this.longitude ?? '',
       locationShapes: this.diagnosis.locationShapes || [],
     });
 
@@ -251,8 +245,6 @@ export class DiagnosisForm implements OnInit, OnChanges {
       date: this.date.value,
       status: this.status.value,
       result: this.result.value,
-      latitude: this.latitude.value,
-      longitude: this.longitude.value,
       createdAt: this.diagnosis?.createdAt || new Date(),
       updatedAt: new Date(),
       locationShapes: this.locationShapes.value,
