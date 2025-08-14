@@ -1,11 +1,20 @@
-<lib-button
-  label="Obter Localização Atual"
-  type="button"
-  [fluid]="true"
-  [severity]="'secondary'"
-  [loading]="loading"
-  (click)="detectLocation()"
-></lib-button>
+<div class="flex gap-2">
+  <lib-button
+    label="Obter Localização Atual"
+    type="button"
+    [severity]="'secondary'"
+    [loading]="loading"
+    (click)="detectLocation()"
+  ></lib-button>
+
+  <lib-button
+    label="Limpar Desenhos"
+    type="button"
+    [severity]="'warn'"
+    (click)="clearDrawings()"
+  ></lib-button>
+</div>
+
 
 <p *ngIf="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
 

@@ -46,7 +46,22 @@ namespace Application.Services
             if (plot.FarmId != farm.Id)
                 throw new InvalidOperationException("The selected plot does not belong to the selected farm.");
 
+            List<LocationShape> locationShapes = new List<LocationShape>();
 
+            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Count > 0)
+            {
+                locationShapes = inputModel.LocationShapes.Select(shape => new LocationShape
+                {
+                    Type = shape.Type,
+                    Label = shape.Label,
+                    Coordinates = shape.Coordinates.Select(coord => new Coordinate
+                    {
+                        Lat = coord.Lat,
+                        Lng = coord.Lng
+                    }).ToList()
+                }).ToList();
+            }
+            
             var diagnosis = new Diagnosis
             {
                 UserId = userId,
@@ -57,7 +72,8 @@ namespace Application.Services
                 PhotoUrl = inputModel.PhotoUrl,
                 Date = inputModel.Date,
                 Latitude = inputModel.Latitude,
-                Longitude = inputModel.Longitude
+                Longitude = inputModel.Longitude,
+                LocationShapes = locationShapes
             };
 
             await _diagnosisRepository.AddAsync(diagnosis);
@@ -109,6 +125,24 @@ namespace Application.Services
                 await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
             }
 
+            List<LocationShape>? locationShapes = null;
+            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Count > 0)
+            {
+                await _diagnosisRepository.DeleteLocationShapesByDiagnosisIdAsync(diagnosis.Id);
+
+                locationShapes = inputModel.LocationShapes.Select(shape => new LocationShape
+                {
+                    Type = shape.Type,
+                    Label = shape.Label,
+                    Coordinates = shape.Coordinates.Select(coord => new Coordinate
+                    {
+                        Lat = coord.Lat,
+                        Lng = coord.Lng
+                    }).ToList()
+                }).ToList();
+
+            }
+
             diagnosis.Update(
                 inputModel.UploadType,
                 inputModel.PhotoUrl,
@@ -118,7 +152,8 @@ namespace Application.Services
                 harvest,
                 plot,
                 inputModel.Latitude,
-                inputModel.Longitude
+                inputModel.Longitude,
+                locationShapes
             );
 
             await _diagnosisRepository.UpdateAsync(diagnosis);
@@ -132,6 +167,11 @@ namespace Application.Services
             if (!string.IsNullOrEmpty(diagnosis.PhotoUrl))
             {
                 await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
+            }
+
+            if (diagnosis.LocationShapes != null && diagnosis.LocationShapes.Count > 0)
+            {
+                await _diagnosisRepository.DeleteLocationShapesByDiagnosisIdAsync(diagnosis.Id);
             }
 
             await _diagnosisRepository.DeleteAsync(diagnosis);

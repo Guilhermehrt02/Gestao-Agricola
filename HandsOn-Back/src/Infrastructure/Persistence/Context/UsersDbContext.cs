@@ -18,6 +18,8 @@ namespace Infrastructure.Persistence.Context
         public DbSet<Farm> Farms { get; set; }
         public DbSet<Harvest> Harvests { get; set; }
 
+        public DbSet<LocationShape> LocationShapes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -217,6 +219,18 @@ namespace Infrastructure.Persistence.Context
                 entity.Property(h => h.UpdatedAt)
                     .IsRequired();
             });
+
+            modelBuilder.Entity<Diagnosis>()
+                .HasMany(d => d.LocationShapes)
+                .WithOne(ls => ls.Diagnosis)
+                .HasForeignKey(ls => ls.DiagnosisId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<LocationShape>()
+                .HasMany(ls => ls.Coordinates)
+                .WithOne(c => c.LocationShape)
+                .HasForeignKey(c => c.LocationShapeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

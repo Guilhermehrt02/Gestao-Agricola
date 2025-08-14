@@ -70,9 +70,32 @@
       (fileSelected)="onFileSelected($event)"
       class="w-full"
     />
+    <lib-input
+      formControlName="latitude"
+      label="Latitude"
+      [type]="'number'"
+    ></lib-input>
+
+    <lib-input
+      formControlName="longitude"
+      label="Longitude"
+      [type]="'number'"
+    ></lib-input>
+    
+    <lib-button
+      label="Marcar no mapa"
+      (click)="markFromFields()"
+    ></lib-button>
 
     <lib-get-location
+      #locationComp
+      [setPositionFromParent]="{ 
+        latitude: diagnosisForm.get('latitude')?.value, 
+        longitude: diagnosisForm.get('longitude')?.value 
+      }"
+      [setShapesFromParent]="diagnosisForm.get('locationShapes')?.value"
       (locationDetected)="onLocationDetected($event)"
+      (shapesDrawn)="onShapesDrawn($event)"
     ></lib-get-location>
 
     <lib-button

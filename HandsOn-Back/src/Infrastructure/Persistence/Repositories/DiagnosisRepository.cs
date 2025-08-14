@@ -22,6 +22,8 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(x => x.Farm)
                 .Include(x => x.Harvest)
                 .Include(x => x.Plot)
+                .Include(x => x.LocationShapes)
+                    .ThenInclude(ls => ls.Coordinates)
                 .Where(d => d.Id == diagnosisId)
                 .FirstOrDefaultAsync();
         }
@@ -45,6 +47,13 @@ namespace Infrastructure.Persistence.Repositories
             var result = _context.Diagnoses.Remove(diagnosis);
             await _context.SaveChangesAsync();
             return result.Entity;
+        }
+
+        public async Task DeleteLocationShapesByDiagnosisIdAsync(Guid diagnosisId)
+        {
+            var shapes = _context.LocationShapes.Where(ls => ls.DiagnosisId == diagnosisId);
+            _context.LocationShapes.RemoveRange(shapes);
+            await _context.SaveChangesAsync();
         }
     }
 }

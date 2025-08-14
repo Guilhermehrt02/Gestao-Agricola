@@ -18,6 +18,7 @@ export * from './lib/models/diagnosis.model';
 export * from './lib/models/farm.model';
 export * from './lib/models/harvest.model';
 export * from './lib/models/plot.model';
+export * from './lib/models/locationShape.model';
 
 // services
 export * from './lib/services/authentication/authentication.service';
