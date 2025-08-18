@@ -1,0 +1,20 @@
+<div class="p-6">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold">Meus Diagnósticos</h2>
+    <lib-button
+      [label]="'Novo Diagnóstico'"
+      [severity]="'primary'"
+      [type]="'button'"
+      [styleClass] ="'bg-green-800 text-white hover:bg-green-700 border-white'"
+      (click)="onCreate()"
+    ></lib-button>
+  </div>
+
+  <lib-table
+    [data]="data"
+    [columns]="columns"
+    [loading]="loading"
+    [showMoreButton]="showMoreButton"
+    (refresh)="refresh()"
+  />
+</div>

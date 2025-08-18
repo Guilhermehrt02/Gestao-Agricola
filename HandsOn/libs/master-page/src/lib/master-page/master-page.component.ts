@@ -62,11 +62,11 @@ export class MasterPageComponent implements OnInit, OnDestroy {
           icon: 'pi pi-fw pi-plus',
           routerLink: '/app/diagnoses/diagnosis/create',
         },
-        // {
-        //   label: 'Gerenciar',
-        //   icon: 'pi pi-fw pi-list',
-        //   routerLink: '/app/diagnostics',
-        // },
+        {
+          label: 'Gerenciar',
+          icon: 'pi pi-fw pi-list',
+          routerLink: '/app/diagnoses/diagnosis',
+        },
       ],
     });
 

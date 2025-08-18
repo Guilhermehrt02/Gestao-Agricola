@@ -16,7 +16,7 @@ export class DiagnosisService extends RequestService {
 
     getAllDiagnoses() {
         return this.httpClient
-            .get<Diagnosis[]>(`${this.apiUrl}/diagnosis`, this.httpOptionsBypassInterceptor)
+            .get<Diagnosis[]>(`${this.apiUrl}/diagnosis/user/`, this.httpOptionsBypassInterceptor)
             .pipe(catchError(this.handleError));
     }
 

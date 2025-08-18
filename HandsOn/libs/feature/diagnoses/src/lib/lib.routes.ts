@@ -14,7 +14,7 @@ export const diagnosesRoutes: Route[] = [
       {
         path: 'diagnosis',
         loadChildren: () =>
-          import('@farm/diagnosis').then((m) => m.diagnosisRoutes),
+          import('@farm/diagnoses-list').then((m) => m.diagnosesListRoutes),
       },
       {
         path: 'diagnosis/create',

@@ -22,6 +22,9 @@
       "@farm/core": ["libs/shared/core/src/index.ts"],
       "@farm/dashboard": ["libs/feature/dashboard/src/index.ts"],
       "@farm/diagnoses": ["libs/feature/diagnoses/src/index.ts"],
+      "@farm/diagnoses-list": [
+        "libs/feature/diagnoses/src/lib/diagnoses/diagnoses-list/src/index.ts"
+      ],
       "@farm/diagnosis": [
         "libs/feature/diagnoses/src/lib/diagnoses/diagnosis/src/index.ts"
       ],
