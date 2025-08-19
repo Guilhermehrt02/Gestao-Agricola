@@ -23,6 +23,7 @@ import { GoogleMapsService, LocationShapeData } from '@farm/core';
   styleUrls: ['./get-location.component.css'],
 })
 export class GetLocationComponent implements AfterViewInit, OnChanges {
+  private activeInfoWindow: google.maps.InfoWindow | null = null;
   @Input() setPositionFromParent?: { latitude: number; longitude: number };
   @Input() setShapesFromParent?: LocationShapeData[];
 
@@ -146,11 +147,16 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         });
 
         polygon.addListener('click', (e: google.maps.MapMouseEvent) => {
-          infoWindow.setPosition(e.latLng);
-          infoWindow.open(this.map);
-        });
-
+        if (this.activeInfoWindow) {
+          this.activeInfoWindow.close();
+        }
+        infoWindow.setPosition(e.latLng);
         infoWindow.open(this.map);
+        this.activeInfoWindow = infoWindow;
+      });
+
+
+        infoWindow.close();
 
         polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
         polygon
@@ -186,8 +192,13 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           content,
         });
 
-        marker.addListener('click', () => infoWindow.open(this.map, marker));
-        infoWindow.open(this.map, marker);
+        marker.addListener('click', () => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
+          infoWindow.open(this.map, marker);
+          this.activeInfoWindow = infoWindow;
+        });
 
         marker.addListener('dragend', () => {
           this.emitCurrentShapes();
@@ -196,6 +207,13 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         });
       },
     );
+
+    this.map.addListener('click', () => {
+      if (this.activeInfoWindow) {
+        this.activeInfoWindow.close();
+        this.activeInfoWindow = null;
+      }
+    });
   }
 
   private createInfoWindowContent(
@@ -326,11 +344,15 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         });
 
         polygon.addListener('click', (e: google.maps.MapMouseEvent) => {
-          infoWindow.setPosition(e.latLng);
-          infoWindow.open(this.map);
-        });
-
+        if (this.activeInfoWindow) {
+          this.activeInfoWindow.close();
+        }
+        
+        infoWindow.setPosition(e.latLng);
         infoWindow.open(this.map);
+        this.activeInfoWindow = infoWindow;
+      });
+
 
         polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
         polygon
@@ -365,8 +387,14 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           content,
         });
 
-        marker.addListener('click', () => infoWindow.open(this.map, marker));
+        marker.addListener('click', () => {
+        if (this.activeInfoWindow) {
+          this.activeInfoWindow.close();
+        }
         infoWindow.open(this.map, marker);
+        this.activeInfoWindow = infoWindow;
+      });
+
 
         marker.addListener('dragend', () => {
           this.emitCurrentShapes();
