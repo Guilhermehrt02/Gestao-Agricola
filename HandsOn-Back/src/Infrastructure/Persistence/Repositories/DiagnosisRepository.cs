@@ -12,6 +12,11 @@ namespace Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Diagnosis>> GetAllByUserIdAsync(Guid userId)
         {
             return await _context.Diagnoses
+                .Include(x => x.Farm)
+                .Include(x => x.Harvest)
+                .Include(x => x.Plot)
+                .Include(x => x.LocationShapes)
+                    .ThenInclude(ls => ls.Coordinates)
                 .Where(d => d.UserId == userId)
                 .ToListAsync();
         }

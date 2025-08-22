@@ -5,6 +5,7 @@ namespace Core.Entities
 {
     public class UserFarm
     {
+        public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public User? User { get; set; }
         public Guid FarmId { get; set; }
@@ -24,7 +25,7 @@ namespace Core.Entities
 
         public void Update(string? userRole)
         {
-            UserRole = RoleExtension.ToRole(userRole ?? UserRole.ToFriendlyString());
+            UserRole = RoleExtension.ToRole(userRole ?? UserRole?.ToFriendlyString() ?? "Collaborator");
         }
 
     }

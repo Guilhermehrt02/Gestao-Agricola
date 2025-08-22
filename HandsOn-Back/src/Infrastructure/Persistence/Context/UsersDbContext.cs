@@ -19,6 +19,7 @@ namespace Infrastructure.Persistence.Context
         public DbSet<Harvest> Harvests { get; set; }
 
         public DbSet<LocationShape> LocationShapes { get; set; }
+        public DbSet<UserFarm> UserFarms { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -231,6 +232,19 @@ namespace Infrastructure.Persistence.Context
                 .WithOne(c => c.LocationShape)
                 .HasForeignKey(c => c.LocationShapeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserFarm>()
+               .HasKey(uf => new { uf.UserId, uf.FarmId });
+
+            modelBuilder.Entity<UserFarm>()
+                .HasOne(uf => uf.User)
+                .WithMany()
+                .HasForeignKey(uf => uf.UserId);
+
+            modelBuilder.Entity<UserFarm>()
+                .HasOne(uf => uf.Farm)
+                .WithMany()
+                .HasForeignKey(uf => uf.FarmId);
         }
     }
 }
