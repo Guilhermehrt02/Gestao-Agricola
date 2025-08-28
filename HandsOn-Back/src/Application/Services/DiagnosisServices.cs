@@ -153,7 +153,8 @@ namespace Application.Services
                 plot,
                 inputModel.Latitude,
                 inputModel.Longitude,
-                locationShapes
+                locationShapes,
+                inputModel.Status
             );
 
             await _diagnosisRepository.UpdateAsync(diagnosis);

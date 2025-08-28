@@ -14,6 +14,7 @@ export * from './lib/components/select/select.component';
 export * from './lib/components/spinner/spinner.component';
 export * from './lib/components/table/table.component';
 export * from './lib/components/toast/toast.component';
+export * from './lib/components/dataView/data-view.component';
 
 // Modules
 export * from './lib/modules/user-form/user-form.component';

@@ -32,7 +32,7 @@ export class DiagnosesListComponentFacade {
     this.loadingSubject.next(true);
 
     this.diagnosisFacade
-      .getAllDiagnoses()
+      .getAllDiagnoses(this.userId)
       .pipe(
         tap(
           (diagnoses) => {
@@ -68,7 +68,7 @@ export class DiagnosesListComponentFacade {
               header: 'Excluir Diagnóstico',
               message: 'Você tem certeza que deseja excluir este diagnóstico?',
               accept: () => {
-                this.diagnosisFacade.deleteDiagnosis(diagnosis.id).subscribe(() => {
+                this.diagnosisFacade.deleteDiagnosis(diagnosis.id, this.userId).subscribe(() => {
                   this.load();
                 });
               },
@@ -80,6 +80,18 @@ export class DiagnosesListComponentFacade {
   }
 
   navigateToCreateDiagnosis(): void {
-        this.router.navigate(['/app/diagnoses/diagnosis/create']);
-    }
+    this.router.navigate(['/app/diagnoses/diagnosis/create']);
+  }
+
+  navigateToEditDiagnosis(id: string): void {
+    this.router.navigate([`/app/diagnoses/diagnosis/${id}`]);
+  }
+
+  navigateToViewDiagnosis(id: string): void {
+    // this.router.navigate(['/app/diagnoses/diagnosis', id, 'view']);
+  }
+
+  navigateToDeleteDiagnosis(id: string): void {
+    // this.router.navigate(['/app/diagnoses/diagnosis', id, 'delete']);
+  }
 }

@@ -12,5 +12,5 @@
     "jest.config.ts",
     "src/**/*.test.ts"
   ],
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "../../feature/diagnoses/src/lib/diagnoses/diagnoses-list/src/lib/diagnoses-list/diagnoses-list.ts"]
 }

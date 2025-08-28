@@ -14,9 +14,9 @@ export class DiagnosisService extends RequestService {
         context: new HttpContext().set(BYPASS_INTERCEPTORS, false),
     };
 
-    getAllDiagnoses() {
+    getAllDiagnoses(userId: string) {
         return this.httpClient
-            .get<Diagnosis[]>(`${this.apiUrl}/diagnosis/user/`, this.httpOptionsBypassInterceptor)
+            .get<Diagnosis[]>(`${this.apiUrl}/diagnosis/user/${userId}`, this.httpOptionsBypassInterceptor)
             .pipe(catchError(this.handleError));
     }
 

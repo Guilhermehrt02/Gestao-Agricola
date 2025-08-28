@@ -59,7 +59,8 @@ namespace Core.Entities
             Plot? plot = null,
             double? latitude = null,
             double? longitude = null,
-            List<LocationShape>? locationShapes = null
+            List<LocationShape>? locationShapes = null,
+            string? status = null
         )
         {
             UploadType = UploadTypeExtension.ToUploadType(uploadType ?? UploadType.ToFriendlyString());
@@ -73,6 +74,7 @@ namespace Core.Entities
             Longitude = longitude ?? Longitude;
             UpdatedAt = DateTime.Now;
             LocationShapes = locationShapes ?? LocationShapes;
+            Status = DiagnosisStatusExtension.ToDiagnosisStatus(status ?? Status.ToFriendlyString());
         }
     }
 }

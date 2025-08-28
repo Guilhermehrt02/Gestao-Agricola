@@ -1,33 +1,27 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonComponent, Column, Row, TableComponent } from '@farm/ui';
+import { ButtonComponent, Column, Row, TableComponent, DataViewComponent } from '@farm/ui';
 import { DiagnosesListComponentFacade } from './diagnoses-list.facade';
+import { DataView } from 'primeng/dataview';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'lib-diagnoses-list',
-  imports: [CommonModule, TableComponent, ButtonComponent],
+  imports: [CommonModule, ButtonComponent, DataView, TagModule, ButtonModule],
   templateUrl: './diagnoses-list.html',
   styleUrl: './diagnoses-list.css',
 })
 export class DiagnosesList implements OnInit {
-  data: Row[] = [];
-  columns: Column[];
+  data: any[] = [];
   loading = false;
-  showMoreButton = true;
 
-  constructor(private facade: DiagnosesListComponentFacade) {
-    this.columns = columns;
-  }
+  constructor(private facade: DiagnosesListComponentFacade) {}
 
   ngOnInit(): void {
-    this.facade.loading$.subscribe((loading) => {
-      this.loading = loading;
-    });
-
-    this.facade.diagnoses$.subscribe((diagnoses) => {
-      this.data = diagnoses;
-    });
+    this.facade.loading$.subscribe((loading) => (this.loading = loading));
+    this.facade.diagnoses$.subscribe((diagnoses) => (this.data = diagnoses));
 
     this.facade.load();
   }
@@ -39,97 +33,16 @@ export class DiagnosesList implements OnInit {
   onCreate() {
     this.facade.navigateToCreateDiagnosis();
   }
-}
 
-const columns: Column[] = [
-  {
-    field: 'status',
-    header: 'Status',
-    type: 'text',
-    sortable: false,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'result',
-    header: 'Resultado',
-    type: 'text',
-    sortable: false,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'uploadType',
-    header: 'Tipo de Upload',
-    type: 'text',
-    sortable: false,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'date',
-    header: 'Data',
-    type: 'date',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'farm',
-    header: 'Propriedade',
-    type: 'text',
-    sortable: false,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'harvest',
-    header: 'Safra',
-    type: 'text',
-    sortable: false,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'plot',
-    header: 'Talhão',
-    type: 'text',
-    sortable: false,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'createdAt',
-    header: 'Data de Criação',
-    type: 'datetime',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'updatedAt',
-    header: 'Data de Atualização',
-    type: 'datetime',
-    sortable: true,
-    filterable: true,
-    visible: true,
-    showToUser: true,
-  },
-  {
-    field: 'photoUrl',
-    header: 'Foto',
-    type: 'file',
-    sortable: false,
-    filterable: true,
-    visible: true,
-    showToUser: true,
+  onEdit(item: any) {
+    this.facade.navigateToEditDiagnosis(item.id);
   }
-];
+
+  onView(item: any) {
+    this.facade.navigateToViewDiagnosis(item.id);
+  }
+
+  onDelete(item: any) {
+    this.facade.navigateToDeleteDiagnosis(item.id);
+  }
+}
