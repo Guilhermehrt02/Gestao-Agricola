@@ -7,6 +7,7 @@ namespace Core.Entities
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Farm Farm { get; set; } = new Farm();
+        public Guid FarmId { get; set; }
         public Harvest Harvest { get; set; } = new Harvest();
         public Plot Plot { get; set; } = new Plot();
         public UploadType UploadType { get; set; }
@@ -67,6 +68,7 @@ namespace Core.Entities
             PhotoUrl = photoUrl ?? PhotoUrl;
             Date = date ?? Date;
             Farm = farm ?? Farm;
+            FarmId = farm?.Id ?? FarmId;
             UserId = userId ?? UserId;
             Harvest = harvest ?? Harvest;
             Plot = plot ?? Plot;

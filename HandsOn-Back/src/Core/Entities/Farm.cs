@@ -13,6 +13,7 @@ namespace Core.Entities
 
         public Farm(Guid userId, string name, string? location = null)
         {
+            Id = Guid.NewGuid();
             UserId = userId;
             Name = name;
             Location = location;

@@ -31,15 +31,17 @@ namespace Application.Services
         {
             InputModelValidator.Validate(inputModel);
 
+            var userId = Guid.Parse(actionUser.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NotFoundException("User not found"));
+
             var farm = new Farm
             {
-                UserId = inputModel.UserId,
+                UserId = userId,
                 Name = inputModel.Name,
                 Location = inputModel.Location
             };
 
-            var userId = Guid.Parse(actionUser.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NotFoundException("User not found"));
-
+            await _farmRepository.AddAsync(farm);
+            
             await _userFarmServices.CreateAsync(new CreateUserFarmInputModel
             {
                 FarmId = farm.Id,
@@ -47,7 +49,6 @@ namespace Application.Services
                 UserRole = "Owner"
             });
 
-            await _farmRepository.AddAsync(farm);
             return FarmViewModel.FromEntity(farm);
         }
 

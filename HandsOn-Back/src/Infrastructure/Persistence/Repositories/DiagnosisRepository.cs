@@ -17,7 +17,22 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(x => x.Plot)
                 .Include(x => x.LocationShapes)
                     .ThenInclude(ls => ls.Coordinates)
-                .Where(d => d.UserId == userId)
+                .Where(d => _context.UserFarms
+                    .Where(uf => uf.UserId == userId)
+                    .Select(uf => uf.FarmId)
+                    .Contains(d.FarmId))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Diagnosis>> GetAllByFarmIdsAsync(IEnumerable<Guid> farmIds)
+        {
+            return await _context.Diagnoses
+                .Include(x => x.Farm)
+                .Include(x => x.Harvest)
+                .Include(x => x.Plot)
+                .Include(x => x.LocationShapes)
+                    .ThenInclude(ls => ls.Coordinates)
+                .Join(farmIds, d => d.FarmId, fId => fId, (d, fId) => d) 
                 .ToListAsync();
         }
 

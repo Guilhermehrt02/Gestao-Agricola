@@ -1,7 +1,7 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonComponent, Column, Row, TableComponent, DataViewComponent } from '@farm/ui';
+import { ButtonComponent } from '@farm/ui';
 import { DiagnosesListComponentFacade } from './diagnoses-list.facade';
 import { DataView } from 'primeng/dataview';
 import { TagModule } from 'primeng/tag';

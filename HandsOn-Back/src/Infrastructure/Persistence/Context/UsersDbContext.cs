@@ -80,6 +80,12 @@ namespace Infrastructure.Persistence.Context
                 });
             }
 
+            // List<Farm> farms =
+            // [
+            //     new Farm(users[0].Id, "Fazenda Primavera", "São Paulo, SP"),
+            //     new Farm(users[0].Id, "Fazenda Aurora", "Itajubá, MG"),
+            // ];
+
             modelBuilder.Entity<Expense>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -234,7 +240,7 @@ namespace Infrastructure.Persistence.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserFarm>()
-               .HasKey(uf => new { uf.UserId, uf.FarmId });
+               .HasKey(uf => uf.Id);
 
             modelBuilder.Entity<UserFarm>()
                 .HasOne(uf => uf.User)

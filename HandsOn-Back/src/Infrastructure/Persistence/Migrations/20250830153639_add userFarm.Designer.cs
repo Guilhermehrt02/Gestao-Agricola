@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20250825231124_userFarmEntity")]
-    partial class userFarmEntity
+    [Migration("20250830153639_add userFarm")]
+    partial class adduserFarm
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -400,10 +400,10 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9ffb0764-bfe8-4d31-a479-c9e671e6b762"),
+                            Id = new Guid("eb377288-d030-4221-ba2d-be505c57f9da"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "43111410-904e-4963-b764-d94edae438cd",
-                            CreatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(2701),
+                            ConcurrencyStamp = "dd7863b3-e097-4296-aeee-b9760061a509",
+                            CreatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(8547),
                             Email = "example1@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "John",
@@ -411,21 +411,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE1@GMAIL.COM",
                             NormalizedUserName = "JOHN",
-                            PasswordHash = "$2a$11$im2lE62USnbSmu4lHHz9ZehxwteP36OhdwL9cybYUPD8L6z7ekHYq",
+                            PasswordHash = "$2a$11$oLlRDLafc15vLGM16BqJiehCdFcN7zV4klF9pQjR7KgaYjel1QXbu",
                             PhoneNumber = "(99) 99999-9991",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b7968b56-36ac-4842-9cf4-9d334eaf9e1d",
+                            SecurityStamp = "02814d04-0a7a-4fa6-a281-1db5f5299a32",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(759),
+                            UpdatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(4170),
                             UserName = "john"
                         },
                         new
                         {
-                            Id = new Guid("66909c67-b5f3-468f-afbf-7ba917c3a31d"),
+                            Id = new Guid("1b96a873-80e9-4966-9108-7eb12cd41b86"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ff531598-6314-4b6d-a69d-021b8577bcd2",
-                            CreatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(2986),
+                            ConcurrencyStamp = "2db96200-bf21-4ac8-a4b1-0eaf08fd7198",
+                            CreatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(9179),
                             Email = "example2@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Jane",
@@ -433,21 +433,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE2@GMAIL.COM",
                             NormalizedUserName = "JANE",
-                            PasswordHash = "$2a$11$U93hcM7yURPTa07SIIDU6Opb4gSgunWkbkj/A2qJuoRntIForQWNy",
+                            PasswordHash = "$2a$11$hY5xWjNMgq11oFALvBQI0OeflxMUIVEaU7jj5fMVXQ.sNlagaJT4i",
                             PhoneNumber = "(99) 99999-9992",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cf5b32aa-a41b-4864-94bf-b2807c05eacd",
+                            SecurityStamp = "93e6d021-d2cc-41df-aecf-82b645660734",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(2965),
+                            UpdatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(9126),
                             UserName = "jane"
                         },
                         new
                         {
-                            Id = new Guid("6b0f2cbc-b6d9-434b-b899-61e64749fcd2"),
+                            Id = new Guid("714a8d4d-bc3c-42cb-bc6a-d40a7479228e"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e21aa38b-e7e3-44f9-91a8-3f7b729a6a7c",
-                            CreatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(2991),
+                            ConcurrencyStamp = "e98e1a24-8cc9-43f5-a7c4-de5b92f39d45",
+                            CreatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(9209),
                             Email = "example3@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Alice",
@@ -455,21 +455,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE3@GMAIL.COM",
                             NormalizedUserName = "ALICE",
-                            PasswordHash = "$2a$11$fM/SWPkiP800eeJh8IZ9cOH1.ZOAWn4gdqmkmMQzklFJSFElU4ifu",
+                            PasswordHash = "$2a$11$tvb6nI7peHwS.LJ5NDm.M.m1HUMNNJHZtaj/Kq9a527AP1pT4XbdW",
                             PhoneNumber = "(99) 99999-9993",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c7f205f6-6490-4148-a6d1-bceb9653fa4b",
+                            SecurityStamp = "9ae1b5f5-0979-4db6-8802-5e789462f804",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(2987),
+                            UpdatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(9182),
                             UserName = "alice"
                         },
                         new
                         {
-                            Id = new Guid("ceb61b77-3082-4382-ab9a-267a58078ef6"),
+                            Id = new Guid("6fe28065-af1f-439e-acfe-e6ba29f61e00"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1129bd93-1420-4f6f-9cba-294157b066b1",
-                            CreatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(3000),
+                            ConcurrencyStamp = "2db9342a-78c8-49de-ae63-cf17bbc5efa3",
+                            CreatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(9218),
                             Email = "example4@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Bob",
@@ -477,21 +477,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE4@GMAIL.COM",
                             NormalizedUserName = "BOB",
-                            PasswordHash = "$2a$11$SgJa1Tcec3pp3VkQqfOyIer6TL8lZQd7DdsA5asMDd3na/XaDIfSm",
+                            PasswordHash = "$2a$11$/2el3oGXf5.LhuRsTrTe.u/fofH/Z0Z/tafbCKy4CY3CykKEm9s8.",
                             PhoneNumber = "(99) 99999-9994",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "204e0b14-91cc-4589-bd38-93b816034a4a",
+                            SecurityStamp = "190b7df4-8cf7-4c42-ad92-0ca99082082d",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(2992),
+                            UpdatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(9210),
                             UserName = "bob"
                         },
                         new
                         {
-                            Id = new Guid("d32444b7-2ed8-4d66-b1b4-818e02434311"),
+                            Id = new Guid("89951b52-acc7-4a6d-9a7b-9d1dc35c5b8d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e50d5c98-4bc4-42fb-8075-a6571b94404d",
-                            CreatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(3010),
+                            ConcurrencyStamp = "31a2b4a5-014f-45c8-9ff1-1e9cf6404cbc",
+                            CreatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(9244),
                             Email = "example5@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Charlie",
@@ -499,34 +499,37 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE5@GMAIL.COM",
                             NormalizedUserName = "CHARLIE",
-                            PasswordHash = "$2a$11$FV./wb3ZV4thaQqWBGeCYe8WGeqAwFyuo/afMb4548f3O0P9P4guG",
+                            PasswordHash = "$2a$11$cjONaOKePaKaslwEFi8avuOsT51jT.ZaqzZrHKI0YpibWfh7Uom8K",
                             PhoneNumber = "(99) 99999-9995",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "37db0972-c64d-43c1-8a0a-107d7fed54dd",
+                            SecurityStamp = "85d8bbc0-8d8e-440b-a2cf-4d87db6fd7d0",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 25, 20, 11, 22, 505, DateTimeKind.Local).AddTicks(3001),
+                            UpdatedAt = new DateTime(2025, 8, 30, 12, 36, 36, 649, DateTimeKind.Local).AddTicks(9220),
                             UserName = "charlie"
                         });
                 });
 
             modelBuilder.Entity("Core.Entities.UserFarm", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("FarmId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 
                     b.Property<int?>("UserRole")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "FarmId");
+                    b.HasKey("Id");
 
                     b.HasIndex("FarmId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserFarms");
                 });
@@ -560,36 +563,36 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("91b09b9c-8d26-4719-bfc6-ff94abda685a"),
-                            ConcurrencyStamp = "a35c4424-16f1-49cc-bf74-ab3793ace763",
+                            Id = new Guid("b1449d44-0c8b-43ca-9d6e-0e43f32fb256"),
+                            ConcurrencyStamp = "c484ea2f-90d7-40b6-8636-4e09a36e7755",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("dc9ab0ec-5c29-4b6f-ad5c-670f6307bcc1"),
-                            ConcurrencyStamp = "7aae22ec-70c1-4aec-b349-c7e66812a62f",
+                            Id = new Guid("8ae0ce67-1425-4592-b138-3687b55df861"),
+                            ConcurrencyStamp = "231fd1d6-d98a-4e52-b3f9-f921498adca0",
                             Name = "Owner",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = new Guid("e123e47d-bf78-4460-bcda-a8250eb9c3b8"),
-                            ConcurrencyStamp = "fad31182-9c06-4c09-a945-5d4c56daec51",
+                            Id = new Guid("0aeba5e0-ec35-488d-b974-4e03ac5faff4"),
+                            ConcurrencyStamp = "466a16c3-17b2-47a2-bd06-052e07a56204",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         },
                         new
                         {
-                            Id = new Guid("7315e528-aa05-480a-ab39-0d8baf45be56"),
-                            ConcurrencyStamp = "6558187a-349f-473a-8042-ab07c572f0b5",
+                            Id = new Guid("6d0bcab4-6725-44c3-8a82-aab9741b676e"),
+                            ConcurrencyStamp = "065c0d30-9ebd-491e-b7ce-00bcc98832dc",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
-                            Id = new Guid("e1ce927b-6ce9-41bc-a234-706fcfb92750"),
-                            ConcurrencyStamp = "75830766-77e0-4c91-a2e2-f72da72ec872",
+                            Id = new Guid("f7a9ad02-e81d-4b7a-8a2b-c522dc48fe10"),
+                            ConcurrencyStamp = "9440ddce-a272-4583-80ce-dbef21a90a88",
                             Name = "Collaborator",
                             NormalizedName = "COLLABORATOR"
                         });
@@ -681,28 +684,28 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("9ffb0764-bfe8-4d31-a479-c9e671e6b762"),
-                            RoleId = new Guid("91b09b9c-8d26-4719-bfc6-ff94abda685a")
+                            UserId = new Guid("eb377288-d030-4221-ba2d-be505c57f9da"),
+                            RoleId = new Guid("b1449d44-0c8b-43ca-9d6e-0e43f32fb256")
                         },
                         new
                         {
-                            UserId = new Guid("66909c67-b5f3-468f-afbf-7ba917c3a31d"),
-                            RoleId = new Guid("dc9ab0ec-5c29-4b6f-ad5c-670f6307bcc1")
+                            UserId = new Guid("1b96a873-80e9-4966-9108-7eb12cd41b86"),
+                            RoleId = new Guid("8ae0ce67-1425-4592-b138-3687b55df861")
                         },
                         new
                         {
-                            UserId = new Guid("6b0f2cbc-b6d9-434b-b899-61e64749fcd2"),
-                            RoleId = new Guid("e123e47d-bf78-4460-bcda-a8250eb9c3b8")
+                            UserId = new Guid("714a8d4d-bc3c-42cb-bc6a-d40a7479228e"),
+                            RoleId = new Guid("0aeba5e0-ec35-488d-b974-4e03ac5faff4")
                         },
                         new
                         {
-                            UserId = new Guid("ceb61b77-3082-4382-ab9a-267a58078ef6"),
-                            RoleId = new Guid("7315e528-aa05-480a-ab39-0d8baf45be56")
+                            UserId = new Guid("6fe28065-af1f-439e-acfe-e6ba29f61e00"),
+                            RoleId = new Guid("6d0bcab4-6725-44c3-8a82-aab9741b676e")
                         },
                         new
                         {
-                            UserId = new Guid("d32444b7-2ed8-4d66-b1b4-818e02434311"),
-                            RoleId = new Guid("e1ce927b-6ce9-41bc-a234-706fcfb92750")
+                            UserId = new Guid("89951b52-acc7-4a6d-9a7b-9d1dc35c5b8d"),
+                            RoleId = new Guid("f7a9ad02-e81d-4b7a-8a2b-c522dc48fe10")
                         });
                 });
 

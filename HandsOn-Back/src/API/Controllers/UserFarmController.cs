@@ -13,7 +13,7 @@ namespace API.Controllers
         private readonly IUserFarmServices _userFarmServices = userFarmServices;
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _userFarmServices.GetByIdAsync(id);
             return Ok(result);
@@ -37,7 +37,7 @@ namespace API.Controllers
         public async Task<IActionResult> CreateAsync(CreateUserFarmInputModel inputModel)
         {
             var result = await _userFarmServices.CreateAsync(inputModel);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]

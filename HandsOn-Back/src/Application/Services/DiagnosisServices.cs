@@ -9,14 +9,14 @@ using System.Security.Claims;
 
 namespace Application.Services
 {
-    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository, IUploadServices uploadServices, IFarmRepository farmRepository, IHarvestRepository harvestRepository, IPlotRepository plotRepository) : IDiagnosisServices
+    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository, IUploadServices uploadServices, IFarmRepository farmRepository, IHarvestRepository harvestRepository, IPlotRepository plotRepository, IUserFarmServices userFarmServices) : IDiagnosisServices
     {
         private readonly IDiagnosisRepository _diagnosisRepository = diagnosisRepository;
         private readonly IFarmRepository _farmRepository = farmRepository;
         private readonly IHarvestRepository _harvestRepository = harvestRepository;
         private readonly IPlotRepository _plotRepository = plotRepository;
-
         private readonly IUploadServices _uploadServices = uploadServices;
+        private readonly IUserFarmServices _userFarmServices = userFarmServices;
 
         public async Task<DiagnosisViewModel> GetByIdAsync(Guid id)
         {
@@ -26,7 +26,22 @@ namespace Application.Services
 
         public async Task<IEnumerable<DiagnosisViewModel>> GetAllByUserIdAsync(Guid userId)
         {
-            var diagnoses = await _diagnosisRepository.GetAllByUserIdAsync(userId);
+            var diagnosis = await _diagnosisRepository.GetAllByUserIdAsync(userId);
+            return diagnosis.Select(DiagnosisViewModel.FromEntity);
+
+            // if (!userFarms.Any())
+            //     return Enumerable.Empty<DiagnosisViewModel>();
+
+            // var farmIds = userFarms.Select(uf => uf.FarmId).ToList();
+
+            // var diagnoses = await GetAllByFarmIdsAsync(farmIds);
+
+            // return diagnoses;
+        }
+
+        public async Task<IEnumerable<DiagnosisViewModel>> GetAllByFarmIdsAsync(IEnumerable<Guid> farmIds)
+        {
+            var diagnoses = await _diagnosisRepository.GetAllByFarmIdsAsync(farmIds);
             return diagnoses.Select(DiagnosisViewModel.FromEntity);
         }
 
@@ -61,11 +76,12 @@ namespace Application.Services
                     }).ToList()
                 }).ToList();
             }
-            
+
             var diagnosis = new Diagnosis
             {
                 UserId = userId,
                 Farm = farm,
+                FarmId = inputModel.FarmId,
                 Harvest = harvest,
                 Plot = plot,
                 UploadType = UploadTypeExtension.ToUploadType(inputModel.UploadType),
