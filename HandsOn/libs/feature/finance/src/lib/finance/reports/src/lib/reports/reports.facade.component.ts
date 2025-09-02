@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
+
 import {
   ReportInput,
   ReportFacade,
@@ -9,6 +12,23 @@ import {
   RevenueSourceLabels,
 } from '@farm/core';
 import { Router } from '@angular/router';
+
+interface Result {
+  classe: string;
+  conf: number;
+}
+
+interface ApiResponse {
+  results: Result[];
+  id: string;
+}
+
+export interface ItemCompare {
+  images_book: string;
+  similarity: number;
+}
+
+export type ResponseCompare = ItemCompare[];
 
 @Injectable({ providedIn: 'root' })
 export class ReportComponentFacade {
@@ -22,7 +42,11 @@ export class ReportComponentFacade {
   expenseAndRevenueData$: Observable<ReportData | null> =
     this.revenueAndExpenseSubject.asObservable();
 
-  constructor(private reportFacade: ReportFacade, private router: Router) {}
+  constructor(
+    private reportFacade: ReportFacade,
+    private router: Router,
+    private http: HttpClient,
+  ) {}
 
   load(reportInput: ReportInput) {
     this.loadingSubject.next(true);
@@ -49,17 +73,23 @@ export class ReportComponentFacade {
     this.load(reportInput);
   }
 
+  private apiUrl = 'http://localhost:5000/compare';
+
+  compareStaticImage(): Observable<ResponseCompare> {
+    return this.http.get<ResponseCompare>(this.apiUrl);
+  }
+
   private translateReportData(data: ReportData): ReportData {
     return {
       ...data,
-      expenses: (data.expenses ?? []).map(item => {
+      expenses: (data.expenses ?? []).map((item) => {
         const categoryKey = item.category as keyof typeof ExpenseCategoryLabels;
         return {
           ...item,
           label: ExpenseCategoryLabels[categoryKey] ?? item.category,
         };
       }),
-      revenues: (data.revenues ?? []).map(item => {
+      revenues: (data.revenues ?? []).map((item) => {
         const sourceKey = item.source as keyof typeof RevenueSourceLabels;
         return {
           ...item,
@@ -67,5 +97,5 @@ export class ReportComponentFacade {
         };
       }),
     };
-  }  
+  }
 }

@@ -71,7 +71,7 @@ function environmentFactory(): Environment {
   try {
     env = require('./environments/environment.json');
   } catch {
-    env = require('./environments/environment.prod.json');
+    env = require('./environments/environment.json');
   }
   // env = require('./environments/environment.json');
   return env;

@@ -71,6 +71,24 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     });
 
     menuItems.push({
+      label: 'Results-view',
+      icon: 'pi pi-fw pi-search',
+      styleClass: 'cursor-pointer',
+      items: [
+        {
+          label: 'results',
+          icon: 'pi pi-fw pi-list',
+          routerLink: '/app/diagnoses/diagnosis/create',
+        },
+        // {
+        //   label: 'Gerenciar',
+        //   icon: 'pi pi-fw pi-list',
+        //   routerLink: '/app/diagnostics',
+        // },
+      ],
+    });
+
+    menuItems.push({
       label: 'finance',
       icon: 'pi pi-fw pi-money-bill',
       styleClass: 'cursor-pointer',

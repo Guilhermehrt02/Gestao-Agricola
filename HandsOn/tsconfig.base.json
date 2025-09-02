@@ -49,6 +49,7 @@
       "@farm/reports": [
         "libs/feature/finance/src/lib/finance/reports/src/index.ts"
       ],
+      "@farm/results-angular": ["results-angular/src/index.ts"],
       "@farm/revenue": [
         "libs/feature/finance/src/lib/finance/revenue/src/index.ts"
       ],
