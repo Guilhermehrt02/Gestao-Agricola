@@ -26,7 +26,15 @@ namespace Application
             services.AddScoped<IPlotServices, PlotServices>();
             services.AddScoped<IDiagnosisServices, DiagnosisServices>();
             services.AddScoped<IUserFarmServices, UserFarmServices>();
-            
+            services.AddHttpClient<IAIServiceClient, AIServiceClient>(client =>
+            {
+                var baseUrl = configuration!.GetSection("AIService:BaseUrl").Value;
+                if (string.IsNullOrEmpty(baseUrl))
+                    throw new InvalidOperationException("AIService:BaseUrl não configurado no appsettings.json");
+
+                client.BaseAddress = new Uri(baseUrl);
+            });
+
             return services;
         }
     }

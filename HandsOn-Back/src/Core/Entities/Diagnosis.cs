@@ -78,5 +78,11 @@ namespace Core.Entities
             LocationShapes = locationShapes ?? LocationShapes;
             Status = DiagnosisStatusExtension.ToDiagnosisStatus(status ?? Status.ToFriendlyString());
         }
+        public void UpdateResult(string result)
+        {
+            Result = result;
+            Status = DiagnosisStatus.Processed;
+            UpdatedAt = DateTime.Now;
+        }
     }
 }

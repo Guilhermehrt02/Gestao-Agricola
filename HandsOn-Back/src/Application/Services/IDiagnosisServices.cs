@@ -11,5 +11,6 @@ namespace Application.Services
         Task<DiagnosisViewModel> CreateAsync(ClaimsPrincipal actionUser, CreateDiagnosisInputModel inputModel);
         Task<DiagnosisViewModel> UpdateAsync(Guid id, UpdateDiagnosisInputModel inputModel);
         Task<DiagnosisViewModel> DeleteAsync(Guid id);
+        Task UpdateResultAsync(Guid id, UpdateDiagnosisResultInputModel inputModel);
     }
 }

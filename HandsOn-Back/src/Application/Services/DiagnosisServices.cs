@@ -9,14 +9,19 @@ using System.Security.Claims;
 
 namespace Application.Services
 {
-    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository, IUploadServices uploadServices, IFarmRepository farmRepository, IHarvestRepository harvestRepository, IPlotRepository plotRepository, IUserFarmServices userFarmServices) : IDiagnosisServices
+    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository,
+        IUploadServices uploadServices,
+        IFarmRepository farmRepository,
+        IHarvestRepository harvestRepository,
+        IPlotRepository plotRepository,
+        IAIServiceClient aiServiceClient) : IDiagnosisServices
     {
         private readonly IDiagnosisRepository _diagnosisRepository = diagnosisRepository;
         private readonly IFarmRepository _farmRepository = farmRepository;
         private readonly IHarvestRepository _harvestRepository = harvestRepository;
         private readonly IPlotRepository _plotRepository = plotRepository;
+        private readonly IAIServiceClient _aiServiceClient = aiServiceClient;
         private readonly IUploadServices _uploadServices = uploadServices;
-        private readonly IUserFarmServices _userFarmServices = userFarmServices;
 
         public async Task<DiagnosisViewModel> GetByIdAsync(Guid id)
         {
@@ -28,15 +33,6 @@ namespace Application.Services
         {
             var diagnosis = await _diagnosisRepository.GetAllByUserIdAsync(userId);
             return diagnosis.Select(DiagnosisViewModel.FromEntity);
-
-            // if (!userFarms.Any())
-            //     return Enumerable.Empty<DiagnosisViewModel>();
-
-            // var farmIds = userFarms.Select(uf => uf.FarmId).ToList();
-
-            // var diagnoses = await GetAllByFarmIdsAsync(farmIds);
-
-            // return diagnoses;
         }
 
         public async Task<IEnumerable<DiagnosisViewModel>> GetAllByFarmIdsAsync(IEnumerable<Guid> farmIds)
@@ -93,6 +89,8 @@ namespace Application.Services
             };
 
             await _diagnosisRepository.AddAsync(diagnosis);
+            _ = _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
+
             return DiagnosisViewModel.FromEntity(diagnosis);
         }
 
@@ -194,6 +192,16 @@ namespace Application.Services
             await _diagnosisRepository.DeleteAsync(diagnosis);
 
             return DiagnosisViewModel.FromEntity(diagnosis);
+        }
+
+        public async Task UpdateResultAsync(Guid id, UpdateDiagnosisResultInputModel inputModel)
+        {
+            var diagnosis = await _diagnosisRepository.GetByIdAsync(id)
+                    ?? throw new NotFoundException("Diagnosis not found");
+
+            diagnosis.UpdateResult(inputModel.Result);
+
+            await _diagnosisRepository.UpdateAsync(diagnosis);
         }
     }
 }
