@@ -52,6 +52,9 @@
       "@farm/reports": [
         "libs/feature/finance/src/lib/finance/reports/src/index.ts"
       ],
+      "@farm/result": [
+        "libs/feature/diagnoses/src/lib/diagnoses/result/src/index.ts"
+      ],
       "@farm/revenue": [
         "libs/feature/finance/src/lib/finance/revenue/src/index.ts"
       ],

@@ -1,7 +1,9 @@
+using Application.InputModels.DiagnosisModels;
+
 namespace Application.Services
 {
     public interface IAIServiceClient
     {
-        Task StartProcessingAsync(Guid diagnosisId, string imagePath);
+        Task<List<UpdateDiagnosisResultInputModel>> StartProcessingAsync(Guid diagnosisId, string imagePath);
     }
 }

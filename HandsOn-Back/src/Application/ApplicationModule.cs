@@ -33,6 +33,7 @@ namespace Application
                     throw new InvalidOperationException("AIService:BaseUrl não configurado no appsettings.json");
 
                 client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromMinutes(10);
             });
 
             return services;

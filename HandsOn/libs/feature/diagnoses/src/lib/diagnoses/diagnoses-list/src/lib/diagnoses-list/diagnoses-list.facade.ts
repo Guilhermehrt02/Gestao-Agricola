@@ -88,10 +88,18 @@ export class DiagnosesListComponentFacade {
   }
 
   navigateToViewDiagnosis(id: string): void {
-    // this.router.navigate(['/app/diagnoses/diagnosis', id, 'view']);
+    this.router.navigate([`/app/diagnoses/diagnosis/${id}/result`]);
   }
 
   navigateToDeleteDiagnosis(id: string): void {
-    // this.router.navigate(['/app/diagnoses/diagnosis', id, 'delete']);
+    this.confirmationService.confirm({
+      header: 'Excluir Diagnóstico',
+      message: 'Você tem certeza que deseja excluir este diagnóstico?',
+      accept: () => {
+        this.diagnosisFacade.deleteDiagnosis(id, this.userId).subscribe(() => {
+          this.load();
+        });
+      },
+    });
   }
 }

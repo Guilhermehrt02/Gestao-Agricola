@@ -8,7 +8,7 @@ export const diagnosesRoutes: Route[] = [
     children: [
       {
         path: '',
-        redirectTo: 'diagnoses',
+        redirectTo: 'diagnosis',
         pathMatch: 'full',
       },
       {
@@ -26,6 +26,11 @@ export const diagnosesRoutes: Route[] = [
         loadChildren: () =>
           import('@farm/diagnosis').then((m) => m.diagnosisRoutes),
       },
+      {
+        path: 'diagnosis/:id/result',
+        loadChildren: () =>
+          import('@farm/result').then((m) => m.resultRoutes),
+      }
     ],
   },
 ];

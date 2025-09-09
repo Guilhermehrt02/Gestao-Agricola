@@ -4,6 +4,7 @@ using Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    partial class UsersDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250909002152_diagnosis result")]
+    partial class diagnosisresult
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,7 +44,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("LocationShapeId");
 
-                    b.ToTable("Coordinate", (string)null);
+                    b.ToTable("Coordinate");
                 });
 
             modelBuilder.Entity("Core.Entities.Diagnosis", b =>
@@ -100,7 +103,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PlotId");
 
-                    b.ToTable("Diagnoses", (string)null);
+                    b.ToTable("Diagnoses");
                 });
 
             modelBuilder.Entity("Core.Entities.DiagnosisResult", b =>
@@ -117,7 +120,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("DiagnosisId")
                         .IsUnique();
 
-                    b.ToTable("DiagnosisResults", (string)null);
+                    b.ToTable("DiagnosisResults");
                 });
 
             modelBuilder.Entity("Core.Entities.Expense", b =>
@@ -159,7 +162,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Expenses", (string)null);
+                    b.ToTable("Expenses");
                 });
 
             modelBuilder.Entity("Core.Entities.Farm", b =>
@@ -189,7 +192,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Farms", (string)null);
+                    b.ToTable("Farms");
                 });
 
             modelBuilder.Entity("Core.Entities.Harvest", b =>
@@ -220,7 +223,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Harvests", (string)null);
+                    b.ToTable("Harvests");
                 });
 
             modelBuilder.Entity("Core.Entities.ImageSimilarity", b =>
@@ -249,7 +252,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("DiagnosisResultId1")
                         .IsUnique();
 
-                    b.ToTable("ImageSimilarity", (string)null);
+                    b.ToTable("ImageSimilarity");
                 });
 
             modelBuilder.Entity("Core.Entities.LocationShape", b =>
@@ -273,7 +276,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DiagnosisId");
 
-                    b.ToTable("LocationShapes", (string)null);
+                    b.ToTable("LocationShapes");
                 });
 
             modelBuilder.Entity("Core.Entities.Plot", b =>
@@ -313,7 +316,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Plots", (string)null);
+                    b.ToTable("Plots");
                 });
 
             modelBuilder.Entity("Core.Entities.Revenue", b =>
@@ -351,7 +354,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Revenues", (string)null);
+                    b.ToTable("Revenues");
                 });
 
             modelBuilder.Entity("Core.Entities.User", b =>
@@ -569,7 +572,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserFarms", (string)null);
+                    b.ToTable("UserFarms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>

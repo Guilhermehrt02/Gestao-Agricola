@@ -44,26 +44,25 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var diagnosis = await _diagnosisServices.DeleteAsync(id);
+            _ = await _diagnosisServices.DeleteAsync(id);
             return NoContent();
         }
 
-        [AllowAnonymous]
-        [HttpPost("{id}/result")]
-        public async Task<IActionResult> UpdateResult(Guid id, UpdateDiagnosisResultInputModel inputModel)
-        {
-            await _diagnosisServices.UpdateResultAsync(id, inputModel);
-            //Console.WriteLine($"[HandsOn-Back] Resultado do diagnóstico {id} atualizado para: {inputModel.Result}");
-            return Ok();
-        }
-
-        [HttpPost("{id}/testIntegration")]
+        [HttpPost("{id}/testAIService")]
         public async Task<IActionResult> TestIntegration(Guid id)
         {
             var diagnosis = await _diagnosisServices.GetByIdAsync(id);
-            _ = _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
+            var result = await _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
 
-            return Ok();
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/updateResult")]
+        public async Task<IActionResult> UpdateResult(Guid id, List<UpdateDiagnosisResultInputModel> inputModel)
+        {
+            var diagnosis = await _diagnosisServices.TestUpdateResult(id, inputModel);
+
+            return Ok(diagnosis);
         }
 
     }

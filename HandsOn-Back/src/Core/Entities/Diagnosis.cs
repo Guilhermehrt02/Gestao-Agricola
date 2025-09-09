@@ -14,7 +14,7 @@ namespace Core.Entities
         public string PhotoUrl { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public DiagnosisStatus Status { get; set; } = DiagnosisStatus.Pending;
-        public string Result { get; set; } = string.Empty;
+        public DiagnosisResult? Result { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -47,7 +47,7 @@ namespace Core.Entities
             Latitude = latitude;
             Longitude = longitude;
             LocationShapes = locationShapes;
-            Result = string.Empty;
+            Result = null;
         }
 
         public void Update(
@@ -78,7 +78,7 @@ namespace Core.Entities
             LocationShapes = locationShapes ?? LocationShapes;
             Status = DiagnosisStatusExtension.ToDiagnosisStatus(status ?? Status.ToFriendlyString());
         }
-        public void UpdateResult(string result)
+        public void UpdateResult(DiagnosisResult result)
         {
             Result = result;
             Status = DiagnosisStatus.Processed;

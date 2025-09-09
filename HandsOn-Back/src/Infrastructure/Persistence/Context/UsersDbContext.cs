@@ -20,6 +20,7 @@ namespace Infrastructure.Persistence.Context
 
         public DbSet<LocationShape> LocationShapes { get; set; }
         public DbSet<UserFarm> UserFarms { get; set; }
+        public DbSet<DiagnosisResult> DiagnosisResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -150,9 +151,6 @@ namespace Infrastructure.Persistence.Context
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(d => d.Result)
-                    .HasMaxLength(1000);
-
                 entity.Property(d => d.Latitude)
                     .HasPrecision(10, 8);
 
@@ -237,6 +235,18 @@ namespace Infrastructure.Persistence.Context
                 .HasMany(ls => ls.Coordinates)
                 .WithOne(c => c.LocationShape)
                 .HasForeignKey(c => c.LocationShapeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Diagnosis>()
+                .HasOne(d => d.Result)
+                .WithOne(r => r.Diagnosis)
+                .HasForeignKey<DiagnosisResult>(r => r.DiagnosisId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DiagnosisResult>()
+                .HasMany(dr => dr.Similarities)
+                .WithOne(s => s.DiagnosisResult)
+                .HasForeignKey(s => s.DiagnosisResultId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserFarm>()

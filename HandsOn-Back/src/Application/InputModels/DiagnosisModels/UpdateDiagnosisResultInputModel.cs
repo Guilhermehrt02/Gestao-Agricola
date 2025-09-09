@@ -1,12 +1,13 @@
-using Core.Enums;
-using System.ComponentModel.DataAnnotations;
-using Core.Entities;
+using System.Text.Json.Serialization;
 
 namespace Application.InputModels.DiagnosisModels
 {
     public class UpdateDiagnosisResultInputModel
     {
-        [Required]
-        public string Result { get; set; }
+        [JsonPropertyName("images_book")]
+        public string ImagesBook { get; set; } = string.Empty;
+
+        [JsonPropertyName("similarity")]
+        public double Similarity { get; set; }
     }
 }

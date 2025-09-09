@@ -17,6 +17,8 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(x => x.Plot)
                 .Include(x => x.LocationShapes)
                     .ThenInclude(ls => ls.Coordinates)
+                .Include(x => x.Result)
+                    .ThenInclude(dr => dr.Similarities)
                 .Where(d => _context.UserFarms
                     .Where(uf => uf.UserId == userId)
                     .Select(uf => uf.FarmId)
@@ -32,7 +34,9 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(x => x.Plot)
                 .Include(x => x.LocationShapes)
                     .ThenInclude(ls => ls.Coordinates)
-                .Join(farmIds, d => d.FarmId, fId => fId, (d, fId) => d) 
+                .Include(x => x.Result)
+                    .ThenInclude(dr => dr.Similarities)
+                .Join(farmIds, d => d.FarmId, fId => fId, (d, fId) => d)
                 .ToListAsync();
         }
 
@@ -44,6 +48,8 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(x => x.Plot)
                 .Include(x => x.LocationShapes)
                     .ThenInclude(ls => ls.Coordinates)
+                .Include(x => x.Result)
+                    .ThenInclude(dr => dr.Similarities)
                 .Where(d => d.Id == diagnosisId)
                 .FirstOrDefaultAsync();
         }
@@ -73,6 +79,25 @@ namespace Infrastructure.Persistence.Repositories
         {
             var shapes = _context.LocationShapes.Where(ls => ls.DiagnosisId == diagnosisId);
             _context.LocationShapes.RemoveRange(shapes);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteDiagnosisResultByDiagnosisIdAsync(Guid diagnosisId)
+        {
+            var result = await _context.DiagnosisResults
+                .Where(dr => dr.DiagnosisId == diagnosisId)
+                .FirstOrDefaultAsync();
+
+            if (result != null)
+            {
+                _context.DiagnosisResults.Remove(result);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task AddDiagnosisResultAsync(DiagnosisResult diagnosisResult)
+        {
+            await _context.DiagnosisResults.AddAsync(diagnosisResult);
             await _context.SaveChangesAsync();
         }
     }

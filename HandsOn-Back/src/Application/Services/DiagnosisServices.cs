@@ -3,9 +3,10 @@ using Core.Repositories;
 using Application.InputModels.DiagnosisModels;
 using Application.Exceptions;
 using Application.Validators;
-using Application.ViewModels;
+using Application.ViewModels.DiagnosisModels;
 using Core.Enums;
 using System.Security.Claims;
+using Infrastructure.Persistence.Migrations;
 
 namespace Application.Services
 {
@@ -89,7 +90,8 @@ namespace Application.Services
             };
 
             await _diagnosisRepository.AddAsync(diagnosis);
-            _ = _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
+
+            await UpdateResult(diagnosis);
 
             return DiagnosisViewModel.FromEntity(diagnosis);
         }
@@ -137,6 +139,7 @@ namespace Application.Services
                 inputModel.PhotoUrl != diagnosis.PhotoUrl)
             {
                 await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
+                await UpdateResult(diagnosis);
             }
 
             List<LocationShape>? locationShapes = null;
@@ -194,14 +197,63 @@ namespace Application.Services
             return DiagnosisViewModel.FromEntity(diagnosis);
         }
 
-        public async Task UpdateResultAsync(Guid id, UpdateDiagnosisResultInputModel inputModel)
+        public async Task UpdateResult(Diagnosis diagnosis)
         {
-            var diagnosis = await _diagnosisRepository.GetByIdAsync(id)
-                    ?? throw new NotFoundException("Diagnosis not found");
+            if (diagnosis.Result != null)
+            {
+                await _diagnosisRepository.DeleteDiagnosisResultByDiagnosisIdAsync(diagnosis.Id);
+            }
+            var results = await _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
 
-            diagnosis.UpdateResult(inputModel.Result);
+            if (results != null && results.Count > 0)
+            {
+                var diagnosisResult = new DiagnosisResult
+                {
+                    DiagnosisId = diagnosis.Id,
+                    Similarities = results
+                        .OrderByDescending(r => r.Similarity)
+                        .Select((r, index) => new ImageSimilarity
+                        {
+                            ImageBook = r.ImagesBook,
+                            Similarity = r.Similarity,
+                        }).ToList()
+                };
 
-            await _diagnosisRepository.UpdateAsync(diagnosis);
+                await _diagnosisRepository.AddDiagnosisResultAsync(diagnosisResult);
+
+                diagnosis.UpdateResult(diagnosisResult);
+
+                await _diagnosisRepository.UpdateAsync(diagnosis);
+            }
+        }
+
+        public async Task<DiagnosisViewModel> TestUpdateResult(Guid diagnosisId, List<UpdateDiagnosisResultInputModel> results)
+        {
+            if (results != null && results.Count > 0)
+            {
+                var diagnosisResult = new DiagnosisResult
+                {
+                    DiagnosisId = diagnosisId,
+                    Similarities = results
+                        .OrderByDescending(r => r.Similarity)
+                        .Select((r, index) => new ImageSimilarity
+                        {
+                            ImageBook = r.ImagesBook,
+                            Similarity = r.Similarity,
+                        }).ToList()
+                };
+
+                await _diagnosisRepository.AddDiagnosisResultAsync(diagnosisResult);
+
+                var diagnosis = await _diagnosisRepository.GetByIdAsync(diagnosisId);
+                if (diagnosis != null)
+                {
+                    diagnosis.UpdateResult(diagnosisResult);
+                    var updatedDiagnosis = await _diagnosisRepository.UpdateAsync(diagnosis);
+                    return DiagnosisViewModel.FromEntity(updatedDiagnosis);
+                }
+            }
+            return null;
         }
     }
 }
