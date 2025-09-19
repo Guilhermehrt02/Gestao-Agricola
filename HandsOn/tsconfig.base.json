@@ -22,6 +22,9 @@
       "@farm/core": ["libs/shared/core/src/index.ts"],
       "@farm/dashboard": ["libs/feature/dashboard/src/index.ts"],
       "@farm/diagnoses": ["libs/feature/diagnoses/src/index.ts"],
+      "@farm/diagnoses-list": [
+        "libs/feature/diagnoses/src/lib/diagnoses/diagnoses-list/src/index.ts"
+      ],
       "@farm/diagnosis": [
         "libs/feature/diagnoses/src/lib/diagnoses/diagnosis/src/index.ts"
       ],
@@ -49,7 +52,9 @@
       "@farm/reports": [
         "libs/feature/finance/src/lib/finance/reports/src/index.ts"
       ],
-      "@farm/results-angular": ["results-angular/src/index.ts"],
+      "@farm/result": [
+        "libs/feature/diagnoses/src/lib/diagnoses/result/src/index.ts"
+      ],
       "@farm/revenue": [
         "libs/feature/finance/src/lib/finance/revenue/src/index.ts"
       ],

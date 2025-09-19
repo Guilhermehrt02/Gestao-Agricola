@@ -8,9 +8,10 @@ namespace API.Controllers
     [ApiController]
     [Route("api/diagnosis")]
     [Authorize]
-    public class DiagnosisController(IDiagnosisServices diagnosisServices) : ControllerBase
+    public class DiagnosisController(IDiagnosisServices diagnosisServices, IAIServiceClient aiServiceClient) : ControllerBase
     {
         private readonly IDiagnosisServices _diagnosisServices = diagnosisServices;
+        private readonly IAIServiceClient _aiServiceClient = aiServiceClient;
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
@@ -43,8 +44,26 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var diagnosis = await _diagnosisServices.DeleteAsync(id);
+            _ = await _diagnosisServices.DeleteAsync(id);
             return NoContent();
         }
+
+        [HttpPost("{id}/testAIService")]
+        public async Task<IActionResult> TestIntegration(Guid id)
+        {
+            var diagnosis = await _diagnosisServices.GetByIdAsync(id);
+            var result = await _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
+
+            return Ok(result);
+        }
+
+        [HttpPost("{id}/updateResult")]
+        public async Task<IActionResult> UpdateResult(Guid id, List<UpdateDiagnosisResultInputModel> inputModel)
+        {
+            var diagnosis = await _diagnosisServices.TestUpdateResult(id, inputModel);
+
+            return Ok(diagnosis);
+        }
+
     }
 }

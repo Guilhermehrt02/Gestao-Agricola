@@ -3,19 +3,25 @@ using Core.Repositories;
 using Application.InputModels.DiagnosisModels;
 using Application.Exceptions;
 using Application.Validators;
-using Application.ViewModels;
+using Application.ViewModels.DiagnosisModels;
 using Core.Enums;
 using System.Security.Claims;
+using Infrastructure.Persistence.Migrations;
 
 namespace Application.Services
 {
-    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository, IUploadServices uploadServices, IFarmRepository farmRepository, IHarvestRepository harvestRepository, IPlotRepository plotRepository) : IDiagnosisServices
+    public class DiagnosisServices(IDiagnosisRepository diagnosisRepository,
+        IUploadServices uploadServices,
+        IFarmRepository farmRepository,
+        IHarvestRepository harvestRepository,
+        IPlotRepository plotRepository,
+        IAIServiceClient aiServiceClient) : IDiagnosisServices
     {
         private readonly IDiagnosisRepository _diagnosisRepository = diagnosisRepository;
         private readonly IFarmRepository _farmRepository = farmRepository;
         private readonly IHarvestRepository _harvestRepository = harvestRepository;
         private readonly IPlotRepository _plotRepository = plotRepository;
-
+        private readonly IAIServiceClient _aiServiceClient = aiServiceClient;
         private readonly IUploadServices _uploadServices = uploadServices;
 
         public async Task<DiagnosisViewModel> GetByIdAsync(Guid id)
@@ -26,7 +32,13 @@ namespace Application.Services
 
         public async Task<IEnumerable<DiagnosisViewModel>> GetAllByUserIdAsync(Guid userId)
         {
-            var diagnoses = await _diagnosisRepository.GetAllByUserIdAsync(userId);
+            var diagnosis = await _diagnosisRepository.GetAllByUserIdAsync(userId);
+            return diagnosis.Select(DiagnosisViewModel.FromEntity);
+        }
+
+        public async Task<IEnumerable<DiagnosisViewModel>> GetAllByFarmIdsAsync(IEnumerable<Guid> farmIds)
+        {
+            var diagnoses = await _diagnosisRepository.GetAllByFarmIdsAsync(farmIds);
             return diagnoses.Select(DiagnosisViewModel.FromEntity);
         }
 
@@ -61,11 +73,12 @@ namespace Application.Services
                     }).ToList()
                 }).ToList();
             }
-            
+
             var diagnosis = new Diagnosis
             {
                 UserId = userId,
                 Farm = farm,
+                FarmId = inputModel.FarmId,
                 Harvest = harvest,
                 Plot = plot,
                 UploadType = UploadTypeExtension.ToUploadType(inputModel.UploadType),
@@ -77,6 +90,9 @@ namespace Application.Services
             };
 
             await _diagnosisRepository.AddAsync(diagnosis);
+
+            await UpdateResult(diagnosis);
+
             return DiagnosisViewModel.FromEntity(diagnosis);
         }
 
@@ -123,6 +139,7 @@ namespace Application.Services
                 inputModel.PhotoUrl != diagnosis.PhotoUrl)
             {
                 await _uploadServices.DeleteFileAsync(diagnosis.PhotoUrl);
+                await UpdateResult(diagnosis);
             }
 
             List<LocationShape>? locationShapes = null;
@@ -153,7 +170,8 @@ namespace Application.Services
                 plot,
                 inputModel.Latitude,
                 inputModel.Longitude,
-                locationShapes
+                locationShapes,
+                inputModel.Status
             );
 
             await _diagnosisRepository.UpdateAsync(diagnosis);
@@ -177,6 +195,65 @@ namespace Application.Services
             await _diagnosisRepository.DeleteAsync(diagnosis);
 
             return DiagnosisViewModel.FromEntity(diagnosis);
+        }
+
+        public async Task UpdateResult(Diagnosis diagnosis)
+        {
+            if (diagnosis.Result != null)
+            {
+                await _diagnosisRepository.DeleteDiagnosisResultByDiagnosisIdAsync(diagnosis.Id);
+            }
+            var results = await _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
+
+            if (results != null && results.Count > 0)
+            {
+                var diagnosisResult = new DiagnosisResult
+                {
+                    DiagnosisId = diagnosis.Id,
+                    Similarities = results
+                        .OrderByDescending(r => r.Similarity)
+                        .Select((r, index) => new ImageSimilarity
+                        {
+                            ImageBook = r.ImagesBook,
+                            Similarity = r.Similarity,
+                        }).ToList()
+                };
+
+                await _diagnosisRepository.AddDiagnosisResultAsync(diagnosisResult);
+
+                diagnosis.UpdateResult(diagnosisResult);
+
+                await _diagnosisRepository.UpdateAsync(diagnosis);
+            }
+        }
+
+        public async Task<DiagnosisViewModel> TestUpdateResult(Guid diagnosisId, List<UpdateDiagnosisResultInputModel> results)
+        {
+            if (results != null && results.Count > 0)
+            {
+                var diagnosisResult = new DiagnosisResult
+                {
+                    DiagnosisId = diagnosisId,
+                    Similarities = results
+                        .OrderByDescending(r => r.Similarity)
+                        .Select((r, index) => new ImageSimilarity
+                        {
+                            ImageBook = r.ImagesBook,
+                            Similarity = r.Similarity,
+                        }).ToList()
+                };
+
+                await _diagnosisRepository.AddDiagnosisResultAsync(diagnosisResult);
+
+                var diagnosis = await _diagnosisRepository.GetByIdAsync(diagnosisId);
+                if (diagnosis != null)
+                {
+                    diagnosis.UpdateResult(diagnosisResult);
+                    var updatedDiagnosis = await _diagnosisRepository.UpdateAsync(diagnosis);
+                    return DiagnosisViewModel.FromEntity(updatedDiagnosis);
+                }
+            }
+            return null;
         }
     }
 }

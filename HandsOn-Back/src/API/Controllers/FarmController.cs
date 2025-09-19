@@ -29,7 +29,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateFarmInputModel inputModel)
         {
-            var farm = await _farmServices.CreateAsync(inputModel);
+            var farm = await _farmServices.CreateAsync(User, inputModel);
             return CreatedAtAction(nameof(GetById), new { id = farm.Id }, farm);
         }
 

@@ -22,8 +22,8 @@ export class DiagnosisFacade {
         private notificationService: NotificationService,
     ) {}
 
-    getAllDiagnoses(): Observable<Diagnosis[]> {
-        return this.diagnosisService.getAllDiagnoses().pipe(
+    getAllDiagnoses(userId: string): Observable<Diagnosis[]> {
+        return this.diagnosisService.getAllDiagnoses(userId).pipe(
             tap({
                 next: (diagnoses) => {
                     this.diagnosisSubject.next(diagnoses);
@@ -91,7 +91,7 @@ export class DiagnosisFacade {
         );
     }
 
-    deleteDiagnosis(id: string): Observable<void> {
+    deleteDiagnosis(id: string, userId?: string): Observable<void> {
         return this.diagnosisService.deleteDiagnosis(id).pipe(
             tap({
                 next: () => {
@@ -99,7 +99,7 @@ export class DiagnosisFacade {
                         'Sucesso!',
                         'Diagnóstico excluído com sucesso!'
                     );
-                    this.getAllDiagnoses();
+                    this.getAllDiagnoses(userId ?? '');
                 },
                 error: () => {
                     this.notificationService.error(

@@ -19,6 +19,8 @@ namespace Infrastructure.Persistence.Context
         public DbSet<Harvest> Harvests { get; set; }
 
         public DbSet<LocationShape> LocationShapes { get; set; }
+        public DbSet<UserFarm> UserFarms { get; set; }
+        public DbSet<DiagnosisResult> DiagnosisResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -78,6 +80,12 @@ namespace Infrastructure.Persistence.Context
                     RoleId = roleIds[i]
                 });
             }
+
+            // List<Farm> farms =
+            // [
+            //     new Farm(users[0].Id, "Fazenda Primavera", "São Paulo, SP"),
+            //     new Farm(users[0].Id, "Fazenda Aurora", "Itajubá, MG"),
+            // ];
 
             modelBuilder.Entity<Expense>(entity =>
             {
@@ -142,9 +150,6 @@ namespace Infrastructure.Persistence.Context
                 entity.Property(d => d.Status)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.Property(d => d.Result)
-                    .HasMaxLength(1000);
 
                 entity.Property(d => d.Latitude)
                     .HasPrecision(10, 8);
@@ -231,6 +236,31 @@ namespace Infrastructure.Persistence.Context
                 .WithOne(c => c.LocationShape)
                 .HasForeignKey(c => c.LocationShapeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Diagnosis>()
+                .HasOne(d => d.Result)
+                .WithOne(r => r.Diagnosis)
+                .HasForeignKey<DiagnosisResult>(r => r.DiagnosisId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DiagnosisResult>()
+                .HasMany(dr => dr.Similarities)
+                .WithOne(s => s.DiagnosisResult)
+                .HasForeignKey(s => s.DiagnosisResultId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserFarm>()
+               .HasKey(uf => uf.Id);
+
+            modelBuilder.Entity<UserFarm>()
+                .HasOne(uf => uf.User)
+                .WithMany()
+                .HasForeignKey(uf => uf.UserId);
+
+            modelBuilder.Entity<UserFarm>()
+                .HasOne(uf => uf.Farm)
+                .WithMany()
+                .HasForeignKey(uf => uf.FarmId);
         }
     }
 }

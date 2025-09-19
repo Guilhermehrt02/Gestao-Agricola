@@ -8,13 +8,13 @@ export const diagnosesRoutes: Route[] = [
     children: [
       {
         path: '',
-        redirectTo: 'diagnoses',
+        redirectTo: 'diagnosis',
         pathMatch: 'full',
       },
       {
         path: 'diagnosis',
         loadChildren: () =>
-          import('@farm/diagnosis').then((m) => m.diagnosisRoutes),
+          import('@farm/diagnoses-list').then((m) => m.diagnosesListRoutes),
       },
       {
         path: 'diagnosis/create',
@@ -26,6 +26,11 @@ export const diagnosesRoutes: Route[] = [
         loadChildren: () =>
           import('@farm/diagnosis').then((m) => m.diagnosisRoutes),
       },
+      {
+        path: 'diagnosis/:id/result',
+        loadChildren: () =>
+          import('@farm/result').then((m) => m.resultRoutes),
+      }
     ],
   },
 ];

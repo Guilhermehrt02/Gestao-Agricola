@@ -4,7 +4,7 @@ using Application.ViewModels.FarmModels;
 using Application.ViewModels.HarvestModels;
 using Application.ViewModels.PlotModels;
 
-namespace Application.ViewModels
+namespace Application.ViewModels.DiagnosisModels
 {
     public class DiagnosisViewModel
     {
@@ -17,7 +17,7 @@ namespace Application.ViewModels
         public DateTime Date { get; set; }
         public string Status { get; set; } = String.Empty;
         public string? UploadType { get; set; }
-        public string? Result { get; set; }
+        public DiagnosisResultViewModel? Result { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -37,7 +37,9 @@ namespace Application.ViewModels
                 Date = diagnosis.Date,
                 Status = diagnosis.Status.ToFriendlyString(),
                 UploadType = diagnosis.UploadType.ToFriendlyString(),
-                Result = diagnosis.Result,
+                Result = diagnosis.Result != null
+                    ? DiagnosisResultViewModel.FromEntity(diagnosis.Result)
+                    : null,
                 Latitude = diagnosis.Latitude,
                 Longitude = diagnosis.Longitude,
                 CreatedAt = diagnosis.CreatedAt,

@@ -8,7 +8,7 @@ namespace Application.Services
     {
         Task<FarmViewModel> GetByIdAsync(Guid id);
         Task<IEnumerable<FarmViewModel>> GetAllByUserIdAsync(ClaimsPrincipal actionUser);
-        Task<FarmViewModel> CreateAsync(CreateFarmInputModel inputModel);
+        Task<FarmViewModel> CreateAsync(ClaimsPrincipal actionUser, CreateFarmInputModel inputModel);
         Task<FarmViewModel> UpdateAsync(Guid id, UpdateFarmInputModel inputModel);
         Task<FarmViewModel> DeleteAsync(Guid id);
     }

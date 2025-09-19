@@ -41,7 +41,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("LocationShapeId");
 
-                    b.ToTable("Coordinate");
+                    b.ToTable("Coordinate", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Diagnosis", b =>
@@ -78,11 +78,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<Guid>("PlotId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Result")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
-
                     b.Property<int>("Status")
                         .HasMaxLength(50)
                         .HasColumnType("int");
@@ -105,7 +100,24 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PlotId");
 
-                    b.ToTable("Diagnoses");
+                    b.ToTable("Diagnoses", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.DiagnosisResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("DiagnosisId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DiagnosisId")
+                        .IsUnique();
+
+                    b.ToTable("DiagnosisResults", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Expense", b =>
@@ -147,7 +159,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Expenses");
+                    b.ToTable("Expenses", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Farm", b =>
@@ -177,7 +189,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Farms");
+                    b.ToTable("Farms", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Harvest", b =>
@@ -208,7 +220,36 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Harvests");
+                    b.ToTable("Harvests", (string)null);
+                });
+
+            modelBuilder.Entity("Core.Entities.ImageSimilarity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("DiagnosisResultId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("DiagnosisResultId1")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ImageBook")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<double>("Similarity")
+                        .HasColumnType("double");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DiagnosisResultId");
+
+                    b.HasIndex("DiagnosisResultId1")
+                        .IsUnique();
+
+                    b.ToTable("ImageSimilarity", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.LocationShape", b =>
@@ -232,7 +273,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DiagnosisId");
 
-                    b.ToTable("LocationShapes");
+                    b.ToTable("LocationShapes", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Plot", b =>
@@ -272,7 +313,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Plots");
+                    b.ToTable("Plots", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Revenue", b =>
@@ -310,7 +351,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Revenues");
+                    b.ToTable("Revenues", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.User", b =>
@@ -397,10 +438,10 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b63339d1-89aa-4aa3-b100-c0b1a965fda8"),
+                            Id = new Guid("1a578f22-6617-4f42-9e3c-017454fe474e"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "140e721e-3735-4953-9c31-069a339a0bbe",
-                            CreatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6419),
+                            ConcurrencyStamp = "236dc680-34f7-483e-a79e-35ab6eb38f79",
+                            CreatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(5924),
                             Email = "example1@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "John",
@@ -408,21 +449,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE1@GMAIL.COM",
                             NormalizedUserName = "JOHN",
-                            PasswordHash = "$2a$11$7obCtsdnOGu3njjWk/TVlOTIHizPJTgDRdweOB.Wx32YoZQJNN3iq",
+                            PasswordHash = "$2a$11$dtkuNspc2Jg0EM5pL56qpuUi3ObU7sYuOHorcms9wXCawwg3FiY/m",
                             PhoneNumber = "(99) 99999-9991",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ff66aeef-acfa-48da-b40e-1a5e10e5342f",
+                            SecurityStamp = "4266f2cd-d41d-42ed-a501-f93df879ef0e",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(2760),
+                            UpdatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(3423),
                             UserName = "john"
                         },
                         new
                         {
-                            Id = new Guid("cc28939f-dfdd-486f-b832-9221f20ca855"),
+                            Id = new Guid("b62eac0f-e7fd-4501-97cf-acabfa8c519d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ca54e9b6-c758-420a-b5fb-74c038893e0e",
-                            CreatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6753),
+                            ConcurrencyStamp = "518e1dd6-f1b8-4461-b90e-a9c526b8a2d5",
+                            CreatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(6296),
                             Email = "example2@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Jane",
@@ -430,21 +471,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE2@GMAIL.COM",
                             NormalizedUserName = "JANE",
-                            PasswordHash = "$2a$11$.w1aJltFFERaDQx.7B3C2u0KQLM1NykPhOwxpREJPEmjjx3RB4LI6",
+                            PasswordHash = "$2a$11$n.LVgl5AMYoSWJpKFKU0LuMrJhcX68si6cFWd75xpBAd7sjgslZG.",
                             PhoneNumber = "(99) 99999-9992",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "21880664-31bd-48fd-acb0-0f2d5f0d91af",
+                            SecurityStamp = "56f0e0f1-3aa9-4d44-a86e-3b95dad9c98d",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6725),
+                            UpdatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(6258),
                             UserName = "jane"
                         },
                         new
                         {
-                            Id = new Guid("0e522a9b-236c-414d-aeba-70ea24a8e659"),
+                            Id = new Guid("dc835b63-58c9-43d9-a753-f68fe47ea1a5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "60fc0405-b0e0-4af3-a72b-b8c59e24a87d",
-                            CreatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6766),
+                            ConcurrencyStamp = "fc8466d0-0132-4a97-a0c5-0ef5c39bb203",
+                            CreatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(6303),
                             Email = "example3@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Alice",
@@ -452,21 +493,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE3@GMAIL.COM",
                             NormalizedUserName = "ALICE",
-                            PasswordHash = "$2a$11$hEhGjittxH0t9mQJBmjvge/TPZZOjrm/pW04LHqKMwZy7c14DJtsW",
+                            PasswordHash = "$2a$11$tVQqV1yaHGkO40HtCCLAa.xw0kQ65CaWFqFR2jM1YSv4Om3N/.Taa",
                             PhoneNumber = "(99) 99999-9993",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5362a738-a8a2-4606-93a5-a911193513be",
+                            SecurityStamp = "b9c62b05-704f-4289-a739-113fa70b5302",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6754),
+                            UpdatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(6298),
                             UserName = "alice"
                         },
                         new
                         {
-                            Id = new Guid("cce43b07-b30d-4858-9343-df0e4584bfce"),
+                            Id = new Guid("8d015060-bd48-49b0-a47f-f7bd9ef024ee"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b25006d9-a8a7-4372-bdd2-37cbebb08726",
-                            CreatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6771),
+                            ConcurrencyStamp = "47659519-0991-4ecb-bf97-6947ec956f43",
+                            CreatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(6309),
                             Email = "example4@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Bob",
@@ -474,21 +515,21 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE4@GMAIL.COM",
                             NormalizedUserName = "BOB",
-                            PasswordHash = "$2a$11$TYmjNqpnRy9gM11Fm4PU3ebUrSDmLSJNTstpEf1D0xI8AMQFUcVYG",
+                            PasswordHash = "$2a$11$o4bQMy8F8vPThwYs/dq7g.JSmJeuPAxgU7pR/jIvH5hDTYWX9EV8K",
                             PhoneNumber = "(99) 99999-9994",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5c8dfb36-afd3-430d-a77c-fb18d9b3440e",
+                            SecurityStamp = "eb72e009-c347-4513-aff2-49e398897b51",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6767),
+                            UpdatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(6305),
                             UserName = "bob"
                         },
                         new
                         {
-                            Id = new Guid("bd61794a-a064-4611-89dc-22e425f9c030"),
+                            Id = new Guid("a06e545a-14e1-4e7d-95d4-16e51ed66cf0"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3a7c1eb2-3f9c-4dd9-bfc6-53fe582f39d9",
-                            CreatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6781),
+                            ConcurrencyStamp = "fdefcdd3-8f18-495a-9b87-0037fe007da5",
+                            CreatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(6318),
                             Email = "example5@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Charlie",
@@ -496,15 +537,39 @@ namespace Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "EXAMPLE5@GMAIL.COM",
                             NormalizedUserName = "CHARLIE",
-                            PasswordHash = "$2a$11$HrsPCRvX6nHn9rfRuCeKxeLHRVBiE/bCgmjhbCWFG1fRri1FFM0wK",
+                            PasswordHash = "$2a$11$K.U0e4bCQUuUiiDVyOCMuenGXZsMSeaPlX63EG8.Ys5elgKoyRwKy",
                             PhoneNumber = "(99) 99999-9995",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "94331fe3-55f2-4277-ba5f-61defde156c2",
+                            SecurityStamp = "cce20d35-e69d-4ce1-b38a-6b46d235afc3",
                             Status = 0,
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2025, 8, 11, 21, 44, 38, 823, DateTimeKind.Local).AddTicks(6772),
+                            UpdatedAt = new DateTime(2025, 9, 8, 21, 21, 49, 971, DateTimeKind.Local).AddTicks(6310),
                             UserName = "charlie"
                         });
+                });
+
+            modelBuilder.Entity("Core.Entities.UserFarm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("FarmId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int?>("UserRole")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FarmId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFarms", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -536,36 +601,36 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cd9c50ed-c25a-4fd7-b6b8-84f330edd302"),
-                            ConcurrencyStamp = "ece85f8d-481c-4e58-8ab1-5d8ba73f6ed6",
+                            Id = new Guid("df6f7d79-9652-472c-bdf2-faf88d74fc70"),
+                            ConcurrencyStamp = "b3322f39-ab8c-4a4a-9cb0-8e00f045356c",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("057b80c9-fdfe-4c91-80f8-45fe98c34947"),
-                            ConcurrencyStamp = "bc66ca72-cbba-487a-bba5-1889a0f4464b",
+                            Id = new Guid("d453d591-1365-4363-9903-22bd1edb395f"),
+                            ConcurrencyStamp = "64dfb93a-ed26-4927-9b10-87c925cb40ef",
                             Name = "Owner",
                             NormalizedName = "OWNER"
                         },
                         new
                         {
-                            Id = new Guid("37321cda-2830-45e6-97b4-2e2eef8201cb"),
-                            ConcurrencyStamp = "fe0492f1-5bc8-488c-824c-51def65e4393",
+                            Id = new Guid("79c202ea-7ad6-4aa1-ac81-824e50827783"),
+                            ConcurrencyStamp = "9ff06b60-9000-4fd5-a8c3-808c082783bc",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         },
                         new
                         {
-                            Id = new Guid("5acbdedc-01c5-48f9-bfba-a35584627da1"),
-                            ConcurrencyStamp = "97a4a446-caaa-4b53-b3a9-3992b1eb1a82",
+                            Id = new Guid("11e5ca33-943c-4492-887f-b58d18437fad"),
+                            ConcurrencyStamp = "e572ad7e-52cc-4f27-832a-10ec298e3080",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
-                            Id = new Guid("8bccd356-5af4-41aa-891d-f8bb42370ac8"),
-                            ConcurrencyStamp = "b16184cc-09fe-485a-8836-eebc8aa6f33a",
+                            Id = new Guid("52180c39-d5ca-45c8-8cda-db4c976f7d16"),
+                            ConcurrencyStamp = "5e3c9570-33e0-4446-b04b-69d0236a7eda",
                             Name = "Collaborator",
                             NormalizedName = "COLLABORATOR"
                         });
@@ -657,28 +722,28 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("b63339d1-89aa-4aa3-b100-c0b1a965fda8"),
-                            RoleId = new Guid("cd9c50ed-c25a-4fd7-b6b8-84f330edd302")
+                            UserId = new Guid("1a578f22-6617-4f42-9e3c-017454fe474e"),
+                            RoleId = new Guid("df6f7d79-9652-472c-bdf2-faf88d74fc70")
                         },
                         new
                         {
-                            UserId = new Guid("cc28939f-dfdd-486f-b832-9221f20ca855"),
-                            RoleId = new Guid("057b80c9-fdfe-4c91-80f8-45fe98c34947")
+                            UserId = new Guid("b62eac0f-e7fd-4501-97cf-acabfa8c519d"),
+                            RoleId = new Guid("d453d591-1365-4363-9903-22bd1edb395f")
                         },
                         new
                         {
-                            UserId = new Guid("0e522a9b-236c-414d-aeba-70ea24a8e659"),
-                            RoleId = new Guid("37321cda-2830-45e6-97b4-2e2eef8201cb")
+                            UserId = new Guid("dc835b63-58c9-43d9-a753-f68fe47ea1a5"),
+                            RoleId = new Guid("79c202ea-7ad6-4aa1-ac81-824e50827783")
                         },
                         new
                         {
-                            UserId = new Guid("cce43b07-b30d-4858-9343-df0e4584bfce"),
-                            RoleId = new Guid("5acbdedc-01c5-48f9-bfba-a35584627da1")
+                            UserId = new Guid("8d015060-bd48-49b0-a47f-f7bd9ef024ee"),
+                            RoleId = new Guid("11e5ca33-943c-4492-887f-b58d18437fad")
                         },
                         new
                         {
-                            UserId = new Guid("bd61794a-a064-4611-89dc-22e425f9c030"),
-                            RoleId = new Guid("8bccd356-5af4-41aa-891d-f8bb42370ac8")
+                            UserId = new Guid("a06e545a-14e1-4e7d-95d4-16e51ed66cf0"),
+                            RoleId = new Guid("52180c39-d5ca-45c8-8cda-db4c976f7d16")
                         });
                 });
 
@@ -739,6 +804,32 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Plot");
                 });
 
+            modelBuilder.Entity("Core.Entities.DiagnosisResult", b =>
+                {
+                    b.HasOne("Core.Entities.Diagnosis", "Diagnosis")
+                        .WithOne("Result")
+                        .HasForeignKey("Core.Entities.DiagnosisResult", "DiagnosisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Diagnosis");
+                });
+
+            modelBuilder.Entity("Core.Entities.ImageSimilarity", b =>
+                {
+                    b.HasOne("Core.Entities.DiagnosisResult", "DiagnosisResult")
+                        .WithMany("Similarities")
+                        .HasForeignKey("DiagnosisResultId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.DiagnosisResult", null)
+                        .WithOne("BestMatch")
+                        .HasForeignKey("Core.Entities.ImageSimilarity", "DiagnosisResultId1");
+
+                    b.Navigation("DiagnosisResult");
+                });
+
             modelBuilder.Entity("Core.Entities.LocationShape", b =>
                 {
                     b.HasOne("Core.Entities.Diagnosis", "Diagnosis")
@@ -748,6 +839,25 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Diagnosis");
+                });
+
+            modelBuilder.Entity("Core.Entities.UserFarm", b =>
+                {
+                    b.HasOne("Core.Entities.Farm", "Farm")
+                        .WithMany()
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Farm");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -804,6 +914,15 @@ namespace Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Core.Entities.Diagnosis", b =>
                 {
                     b.Navigation("LocationShapes");
+
+                    b.Navigation("Result");
+                });
+
+            modelBuilder.Entity("Core.Entities.DiagnosisResult", b =>
+                {
+                    b.Navigation("BestMatch");
+
+                    b.Navigation("Similarities");
                 });
 
             modelBuilder.Entity("Core.Entities.LocationShape", b =>

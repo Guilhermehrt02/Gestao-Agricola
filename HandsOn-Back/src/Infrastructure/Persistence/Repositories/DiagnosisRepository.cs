@@ -12,7 +12,31 @@ namespace Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Diagnosis>> GetAllByUserIdAsync(Guid userId)
         {
             return await _context.Diagnoses
-                .Where(d => d.UserId == userId)
+                .Include(x => x.Farm)
+                .Include(x => x.Harvest)
+                .Include(x => x.Plot)
+                .Include(x => x.LocationShapes)
+                    .ThenInclude(ls => ls.Coordinates)
+                .Include(x => x.Result)
+                    .ThenInclude(dr => dr.Similarities)
+                .Where(d => _context.UserFarms
+                    .Where(uf => uf.UserId == userId)
+                    .Select(uf => uf.FarmId)
+                    .Contains(d.FarmId))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Diagnosis>> GetAllByFarmIdsAsync(IEnumerable<Guid> farmIds)
+        {
+            return await _context.Diagnoses
+                .Include(x => x.Farm)
+                .Include(x => x.Harvest)
+                .Include(x => x.Plot)
+                .Include(x => x.LocationShapes)
+                    .ThenInclude(ls => ls.Coordinates)
+                .Include(x => x.Result)
+                    .ThenInclude(dr => dr.Similarities)
+                .Join(farmIds, d => d.FarmId, fId => fId, (d, fId) => d)
                 .ToListAsync();
         }
 
@@ -24,6 +48,8 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(x => x.Plot)
                 .Include(x => x.LocationShapes)
                     .ThenInclude(ls => ls.Coordinates)
+                .Include(x => x.Result)
+                    .ThenInclude(dr => dr.Similarities)
                 .Where(d => d.Id == diagnosisId)
                 .FirstOrDefaultAsync();
         }
@@ -53,6 +79,25 @@ namespace Infrastructure.Persistence.Repositories
         {
             var shapes = _context.LocationShapes.Where(ls => ls.DiagnosisId == diagnosisId);
             _context.LocationShapes.RemoveRange(shapes);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteDiagnosisResultByDiagnosisIdAsync(Guid diagnosisId)
+        {
+            var result = await _context.DiagnosisResults
+                .Where(dr => dr.DiagnosisId == diagnosisId)
+                .FirstOrDefaultAsync();
+
+            if (result != null)
+            {
+                _context.DiagnosisResults.Remove(result);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task AddDiagnosisResultAsync(DiagnosisResult diagnosisResult)
+        {
+            await _context.DiagnosisResults.AddAsync(diagnosisResult);
             await _context.SaveChangesAsync();
         }
     }
