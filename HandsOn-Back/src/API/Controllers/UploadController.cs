@@ -31,5 +31,18 @@ namespace API.Controllers
                 FileUrl = fileUrl,
             });
         }
+
+        [HttpGet("agente")]
+        public async Task<IActionResult> Agente()
+        {
+            await _uploadServices.RunAgente();
+            return Ok(new
+            {
+                Message = "Agente executed successfully",
+            });
+        }
+
     }
+
+
 }

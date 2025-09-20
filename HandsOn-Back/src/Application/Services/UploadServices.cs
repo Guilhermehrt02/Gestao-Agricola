@@ -50,5 +50,11 @@ namespace Application.Services
 
             return Task.CompletedTask;
         }
+
+        public async Task RunAgente()
+        {
+            var agente = new Module.IA.Agente();
+            await agente.Init();
+        }
     }
 }
