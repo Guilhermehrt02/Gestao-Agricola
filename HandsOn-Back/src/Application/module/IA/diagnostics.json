@@ -153,5 +153,165 @@
         "features": "Bronzeamento difuso da l\u00E2mina, aspecto de poeira/teia na face superior e manchas clor\u00F3ticas alongadas acompanhando nervuras, sugerindo a\u00E7\u00E3o de \u00E1caros."
       }
     ]
+  },
+  {
+    "id": "ferrugem (2)",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%",
+        "features": "Folhas com minas irregulares de cor pardo\u2011amarelada que evoluem para \u00E1reas secas e necrosadas, afinando o limbo e reduzindo a \u00E1rea fotossint\u00E9tica."
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%",
+        "features": "Pequenas manchas circulares alaranjadas na face inferior das folhas, com necrose do tecido ao redor em est\u00E1gios mais avan\u00E7ados."
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "45%",
+        "features": "Bronzeamento difuso do limbo, aspecto de sujeira com poeira aderida e presen\u00E7a de teia fina; manchas clor\u00F3ticas alongadas acompanhando nervuras."
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2)",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%",
+        "features": "Manchas amarronzadas irregulares e \u00E1reas necrosadas em forma de minas; tecido ressecado e redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica."
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%",
+        "features": "Pequenas manchas circulares amarelo\u2011alaranjadas com aspecto pulverulento; em alguns pontos o tecido ao redor encontra\u2011se necrosado."
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "55%",
+        "features": "Manchas escuras circulares com poss\u00EDveis halos conc\u00EAntricos e presen\u00E7a de rachaduras/perfura\u00E7\u00F5es nas bordas das folhas."
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2)",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "60%",
+        "features": "Manchas amarronzadas irregulares com \u00E1reas secas e necrosadas, aspecto de minas/galerias no limbo foliar e redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica, compat\u00EDvel com ataque de bicho\u2011mineiro."
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%",
+        "features": "Pequenas p\u00FAstulas/manchas circulares de cor amarelo\u2011alaranjada, com halo amarelado e evolu\u00E7\u00E3o para necrose, t\u00EDpicas de uredosporos na face inferior da folha."
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "35%",
+        "features": "Clorose internerval em folhas novas (reticulado fino com nervuras verdes sobre fundo amarelado), sem redu\u00E7\u00E3o marcante do tamanho da folha, sugerindo defici\u00EAncia de ferro."
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2)",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "75%",
+        "features": "Presen\u00E7a de \u00E1reas amarronzadas e necr\u00F3ticas, irregulares, com aspecto de minas/galerias internas no limbo; redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica e pontos de ressecamento compat\u00EDveis com ataque do bicho\u2011mineiro."
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%",
+        "features": "Pequenas les\u00F5es circulares com colora\u00E7\u00E3o amarelo\u2011alaranjada e progress\u00E3o para necrose; padr\u00E3o pontual compat\u00EDvel com uredosporos na face inferior das folhas."
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "40%",
+        "features": "Clorose internerval em folhas mais novas, com rede de nervuras finas permanecendo verde sobre fundo amarelado e tend\u00EAncia a branqueamento em \u00E1reas mais severas, sem redu\u00E7\u00E3o marcante do tamanho foliar."
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2)",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%",
+        "features": "Manchas amarronzadas irregulares formando minas internas (galerias) com \u00E1reas secas e necrosadas na l\u00E2mina foliar, reduzindo a \u00E1rea fotossint\u00E9tica."
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%",
+        "features": "Presen\u00E7a de pequenas p\u00FAstulas circulares alaranjadas na face inferior da folha, com amarelecimento ao redor e evolu\u00E7\u00E3o para necrose do tecido."
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "55%",
+        "features": "Bronzeamento difuso da folha com manchas clor\u00F3ticas anelares/alongadas e poss\u00EDvel aspecto de poeira/teia na superf\u00EDcie, t\u00EDpico de ataque de \u00E1caro."
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2)",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%",
+        "features": "Presen\u00E7a de minas (galerias) irregulares que evoluem para \u00E1reas amarronzadas e secas no limbo foliar, com necrose central e redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica; manchas de contorno variado e aspecto de tecido morto."
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%",
+        "features": "Pequenas p\u00FAstulas circulares de cor amarelo-alaranjada, principalmente na face inferior das folhas, com halos amarelados e, em est\u00E1gios avan\u00E7ados, pontos de necrose no tecido ao redor."
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "40%",
+        "features": "Manchas escuras mais circulares com poss\u00EDveis halos conc\u00EAntricos; em algumas \u00E1reas, rachaduras/perfura\u00E7\u00F5es e leve deforma\u00E7\u00E3o do limbo foliar, compat\u00EDveis com infec\u00E7\u00E3o por Phoma."
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2)",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%",
+        "features": "Presen\u00E7a de pequenas manchas circulares alaranjadas com aspecto pulverulento na face inferior da folha e halo clor\u00F3tico ao redor; em alguns pontos j\u00E1 h\u00E1 in\u00EDcio de tecido necrosado, compat\u00EDvel com ferrugem-do-cafeeiro."
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "65%",
+        "features": "Manchas amarronzadas irregulares, \u00E1reas internervais ressecadas e necrosadas sugerindo galerias (minas) do inseto, reduzindo a \u00E1rea fotossint\u00E9tica."
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "55%",
+        "features": "Aspecto de bronzeamento com pequenas manchas clor\u00F3ticas e sujidade aderida; poss\u00EDvel presen\u00E7a de teia fina na face superior, padr\u00E3o t\u00EDpico de ataque de \u00E1caro-vermelho."
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2)",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%",
+        "features": "Manchas amarronzadas irregulares e \u00E1reas secas/necrosadas no limbo, t\u00EDpicas de minas internas; redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica e ind\u00EDcio de desfolha."
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%",
+        "features": "Pequenas les\u00F5es circulares com tonalidade amarelo-alaranjada, algumas com centro necrosado, compat\u00EDveis com p\u00FAstulas na face inferior da folha."
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "45%",
+        "features": "Clorose internerval em folhas novas (rede de nervuras finas verdes sobre fundo amarelado), com tend\u00EAncia a branqueamento em \u00E1reas mais severas."
+      }
+    ]
   }
 ]

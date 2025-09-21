@@ -7,43 +7,45 @@ namespace Application.Module.IA
     {
         Task Init();
         string loadPrompt(string path);
-        List<Image> loadImages(string path);
+        List<IImage> loadImages(string path);
         void generateJSON(string path, string fileName, JsonArray json);
 
     }
 
     public class Agente : IAgente
     {
-        public List<Image> Images { get; set; } = new();
+        public List<IImage> Images { get; set; } = [];
         private readonly IGPT _GPT = new GPT();
         private readonly IMetrics _Metrics = new Metrics();
 
         public async Task Init()
         {
-            var path_prompt = "C:/Users/carlos/Documents/GITHUB/Gestao-Agricola/HandsOn-Back/src/Application/module/IA/Prompt.txt";
-            var prompt = loadPrompt(path_prompt);
+            // var path_prompt = "C:/Users/carlos/Documents/GITHUB/Gestao-Agricola/HandsOn-Back/src/Application/module/IA/Prompt.txt";
+            // var prompt = loadPrompt(path_prompt);
 
-            var path_images = "C:/Users/carlos/Documents/GITHUB/Gestao-Agricola/HandsOn-Back/src/Application/module/IA/images/Ferrugem/ferrugem (2).jpeg";
-            var imagesReq = loadImages(path_images);
-            var fileName = Image.GetFileName(path_images);
+            // var path_images = "C:/Users/carlos/Documents/GITHUB/Gestao-Agricola/HandsOn-Back/src/Application/module/IA/images/Ferrugem/ferrugem (2).jpeg";
+            // var imagesReq = loadImages(path_images);
+            // var fileName = Image.GetFileName(path_images);
 
-            var payload = _GPT.GeneratePayload(prompt, imagesReq);
-            var response = await _GPT.Request(payload);
+            // var payload = _GPT.GeneratePayload(prompt, imagesReq);
+            // var response = await _GPT.Request(payload);
 
-            // Console.WriteLine(response);
+            // // Console.WriteLine(response);
             var path_diagnostico = "C:/Users/carlos/Documents/GITHUB/Gestao-Agricola/HandsOn-Back/src/Application/module/IA/diagnostics.json";
-            var json = JsonNode.Parse(response)?.AsArray();
-            Console.WriteLine(json);
+            // var json = JsonNode.Parse(response)?.AsArray();
+            // Console.WriteLine(json);
 
-            if (json == null) return;
+            // if (json == null) return;
 
-            generateJSON(path_diagnostico, fileName, json);
+            // generateJSON(path_diagnostico, fileName, json);
 
             var existingDiag = File.ReadAllText(path_diagnostico);
             var existingArray = JsonNode.Parse(existingDiag)?.AsArray();
             if (existingArray == null) return;
             var report = _Metrics.GenerateReports(existingArray);
             Console.WriteLine(report);
+
+            _Metrics.GenerateCharts(report);
 
         }
 
@@ -53,7 +55,7 @@ namespace Application.Module.IA
             return sr.ReadToEnd();
         }
 
-        public List<Image> loadImages(string path)
+        public List<IImage> loadImages(string path)
         {
             var image = new Image(path, "jpeg");
             Images.Add(image);
