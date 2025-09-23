@@ -8,7 +8,7 @@ export interface Diagnosis {
     photoUrl: string;
     date: Date;
     status: string | number;
-    result: string;
+    result: [{ imageBook: string; similarity: number }];
     createdAt: Date;
     updatedAt: Date;
     locationShapes?: any;

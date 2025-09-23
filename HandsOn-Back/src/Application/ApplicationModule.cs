@@ -35,6 +35,7 @@ namespace Application
                 client.BaseAddress = new Uri(baseUrl);
                 client.Timeout = TimeSpan.FromMinutes(10);
             });
+            services.AddScoped<IDiseaseService, DiseaseService>();
 
             return services;
         }
