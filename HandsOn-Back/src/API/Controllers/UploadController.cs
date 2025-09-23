@@ -32,10 +32,10 @@ namespace API.Controllers
             });
         }
 
-        [HttpGet("agente")]
-        public async Task<IActionResult> Agente()
+        [HttpGet("Classifier")]
+        public async Task<IActionResult> Classifier()
         {
-            await _uploadServices.RunAgente();
+            await _uploadServices.RunClassifier();
             return Ok(new
             {
                 Message = "Agente executed successfully",

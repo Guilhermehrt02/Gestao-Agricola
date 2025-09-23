@@ -3,7 +3,6 @@
     "id": "def_magnesio",
     "response": [
       {
-        "id": "927154",
         "diagnostic": "BICHO-MINEIRO",
         "severity": "65%",
         "features": "Manchas irregulares amarronzadas e necr\u00F3ticas no limbo, aspecto de tecido \u201Cpapir\u00E1ceo\u201D nas \u00E1reas minadas e galerias internas t\u00EDpicas, reduzindo a \u00E1rea fotossint\u00E9tica"
@@ -26,19 +25,16 @@
     "id": "def_magnesio",
     "response": [
       {
-        "id": "834275",
         "diagnostic": "BICHO-MINEIRO",
         "severity": "85%",
         "features": "Manchas amarronzadas irregulares e \u00E1reas necr\u00F3ticas nas l\u00E2minas; aspecto de \u2018minas\u2019 internas que ressecam o tecido e reduzem a \u00E1rea fotossint\u00E9tica, compat\u00EDvel com galerias do bicho\u2011mineiro."
       },
       {
-        "id": "521903",
         "diagnostic": "FERRUGEM",
         "severity": "70%",
         "features": "Presen\u00E7a de pequenas les\u00F5es circulares amarelo\u2011alaranjadas com aspecto pulverulento (uredosporos), t\u00EDpicas na face inferior, sugerindo ferrugem do cafeeiro."
       },
       {
-        "id": "167488",
         "diagnostic": "MAGN\u00C9SIO",
         "severity": "55%",
         "features": "Clorose internerval mais evidente em folhas mais velhas, com reticulado grosso (nervuras permanecem verdes), padr\u00E3o compat\u00EDvel com defici\u00EAncia de magn\u00E9sio."
@@ -49,19 +45,16 @@
     "id": "def_magnesio",
     "response": [
       {
-        "id": "847291",
         "diagnostic": "BICHO-MINEIRO",
         "severity": "82%",
         "features": "Manchas amarronzadas e irregulares com \u00E1reas internas necrosadas e ressecadas, padr\u00E3o de mina no limbo e redu\u00E7\u00E3o vis\u00EDvel da \u00E1rea fotossint\u00E9tica"
       },
       {
-        "id": "563084",
         "diagnostic": "FERRUGEM",
         "severity": "64%",
         "features": "Pequenas p\u00FAstulas/manchas circulares alaranjadas com halo amarelado, focos na face inferior e pontos de tecido necrosado no centro das les\u00F5es"
       },
       {
-        "id": "190376",
         "diagnostic": "ACARO",
         "severity": "40%",
         "features": "Bronzeamento difuso do limbo, aspecto de sujeira com teia fina na face superior e pequenas manchas clor\u00F3ticas alinhadas \u00E0s nervuras"
@@ -72,19 +65,16 @@
     "id": "def_magnesio",
     "response": [
       {
-        "id": "583204",
         "diagnostic": "BICHO-MINEIRO",
         "severity": "65%",
         "features": "Manchas irregulares amarronzadas com aspecto seco, \u00E1reas foliares minadas (galerias internas) e focos de necrose que reduzem a \u00E1rea fotossint\u00E9tica."
       },
       {
-        "id": "917532",
         "diagnostic": "FERRUGEM",
         "severity": "55%",
         "features": "Pequenas p\u00FAstulas/alv\u00E9olos alaranjados com halo amarelado e pontos de necrose associados, padr\u00E3o compat\u00EDvel com uredosporos na face inferior da folha."
       },
       {
-        "id": "264189",
         "diagnostic": "FERRO",
         "severity": "40%",
         "features": "Clorose internerval em folhas mais novas, com nervuras finas permanecendo verdes sobre fundo amarelado e, em \u00E1reas, tend\u00EAncia a branqueamento sem redu\u00E7\u00E3o marcada do tamanho."
@@ -95,19 +85,16 @@
     "id": "def_magnesio",
     "response": [
       {
-        "id": "834275",
         "diagnostic": "BICHO-MINEIRO",
         "severity": "78%",
         "features": "Manchas amarronzadas irregulares com \u00E1reas necr\u00F3ticas e ressecadas, padr\u00E3o de minas (galerias internas) reduzindo a \u00E1rea fotossint\u00E9tica e favorecendo queda de folhas"
       },
       {
-        "id": "591203",
         "diagnostic": "FERRUGEM",
         "severity": "62%",
         "features": "Pequenas les\u00F5es circulares amarelo-alaranjadas, aspecto pulverulento sugerindo uredosporos na face inferior e in\u00EDcio de necrose no centro das p\u00FAstulas"
       },
       {
-        "id": "407118",
         "diagnostic": "ACARO",
         "severity": "45%",
         "features": "Folhas com aspecto opaco/bronzeado e sujo, presen\u00E7a prov\u00E1vel de teia fina e manchas clor\u00F3ticas anelares acompanhando nervuras"

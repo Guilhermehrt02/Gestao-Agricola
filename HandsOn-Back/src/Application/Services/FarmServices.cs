@@ -22,7 +22,7 @@ namespace Application.Services
         public async Task<IEnumerable<FarmViewModel>> GetAllByUserIdAsync(ClaimsPrincipal actionUser)
         {
             var userId = Guid.Parse(actionUser.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NotFoundException("User not found"));
-            
+
             var farms = await _farmRepository.GetAllByUserIdAsync(userId);
             return farms.Select(FarmViewModel.FromEntity);
         }
@@ -41,7 +41,7 @@ namespace Application.Services
             };
 
             await _farmRepository.AddAsync(farm);
-            
+
             await _userFarmServices.CreateAsync(new CreateUserFarmInputModel
             {
                 FarmId = farm.Id,

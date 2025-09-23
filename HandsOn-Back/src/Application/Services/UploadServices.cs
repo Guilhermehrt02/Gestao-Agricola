@@ -1,9 +1,10 @@
+using Application.Module.IA;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Services
 {
-    public class UploadServices(IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor) : IUploadServices
+    public class UploadServices(IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor, IClassifier classifier) : IUploadServices
     {
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -51,10 +52,13 @@ namespace Application.Services
             return Task.CompletedTask;
         }
 
-        public async Task RunAgente()
+        public async Task RunClassifier()
         {
-            var agente = new Module.IA.Agente();
-            await agente.Init();
+            var path = "src/Application/module/IA/images/Ferrugem/ferrugem (2).jpeg";
+            var type = "jpg";
+
+            var image = new Image(path, type);
+            await classifier.SendImageIA(image);
         }
     }
 }

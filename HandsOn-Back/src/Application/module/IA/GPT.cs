@@ -6,19 +6,21 @@ namespace Application.Module.IA
     public interface IGPT
     {
         Task<string> Request(List<ChatMessage> payload);
-        List<ChatMessage> GeneratePayload(string prompt, List<Image> images);
+        List<ChatMessage> GeneratePayload(string prompt, Image images);
     }
 
     public class GPT : IGPT
     {
         private readonly OpenAIClient client;
 
+        private const string apiKey = "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";
+
         public GPT()
         {
-            client = new OpenAIClient("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");
+            client = new OpenAIClient(apiKey);
         }
 
-        public List<ChatMessage> GeneratePayload(string prompt, List<Image> images)
+        public List<ChatMessage> GeneratePayload(string prompt, Image image)
         {
             var messages = new List<ChatMessage>
             {
@@ -30,20 +32,12 @@ namespace Application.Module.IA
                 ChatMessageContentPart.CreateTextPart(prompt)
             };
 
-            // Adiciona imagens se fornecidas
-            if (images != null && images.Count > 0)
-            {
-                foreach (var image in images)
-                {
-                    var imageUrl = $"data:image/{image.Type};base64,{image.EncodeBase64(image.Data)}";
-                    userContentParts.Add(
-                        ChatMessageContentPart.CreateTextPart(
-                            $"url: {imageUrl}"
-                        )
-                    );
-                }
-            }
-
+            var imageUrl = $"data:image/{image.Type};base64,{image.EncodeBase64()}";
+            userContentParts.Add(
+                ChatMessageContentPart.CreateTextPart(
+                    $"url: {imageUrl}"
+                )
+            );
             messages.Add(new UserChatMessage(userContentParts));
             return messages;
         }

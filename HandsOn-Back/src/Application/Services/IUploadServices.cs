@@ -6,6 +6,6 @@ namespace Application.Services
     {
         Task<string> UploadFileAsync(IFormFile file);
         Task DeleteFileAsync(string filePath);
-        Task RunAgente();
+        Task RunClassifier();
     }
 }
