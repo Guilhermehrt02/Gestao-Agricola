@@ -1,4 +1,4 @@
-import { Component, OnInit, model } from '@angular/core';
+import { Component, model, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImageCompareModule } from 'primeng/imagecompare';
 @Component({
@@ -7,29 +7,15 @@ import { ImageCompareModule } from 'primeng/imagecompare';
   templateUrl: './imageCompare.html',
   styleUrl: './imageCompare.css',
 })
-export class ImageCompare implements OnInit{
-  images = model<any[]>([]);
+export class ImageCompare implements OnChanges{
+  @Input() originalImageUrl = '';
+  @Input() diseaseImageUrl = '';
+  images : { itemImageSrc: string; title: string, alt: string }[] = [];
 
-  ngOnInit() {
-    this.images.set([
-      {
-        itemImageSrc: 'images/user_image_396.jpg',
-        thumbnailImageSrc: 'images/user_image_396.jpg',
-        alt: 'Descrição 1',
-        title: 'Imagem 1',
-      },
-      {
-        itemImageSrc: 'images/acaro_leprose (2).jpg',
-        thumbnailImageSrc: 'images/acaro_leprose (2).jpg',
-        alt: 'Descrição 2',
-        title: 'Imagem 2',
-      },
-      {
-        itemImageSrc: 'images/acaro_leprose_01.jpg',
-        thumbnailImageSrc: 'images/acaro_leprose_01.jpg',
-        alt: 'Descrição 2',
-        title: 'Imagem 2',
-      },
-    ]);
+  ngOnChanges() {
+    this.images = [
+      { itemImageSrc: this.originalImageUrl, title: 'User Image', alt: 'User Image' },
+      { itemImageSrc: this.diseaseImageUrl, title: 'Reference Image', alt: 'Reference Image' }
+    ];
   }
 }

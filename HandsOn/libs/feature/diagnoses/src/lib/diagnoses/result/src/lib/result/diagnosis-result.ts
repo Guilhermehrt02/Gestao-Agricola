@@ -32,6 +32,9 @@ export class DiagnosisResult implements OnInit, OnDestroy {
   title = "Resultado do Diagnóstico";
   description = "Veja abaixo o resultado do diagnóstico realizado para a sua lavoura.";
 
+  mainResult?: any;
+  otherResults: any[] = [];
+
   constructor(
     private route: ActivatedRoute,
     public facade: DiagnosisResultFacade
@@ -50,6 +53,8 @@ export class DiagnosisResult implements OnInit, OnDestroy {
       if (!diagnosis) return;
 
       this.diagnosis = diagnosis;
+      this.mainResult = diagnosis.result.imageSimilarities[0];
+      this.otherResults = diagnosis.result.imageSimilarities.slice(1);
     });
 
     this.facade.loading$.subscribe((loading) => {
