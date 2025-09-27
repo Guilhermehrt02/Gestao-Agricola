@@ -17,6 +17,25 @@ namespace Application.Module.IA
 
         public List<ChatMessage> GeneratePayload(string prompt, Image image)
         {
+            // var messages = new List<ChatMessage>
+            // {
+            //     new SystemChatMessage("Analise as imagens e retorne o resultado conforme as instruções.")
+            // };
+
+            // var userContentParts = new List<ChatMessageContentPart>
+            // {
+            //     ChatMessageContentPart.CreateTextPart(prompt)
+            // };
+
+            // var imageUrl = $"data:image/{image.Type};base64,{image.EncodeBase64()}";
+            // userContentParts.Add(
+            //     ChatMessageContentPart.CreateTextPart(
+            //         $"url: {imageUrl}"
+            //     )
+            // );
+            // messages.Add(new UserChatMessage(userContentParts));
+            // return messages;
+
             var messages = new List<ChatMessage>
             {
                 new SystemChatMessage("Analise as imagens e retorne o resultado conforme as instruções.")
@@ -24,15 +43,14 @@ namespace Application.Module.IA
 
             var userContentParts = new List<ChatMessageContentPart>
             {
-                ChatMessageContentPart.CreateTextPart(prompt)
+                ChatMessageContentPart.CreateTextPart(prompt),
+                ChatMessageContentPart.CreateImagePart(
+                    BinaryData.FromBytes(GetBytesFromFormFile(image.ImageBuffer)),
+                    image.ImageBuffer.ContentType,
+                    imageDetailLevel: "high"
+                )
             };
 
-            var imageUrl = $"data:image/{image.Type};base64,{image.EncodeBase64()}";
-            userContentParts.Add(
-                ChatMessageContentPart.CreateTextPart(
-                    $"url: {imageUrl}"
-                )
-            );
             messages.Add(new UserChatMessage(userContentParts));
             return messages;
         }
@@ -54,6 +72,16 @@ namespace Application.Module.IA
             catch (Exception ex)
             {
                 throw new Exception("Erro ao fazer a requisição: " + ex.Message, ex);
+            }
+
+        }
+
+        private static byte[] GetBytesFromFormFile(Microsoft.AspNetCore.Http.IFormFile file)
+        {
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                return ms.ToArray();
             }
         }
     }

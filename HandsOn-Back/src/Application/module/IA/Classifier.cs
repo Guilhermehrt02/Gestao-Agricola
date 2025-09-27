@@ -37,12 +37,11 @@ namespace Application.Module.IA
             // var responseJsonGPT = JsonNode.Parse(response)?.AsArray();
             // if (responseJsonGPT == null) return null;
 
-            // return responseJsonGPT;
 
             // GenerateJSON(image.GetFileName(), responseJsonGPT);
-            GenerateMetrics();
-
             // return responseJsonGPT;
+
+            GenerateMetrics();
             return null;
         }
 
