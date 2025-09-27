@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Services;
+using Application.Module.IA;
 
 namespace Application
 {
@@ -35,6 +36,9 @@ namespace Application
                 client.BaseAddress = new Uri(baseUrl);
                 client.Timeout = TimeSpan.FromMinutes(10);
             });
+
+            services.AddScoped<IClassifier, Classifier>();
+            services.AddScoped<IAIProvider, GPT>();
 
             return services;
         }

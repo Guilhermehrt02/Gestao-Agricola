@@ -1,303 +1,1803 @@
 [
   {
-    "id": "def_magnesio",
+    "id": "fumagina.jpeg",
     "response": [
       {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "65%",
-        "features": "Manchas irregulares amarronzadas e necr\u00F3ticas no limbo, aspecto de tecido \u201Cpapir\u00E1ceo\u201D nas \u00E1reas minadas e galerias internas t\u00EDpicas, reduzindo a \u00E1rea fotossint\u00E9tica"
-      },
-      {
-        "id": "572019",
         "diagnostic": "FERRUGEM",
-        "severity": "45%",
-        "features": "Pequenas les\u00F5es circulares com colora\u00E7\u00E3o amarelo\u2011alaranjada e centro pulverulento na face inferior, com halo clor\u00F3tico e evolu\u00E7\u00E3o para necrose do tecido"
+        "severity": "88%"
       },
-      {
-        "id": "318746",
-        "diagnostic": "DEFICI\u00CANCIA DE MAGN\u00C9SIO",
-        "severity": "30%",
-        "features": "Clorose internerval em folhas mais velhas com nervuras permanecendo verdes (reticulado grosso), padr\u00E3o compat\u00EDvel com defici\u00EAncia de Mg"
-      }
-    ]
-  },
-  {
-    "id": "def_magnesio",
-    "response": [
       {
         "diagnostic": "BICHO-MINEIRO",
-        "severity": "85%",
-        "features": "Manchas amarronzadas irregulares e \u00E1reas necr\u00F3ticas nas l\u00E2minas; aspecto de \u2018minas\u2019 internas que ressecam o tecido e reduzem a \u00E1rea fotossint\u00E9tica, compat\u00EDvel com galerias do bicho\u2011mineiro."
-      },
-      {
-        "diagnostic": "FERRUGEM",
-        "severity": "70%",
-        "features": "Presen\u00E7a de pequenas les\u00F5es circulares amarelo\u2011alaranjadas com aspecto pulverulento (uredosporos), t\u00EDpicas na face inferior, sugerindo ferrugem do cafeeiro."
-      },
-      {
-        "diagnostic": "MAGN\u00C9SIO",
-        "severity": "55%",
-        "features": "Clorose internerval mais evidente em folhas mais velhas, com reticulado grosso (nervuras permanecem verdes), padr\u00E3o compat\u00EDvel com defici\u00EAncia de magn\u00E9sio."
-      }
-    ]
-  },
-  {
-    "id": "def_magnesio",
-    "response": [
-      {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "82%",
-        "features": "Manchas amarronzadas e irregulares com \u00E1reas internas necrosadas e ressecadas, padr\u00E3o de mina no limbo e redu\u00E7\u00E3o vis\u00EDvel da \u00E1rea fotossint\u00E9tica"
-      },
-      {
-        "diagnostic": "FERRUGEM",
-        "severity": "64%",
-        "features": "Pequenas p\u00FAstulas/manchas circulares alaranjadas com halo amarelado, focos na face inferior e pontos de tecido necrosado no centro das les\u00F5es"
-      },
-      {
-        "diagnostic": "ACARO",
-        "severity": "40%",
-        "features": "Bronzeamento difuso do limbo, aspecto de sujeira com teia fina na face superior e pequenas manchas clor\u00F3ticas alinhadas \u00E0s nervuras"
-      }
-    ]
-  },
-  {
-    "id": "def_magnesio",
-    "response": [
-      {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "65%",
-        "features": "Manchas irregulares amarronzadas com aspecto seco, \u00E1reas foliares minadas (galerias internas) e focos de necrose que reduzem a \u00E1rea fotossint\u00E9tica."
-      },
-      {
-        "diagnostic": "FERRUGEM",
-        "severity": "55%",
-        "features": "Pequenas p\u00FAstulas/alv\u00E9olos alaranjados com halo amarelado e pontos de necrose associados, padr\u00E3o compat\u00EDvel com uredosporos na face inferior da folha."
+        "severity": "75%"
       },
       {
         "diagnostic": "FERRO",
-        "severity": "40%",
-        "features": "Clorose internerval em folhas mais novas, com nervuras finas permanecendo verdes sobre fundo amarelado e, em \u00E1reas, tend\u00EAncia a branqueamento sem redu\u00E7\u00E3o marcada do tamanho."
+        "severity": "60%"
       }
     ]
   },
   {
-    "id": "def_magnesio",
+    "id": "variagacao.jpeg",
     "response": [
       {
         "diagnostic": "BICHO-MINEIRO",
-        "severity": "78%",
-        "features": "Manchas amarronzadas irregulares com \u00E1reas necr\u00F3ticas e ressecadas, padr\u00E3o de minas (galerias internas) reduzindo a \u00E1rea fotossint\u00E9tica e favorecendo queda de folhas"
+        "severity": "70%"
       },
       {
         "diagnostic": "FERRUGEM",
-        "severity": "62%",
-        "features": "Pequenas les\u00F5es circulares amarelo-alaranjadas, aspecto pulverulento sugerindo uredosporos na face inferior e in\u00EDcio de necrose no centro das p\u00FAstulas"
+        "severity": "55%"
       },
       {
-        "diagnostic": "ACARO",
-        "severity": "45%",
-        "features": "Folhas com aspecto opaco/bronzeado e sujo, presen\u00E7a prov\u00E1vel de teia fina e manchas clor\u00F3ticas anelares acompanhando nervuras"
+        "diagnostic": "FERRO",
+        "severity": "40%"
       }
     ]
   },
   {
-    "id": "ferrugem (2)",
+    "id": "coleoptero.jpeg",
     "response": [
       {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
         "diagnostic": "FERRUGEM",
-        "severity": "72%",
-        "features": "Pequenas manchas circulares amarelo\u2011alaranjadas com aspecto pulverulento (uredosporos) na face inferior, evoluindo para necrose do tecido."
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "intoxicacao_glifosato (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "60%"
+      }
+    ]
+  },
+  {
+    "id": "intoxicacao_glifosato.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "bicho_Mineiro (2).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "bicho_mineiro (3).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "bicho_mineiro (4).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "92%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "68%"
       },
       {
         "diagnostic": "PHOMA",
-        "severity": "55%",
-        "features": "Manchas circulares escuras, algumas com halos conc\u00EAntricos; bordas da folha com poss\u00EDvel rachamento/deforma\u00E7\u00E3o e perfura\u00E7\u00F5es."
-      },
-      {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "48%",
-        "features": "Manchas amarronzadas irregulares e \u00E1reas necr\u00F3ticas internas t\u00EDpicas de minas (galerias), reduzindo a \u00E1rea fotossint\u00E9tica."
+        "severity": "54%"
       }
     ]
   },
   {
-    "id": "ferrugem (2)",
+    "id": "bicho_mineiro.jpg",
     "response": [
       {
         "diagnostic": "BICHO-MINEIRO",
-        "severity": "88%",
-        "features": "Manchas amarronzadas irregulares, \u00E1reas necr\u00F3ticas tipo \u201Cjanelas\u201D e galerias internas no limbo; redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica compat\u00EDvel com ataque de larvas minadoras."
+        "severity": "85%"
       },
       {
         "diagnostic": "FERRUGEM",
-        "severity": "63%",
-        "features": "Pequenas p\u00FAstulas circulares alaranjadas com halo amarelado e pontos de necrose no tecido, t\u00EDpicas de uredosporos na face inferior das folhas."
+        "severity": "60%"
       },
       {
         "diagnostic": "ACARO",
-        "severity": "42%",
-        "features": "Bronzeamento difuso da l\u00E2mina, aspecto de poeira/teia na face superior e manchas clor\u00F3ticas alongadas acompanhando nervuras, sugerindo a\u00E7\u00E3o de \u00E1caros."
+        "severity": "45%"
       }
     ]
   },
   {
-    "id": "ferrugem (2)",
+    "id": "bicho_mineiro_01 (2).jpg",
     "response": [
       {
         "diagnostic": "BICHO-MINEIRO",
-        "severity": "85%",
-        "features": "Folhas com minas irregulares de cor pardo\u2011amarelada que evoluem para \u00E1reas secas e necrosadas, afinando o limbo e reduzindo a \u00E1rea fotossint\u00E9tica."
-      },
-      {
-        "diagnostic": "FERRUGEM",
-        "severity": "60%",
-        "features": "Pequenas manchas circulares alaranjadas na face inferior das folhas, com necrose do tecido ao redor em est\u00E1gios mais avan\u00E7ados."
-      },
-      {
-        "diagnostic": "ACARO",
-        "severity": "45%",
-        "features": "Bronzeamento difuso do limbo, aspecto de sujeira com poeira aderida e presen\u00E7a de teia fina; manchas clor\u00F3ticas alongadas acompanhando nervuras."
-      }
-    ]
-  },
-  {
-    "id": "ferrugem (2)",
-    "response": [
-      {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "85%",
-        "features": "Manchas amarronzadas irregulares e \u00E1reas necrosadas em forma de minas; tecido ressecado e redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica."
-      },
-      {
-        "diagnostic": "FERRUGEM",
-        "severity": "70%",
-        "features": "Pequenas manchas circulares amarelo\u2011alaranjadas com aspecto pulverulento; em alguns pontos o tecido ao redor encontra\u2011se necrosado."
+        "severity": "85%"
       },
       {
         "diagnostic": "PHOMA",
-        "severity": "55%",
-        "features": "Manchas escuras circulares com poss\u00EDveis halos conc\u00EAntricos e presen\u00E7a de rachaduras/perfura\u00E7\u00F5es nas bordas das folhas."
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "45%"
       }
     ]
   },
   {
-    "id": "ferrugem (2)",
+    "id": "bicho_mineiro_01.jpg",
     "response": [
       {
         "diagnostic": "BICHO-MINEIRO",
-        "severity": "60%",
-        "features": "Manchas amarronzadas irregulares com \u00E1reas secas e necrosadas, aspecto de minas/galerias no limbo foliar e redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica, compat\u00EDvel com ataque de bicho\u2011mineiro."
+        "severity": "85%"
       },
       {
         "diagnostic": "FERRUGEM",
-        "severity": "55%",
-        "features": "Pequenas p\u00FAstulas/manchas circulares de cor amarelo\u2011alaranjada, com halo amarelado e evolu\u00E7\u00E3o para necrose, t\u00EDpicas de uredosporos na face inferior da folha."
-      },
-      {
-        "diagnostic": "FERRO",
-        "severity": "35%",
-        "features": "Clorose internerval em folhas novas (reticulado fino com nervuras verdes sobre fundo amarelado), sem redu\u00E7\u00E3o marcante do tamanho da folha, sugerindo defici\u00EAncia de ferro."
-      }
-    ]
-  },
-  {
-    "id": "ferrugem (2)",
-    "response": [
-      {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "75%",
-        "features": "Presen\u00E7a de \u00E1reas amarronzadas e necr\u00F3ticas, irregulares, com aspecto de minas/galerias internas no limbo; redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica e pontos de ressecamento compat\u00EDveis com ataque do bicho\u2011mineiro."
-      },
-      {
-        "diagnostic": "FERRUGEM",
-        "severity": "60%",
-        "features": "Pequenas les\u00F5es circulares com colora\u00E7\u00E3o amarelo\u2011alaranjada e progress\u00E3o para necrose; padr\u00E3o pontual compat\u00EDvel com uredosporos na face inferior das folhas."
-      },
-      {
-        "diagnostic": "FERRO",
-        "severity": "40%",
-        "features": "Clorose internerval em folhas mais novas, com rede de nervuras finas permanecendo verde sobre fundo amarelado e tend\u00EAncia a branqueamento em \u00E1reas mais severas, sem redu\u00E7\u00E3o marcante do tamanho foliar."
-      }
-    ]
-  },
-  {
-    "id": "ferrugem (2)",
-    "response": [
-      {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "85%",
-        "features": "Manchas amarronzadas irregulares formando minas internas (galerias) com \u00E1reas secas e necrosadas na l\u00E2mina foliar, reduzindo a \u00E1rea fotossint\u00E9tica."
-      },
-      {
-        "diagnostic": "FERRUGEM",
-        "severity": "70%",
-        "features": "Presen\u00E7a de pequenas p\u00FAstulas circulares alaranjadas na face inferior da folha, com amarelecimento ao redor e evolu\u00E7\u00E3o para necrose do tecido."
-      },
-      {
-        "diagnostic": "ACARO",
-        "severity": "55%",
-        "features": "Bronzeamento difuso da folha com manchas clor\u00F3ticas anelares/alongadas e poss\u00EDvel aspecto de poeira/teia na superf\u00EDcie, t\u00EDpico de ataque de \u00E1caro."
-      }
-    ]
-  },
-  {
-    "id": "ferrugem (2)",
-    "response": [
-      {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "70%",
-        "features": "Presen\u00E7a de minas (galerias) irregulares que evoluem para \u00E1reas amarronzadas e secas no limbo foliar, com necrose central e redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica; manchas de contorno variado e aspecto de tecido morto."
-      },
-      {
-        "diagnostic": "FERRUGEM",
-        "severity": "55%",
-        "features": "Pequenas p\u00FAstulas circulares de cor amarelo-alaranjada, principalmente na face inferior das folhas, com halos amarelados e, em est\u00E1gios avan\u00E7ados, pontos de necrose no tecido ao redor."
+        "severity": "60%"
       },
       {
         "diagnostic": "PHOMA",
-        "severity": "40%",
-        "features": "Manchas escuras mais circulares com poss\u00EDveis halos conc\u00EAntricos; em algumas \u00E1reas, rachaduras/perfura\u00E7\u00F5es e leve deforma\u00E7\u00E3o do limbo foliar, compat\u00EDveis com infec\u00E7\u00E3o por Phoma."
+        "severity": "45%"
       }
     ]
   },
   {
-    "id": "ferrugem (2)",
+    "id": "bicho_mineiro_02.jpg",
     "response": [
       {
-        "diagnostic": "FERRUGEM",
-        "severity": "70%",
-        "features": "Presen\u00E7a de pequenas manchas circulares alaranjadas com aspecto pulverulento na face inferior da folha e halo clor\u00F3tico ao redor; em alguns pontos j\u00E1 h\u00E1 in\u00EDcio de tecido necrosado, compat\u00EDvel com ferrugem-do-cafeeiro."
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
       },
       {
-        "diagnostic": "BICHO-MINEIRO",
-        "severity": "65%",
-        "features": "Manchas amarronzadas irregulares, \u00E1reas internervais ressecadas e necrosadas sugerindo galerias (minas) do inseto, reduzindo a \u00E1rea fotossint\u00E9tica."
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
       },
       {
         "diagnostic": "ACARO",
-        "severity": "55%",
-        "features": "Aspecto de bronzeamento com pequenas manchas clor\u00F3ticas e sujidade aderida; poss\u00EDvel presen\u00E7a de teia fina na face superior, padr\u00E3o t\u00EDpico de ataque de \u00E1caro-vermelho."
+        "severity": "55%"
       }
     ]
   },
   {
-    "id": "ferrugem (2)",
+    "id": "bicho_mineiro_03.jpg",
     "response": [
       {
         "diagnostic": "BICHO-MINEIRO",
-        "severity": "80%",
-        "features": "Manchas amarronzadas irregulares e \u00E1reas secas/necrosadas no limbo, t\u00EDpicas de minas internas; redu\u00E7\u00E3o da \u00E1rea fotossint\u00E9tica e ind\u00EDcio de desfolha."
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "30%"
       },
       {
         "diagnostic": "FERRUGEM",
-        "severity": "70%",
-        "features": "Pequenas les\u00F5es circulares com tonalidade amarelo-alaranjada, algumas com centro necrosado, compat\u00EDveis com p\u00FAstulas na face inferior da folha."
+        "severity": "10%"
+      }
+    ]
+  },
+  {
+    "id": "bicho_mineiro_04.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "45%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "40%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "30%"
+      }
+    ]
+  },
+  {
+    "id": "bicho_mineiro_06.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "75%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
       },
       {
         "diagnostic": "FERRO",
-        "severity": "45%",
-        "features": "Clorose internerval em folhas novas (rede de nervuras finas verdes sobre fundo amarelado), com tend\u00EAncia a branqueamento em \u00E1reas mais severas."
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "bicho_mineiro_10.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "62%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "52%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "crisalida.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "crisalida_01.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "82%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "58%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "crisalida_05.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "87%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "58%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "41%"
+      }
+    ]
+  },
+  {
+    "id": "crisalida_06.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "65%"
+      }
+    ]
+  },
+  {
+    "id": "crisalida_07.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "def_magnesio (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "45%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "30%"
+      }
+    ]
+  },
+  {
+    "id": "def_magnesio.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "def_boro (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "def_boro (3).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "45%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "def_boro (4).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "def_boro (5).jpeg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "30%"
+      }
+    ]
+  },
+  {
+    "id": "def_boro (6).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "def_boro (7).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "MANGANES",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "def_boro (8).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "def_boro.jpeg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "MANGANES",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "def_cobre (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "def_cobre (3).jpeg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "0%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "0%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "0%"
+      }
+    ]
+  },
+  {
+    "id": "def_cobre.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "30%"
+      }
+    ]
+  },
+  {
+    "id": "def_ferro (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "def_ferro.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "88%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "def_manganes.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "50%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "def_zinco (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "40%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "30%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "25%"
+      }
+    ]
+  },
+  {
+    "id": "def_zinco.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "88%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "ANTRACNOSE",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "antraquinose (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "78%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "58%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "antraquinose (3).jpeg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "88%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "72%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "64%"
+      }
+    ]
+  },
+  {
+    "id": "antraquinose (4).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "antraquinose.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "88%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "62%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "48%"
+      }
+    ]
+  },
+  {
+    "id": "ascochyta (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "ascochyta.jpeg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "50%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria (3).jpeg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria (4).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria (5).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria (6).jpeg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "70%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria (7).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "45%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria (8).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria (9).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "62%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "48%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "bacteria.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "65%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (2).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (3).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "50%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (3).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (4).jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "60%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (4).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "78%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "62%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "44%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (5).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "75%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (6).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "75%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (7).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "68%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (8).jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem (9).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem_01.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "40%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "25%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem_02.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "75%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem_05.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "50%"
+      }
+    ]
+  },
+  {
+    "id": "ferrugem_controlada_01.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "phoma.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_02.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "82%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "63%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "47%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_03.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "72%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_04.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_05.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_06.jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_07.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "45%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "30%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "25%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_08.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "62%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "48%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "36%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_09.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "45%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_10.jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "75%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_11.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "78%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "62%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "phoma_12.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "75%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_branco (2).jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_branco (3).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_branco (4).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "60%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_branco (5).jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "0%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "0%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "0%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_branco (6).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_branco.jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_branco_01 (2).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_branco_01.jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose (2).jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "62%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "48%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "34%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose (3).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "50%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose (4).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "45%"
+      },
+      {
+        "diagnostic": "FERRO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "80%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose_01.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "ANTRACNOSE",
+        "severity": "55%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose_02.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "88%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "57%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "41%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose_04.jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "65%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose_05 (2).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "90%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "ANTRACNOSE",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_leprose_05.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "75%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "55%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_vermelho (2).jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "50%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "40%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_vermelho.jpeg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "ACARO",
+        "severity": "60%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_vermelho.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "50%"
+      },
+      {
+        "diagnostic": "MAGNESIO",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_vermelho_01 (2).jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "72%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "48%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "35%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_vermelho_01.jpg",
+    "response": [
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "85%"
+      },
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "70%"
+      },
+      {
+        "diagnostic": "PHOMA",
+        "severity": "45%"
+      }
+    ]
+  },
+  {
+    "id": "acaro_vermelho_02.jpg",
+    "response": [
+      {
+        "diagnostic": "BICHO-MINEIRO",
+        "severity": "75%"
+      },
+      {
+        "diagnostic": "FERRUGEM",
+        "severity": "60%"
+      },
+      {
+        "diagnostic": "BACTERIA",
+        "severity": "45%"
       }
     ]
   }

@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Services
@@ -6,6 +7,6 @@ namespace Application.Services
     {
         Task<string> UploadFileAsync(IFormFile file);
         Task DeleteFileAsync(string filePath);
-        Task RunClassifier();
+        Task<JsonArray?> RunClassifier(IFormFile file);
     }
 }

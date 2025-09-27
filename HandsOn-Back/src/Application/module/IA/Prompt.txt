@@ -42,21 +42,17 @@ INSTRUÇÕES:
    {
       "diagnostic": "",
       "severity": "",
-      "features": "",
    },
    {
       "diagnostic": "",
       "severity": "",
-      "features": "",
    },
    {
       "diagnostic": "",
       "severity": "",
-      "features": "",
    }
 ]
 5. Explicacao do exemplo:
    - diagnostic = nome da doença / deficiencia esse campo deve ser preenchido com um dos nomes do conhecimento base
    - severity = certeza de ser a doenca dita. Ex: "95%"
-   - features = texto resumido de caracteristicas da imagem que da match com o conhecimento base
 6. Preencha todos os jsons do array, ordenando do mais severo (maior severity) para o menos severo (menor severity) com base na sua análise

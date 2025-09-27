@@ -3,21 +3,16 @@ using OpenAI.Chat;
 
 namespace Application.Module.IA
 {
-    public interface IGPT
-    {
-        Task<string> Request(List<ChatMessage> payload);
-        List<ChatMessage> GeneratePayload(string prompt, Image images);
-    }
 
-    public class GPT : IGPT
+    public class GPT : IAIProvider
     {
-        private readonly OpenAIClient client;
+        private readonly ChatClient client;
 
-        private const string apiKey = "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";
+        private const string apiKey = "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";
 
         public GPT()
         {
-            client = new OpenAIClient(apiKey);
+            client = new(model: "gpt-5", apiKey: apiKey);
         }
 
         public List<ChatMessage> GeneratePayload(string prompt, Image image)
@@ -42,13 +37,12 @@ namespace Application.Module.IA
             return messages;
         }
 
+
         public async Task<string> Request(List<ChatMessage> payload)
         {
             try
             {
-                var chatClient = client.GetChatClient("gpt-5");
-
-                var response = await chatClient.CompleteChatAsync(payload);
+                var response = await client.CompleteChatAsync(payload);
 
                 if (response?.Value?.Content?.Count > 0)
                 {

@@ -1,34 +1,29 @@
 
 
+using Microsoft.AspNetCore.Http;
+
 namespace Application.Module.IA
 {
     public interface IImage
     {
-        string EncodeBase64();
         string GetFileName();
     }
 
-    public class Image : IImage
+    public class Image(IFormFile data) : IImage
     {
-        public string ImagePath { get; set; }
-        public string Type { get; set; }
+        public IFormFile ImageBuffer { get; set; } = data;
+        public string Type { get; set; } = data.ContentType.Split('/').Last();
 
-        public Image(string data, string type)
+        public string GetFileName()
         {
-            ImagePath = data;
-            Type = type;
+            return ImageBuffer.FileName;
         }
 
         public string EncodeBase64()
         {
-            var base64 = Convert.ToBase64String(File.ReadAllBytes(ImagePath));
-            return $"data:{Type};base64,{base64}";
-        }
-
-
-        public string GetFileName()
-        {
-            return Path.GetFileNameWithoutExtension(ImagePath);
+            using var memoryStream = new MemoryStream();
+            ImageBuffer.CopyTo(memoryStream);
+            return Convert.ToBase64String(memoryStream.ToArray());
         }
     }
 

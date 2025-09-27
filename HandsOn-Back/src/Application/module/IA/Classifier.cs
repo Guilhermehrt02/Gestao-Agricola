@@ -16,6 +16,7 @@ namespace Application.Module.IA
     {
         public List<IImage> Images { get; set; } = [];
         private readonly GPT _GPT = new();
+        private readonly IAIProvider _IAProvider;
         private readonly Metrics _Metrics = new();
         private readonly string Prompt = "";
         private readonly string Path_diagnostico = "C:/Users/carlos/Documents/GITHUB/Gestao-Agricola/HandsOn-Back/src/Application/module/IA/diagnostics.json";
@@ -24,23 +25,25 @@ namespace Application.Module.IA
         public Classifier()
         {
             Prompt = LoadPrompt();
+            _IAProvider = new IAProvider(_GPT);
 
         }
 
         public async Task<JsonArray?> SendImageIA(Image image)
         {
-            var payload = _GPT.GeneratePayload(Prompt, image);
-            var response = await _GPT.Request(payload);
+            // var payload = _IAProvider.GeneratePayload(Prompt, image);
+            // var response = await _IAProvider.Request(payload);
 
-            var responseJsonGPT = JsonNode.Parse(response)?.AsArray();
-            if (responseJsonGPT == null) return null;
+            // var responseJsonGPT = JsonNode.Parse(response)?.AsArray();
+            // if (responseJsonGPT == null) return null;
 
             // return responseJsonGPT;
 
-            GenerateJSON(image.GetFileName(), responseJsonGPT);
+            // GenerateJSON(image.GetFileName(), responseJsonGPT);
             GenerateMetrics();
 
-            return responseJsonGPT;
+            // return responseJsonGPT;
+            return null;
         }
 
         public void GenerateMetrics()
