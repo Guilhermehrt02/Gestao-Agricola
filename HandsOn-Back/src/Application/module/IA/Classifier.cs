@@ -37,7 +37,6 @@ namespace Application.Module.IA
             // var responseJsonGPT = JsonNode.Parse(response)?.AsArray();
             // if (responseJsonGPT == null) return null;
 
-
             // GenerateJSON(image.GetFileName(), responseJsonGPT);
             // return responseJsonGPT;
 

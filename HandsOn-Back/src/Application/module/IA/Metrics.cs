@@ -108,7 +108,8 @@ namespace Application.Module.IA
                     totalPorClasse[expected] = 1;
 
                 bool acertou = false;
-                int numberResponses = Math.Min(3, responses.Count);
+                // int numberResponses = Math.Min(3, responses.Count);
+                int numberResponses = 1; // Considera apenas a primeira resposta para métricas
 
                 for (int i = 0; i < numberResponses; i++)
                 {
