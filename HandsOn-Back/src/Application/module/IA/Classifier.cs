@@ -31,17 +31,18 @@ namespace Application.Module.IA
 
         public async Task<JsonArray?> SendImageIA(Image image)
         {
-            // var payload = _IAProvider.GeneratePayload(Prompt, image);
-            // var response = await _IAProvider.Request(payload);
+            var payload = _IAProvider.GeneratePayload(Prompt, image);
+            var response = await _IAProvider.Request(payload);
 
-            // var responseJsonGPT = JsonNode.Parse(response)?.AsArray();
-            // if (responseJsonGPT == null) return null;
+            var responseJsonGPT = JsonNode.Parse(response)?.AsArray();
+            if (responseJsonGPT == null) return null;
+            return responseJsonGPT;
 
             // GenerateJSON(image.GetFileName(), responseJsonGPT);
             // return responseJsonGPT;
 
-            GenerateMetrics();
-            return null;
+            // GenerateMetrics();
+            // return null;
         }
 
         public void GenerateMetrics()
