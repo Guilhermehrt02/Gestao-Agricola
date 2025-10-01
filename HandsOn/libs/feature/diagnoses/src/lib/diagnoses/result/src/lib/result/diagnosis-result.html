@@ -6,7 +6,6 @@
     </p>
   </a>
 
-  <!-- Título e descrição principais -->
   <h1 class="title text-center">{{ title }}</h1>
   <p class="description text-center mt-2">{{ description }}</p>
 
@@ -16,7 +15,6 @@
 
   </lib-image-compare>
 
-  <!-- Card principal -->
   <div class="bg-gray-900 text-white p-4 rounded-lg w-full mt-3">
     <div class="flex justify-between items-center mb-2">
       <h1 class="text-xl font-bold">{{ mainResult.imageBook }}</h1>
@@ -29,6 +27,18 @@
       {{ mainResult.disease.description }}
     </p>
   </div>
+
+  <!-- Accordion -->
+  <lib-accordion *ngIf="mainResult?.disease"
+    [symptoms]="mainResult.disease.symptoms"
+    [prevention]="mainResult.disease.prevention" 
+    [recommendation]="mainResult.disease.recommendation"
+  ></lib-accordion>
+
+  <lib-get-location
+    [setShapesFromParent]="diagnosis?.locationShapes"
+    [editable]="false"
+  ></lib-get-location>
 
   <!-- Outros resultados -->
   <div *ngIf="otherResults.length" class="relative w-full max-w-md mx-auto p-3 mb-5 mt-5">
@@ -43,13 +53,6 @@
       </a>
     </div>
   </div>
-
-  <!-- Accordion -->
-  <lib-accordion *ngIf="mainResult?.disease"
-    [symptoms]="mainResult.disease.symptoms"
-    [prevention]="mainResult.disease.prevention" 
-    [recommendation]="mainResult.disease.recommendation"
-  ></lib-accordion>
 
   <!-- Feedback -->
   <section

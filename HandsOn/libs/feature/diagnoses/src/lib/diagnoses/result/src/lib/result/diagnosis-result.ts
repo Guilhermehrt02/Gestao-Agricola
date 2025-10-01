@@ -1,7 +1,7 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Accordion, Gallery, ImageCompare, CardComponent } from '@farm/ui';
+import { Accordion, Gallery, ImageCompare, CardComponent, GetLocationComponent } from '@farm/ui';
 import { Diagnosis } from '@farm/core';
 import { DiagnosisResultFacade } from './diagnosis-result.facade';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -10,13 +10,15 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
 @Component({
   selector: 'lib-diagnosis-result',
   imports: [
-    CommonModule, 
-    Accordion, 
-    Gallery, 
-    RouterModule, 
-    ImageCompare, 
+    CommonModule,
+    Accordion,
+    Gallery,
+    RouterModule,
+    ImageCompare,
     CardComponent,
-    ReactiveFormsModule],
+    ReactiveFormsModule,
+    GetLocationComponent
+],
   templateUrl: './diagnosis-result.html',
   styleUrl: './diagnosis-result.css',
 })
@@ -65,6 +67,7 @@ export class DiagnosisResult implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.facade.reset();
   }
+
   showCommentBox(option: 'nao' | 'parcial') {
     this.selectedOption = option;
     this.showComment = true;

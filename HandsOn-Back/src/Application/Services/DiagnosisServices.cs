@@ -210,7 +210,7 @@ namespace Application.Services
             //var results = await _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
             var results = new List<dynamic>
             {
-                new { ImagesBook = "acaro branco", Similarity = 0.74 },
+                new { ImagesBook = "ferrugem", Similarity = 0.74 },
                 new { ImagesBook = "crisalida", Similarity = 0.7 },
                 new { ImagesBook = "bicho mineiro", Similarity = 0.71 }
             };
