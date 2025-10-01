@@ -1,5 +1,6 @@
 using Core.Entities;
-namespace Application.ViewModels
+using Application.ViewModels.DiseaseModels;
+namespace Application.ViewModels.DiagnosisModels
 {
     public class DiagnosisResultViewModel
     {
@@ -19,13 +20,15 @@ namespace Application.ViewModels
     {
         public string ImageBook { get; set; } = string.Empty;
         public double Similarity { get; set; }
+        public DiseaseViewModel? Disease { get; set; }
 
         public static ImageSimilarityViewModel FromEntity(ImageSimilarity imageSimilarity)
         {
             return new ImageSimilarityViewModel
             {
                 ImageBook = imageSimilarity.ImageBook,
-                Similarity = imageSimilarity.Similarity
+                Similarity = imageSimilarity.Similarity,
+                Disease = imageSimilarity.Disease != null ? DiseaseViewModel.FromEntity(imageSimilarity.Disease) : null
             };
         }
     }

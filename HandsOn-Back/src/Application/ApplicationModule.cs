@@ -36,6 +36,7 @@ namespace Application
                 client.BaseAddress = new Uri(baseUrl);
                 client.Timeout = TimeSpan.FromMinutes(10);
             });
+            services.AddScoped<IDiseaseService, DiseaseService>();
 
             services.AddScoped<IClassifier, Classifier>();
             services.AddScoped<IAIProvider, GPT>();

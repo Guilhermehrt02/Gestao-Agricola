@@ -15,7 +15,9 @@ namespace Application.Services
         IFarmRepository farmRepository,
         IHarvestRepository harvestRepository,
         IPlotRepository plotRepository,
-        IAIServiceClient aiServiceClient) : IDiagnosisServices
+        IAIServiceClient aiServiceClient,
+        IDiseaseService diseaseService,
+        IDiseaseRepository diseaseRepository) : IDiagnosisServices
     {
         private readonly IDiagnosisRepository _diagnosisRepository = diagnosisRepository;
         private readonly IFarmRepository _farmRepository = farmRepository;
@@ -23,6 +25,8 @@ namespace Application.Services
         private readonly IPlotRepository _plotRepository = plotRepository;
         private readonly IAIServiceClient _aiServiceClient = aiServiceClient;
         private readonly IUploadServices _uploadServices = uploadServices;
+        private readonly IDiseaseService _diseaseService = diseaseService;
+        private readonly IDiseaseRepository _diseaseRepository = diseaseRepository;
 
         public async Task<DiagnosisViewModel> GetByIdAsync(Guid id)
         {
@@ -203,20 +207,38 @@ namespace Application.Services
             {
                 await _diagnosisRepository.DeleteDiagnosisResultByDiagnosisIdAsync(diagnosis.Id);
             }
-            var results = await _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
-
+            //var results = await _aiServiceClient.StartProcessingAsync(diagnosis.Id, diagnosis.PhotoUrl);
+            var results = new List<dynamic>
+            {
+                new { ImagesBook = "ferrugem", Similarity = 0.74 },
+                new { ImagesBook = "crisalida", Similarity = 0.7 },
+                new { ImagesBook = "bicho mineiro", Similarity = 0.71 }
+            };
             if (results != null && results.Count > 0)
             {
+                var similarities = new List<ImageSimilarity>();
+
+                foreach (var r in results.OrderByDescending(r => r.Similarity))
+                {
+                    var diseaseEntity = await _diseaseService.GetByNameAsync(r.ImagesBook);
+                    var disease = diseaseEntity != null
+                        ? await _diseaseRepository.GetByIdAsync(diseaseEntity.Id)
+                        : null;
+
+                    similarities.Add(new ImageSimilarity
+                    {
+                        ImageBook = r.ImagesBook,
+                        Similarity = r.Similarity,
+                        DiseaseId = diseaseEntity?.Id,
+                        Disease = disease
+                    });
+                }
+
+
                 var diagnosisResult = new DiagnosisResult
                 {
                     DiagnosisId = diagnosis.Id,
-                    Similarities = results
-                        .OrderByDescending(r => r.Similarity)
-                        .Select((r, index) => new ImageSimilarity
-                        {
-                            ImageBook = r.ImagesBook,
-                            Similarity = r.Similarity,
-                        }).ToList()
+                    Similarities = similarities.ToList()
                 };
 
                 await _diagnosisRepository.AddDiagnosisResultAsync(diagnosisResult);

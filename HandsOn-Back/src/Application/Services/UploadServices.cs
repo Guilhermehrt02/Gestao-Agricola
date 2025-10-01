@@ -34,7 +34,7 @@ namespace Application.Services
                 await file.CopyToAsync(stream);
             }
 
-            return Path.Combine("uploads", fileName).Replace("\\", "/");
+            return $"uploads/{fileName}";
         }
 
 

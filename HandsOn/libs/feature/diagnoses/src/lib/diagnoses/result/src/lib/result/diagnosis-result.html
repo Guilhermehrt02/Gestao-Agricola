@@ -1,4 +1,5 @@
-<lib-card class="">
+<lib-card *ngIf="mainResult" class="">
+  <!-- Voltar -->
   <a [routerLink]="['/app/diagnoses']" class="absolute top-0 left-0 mt-2 ml-2">
     <p class="description flex items-center gap-1 link">
       <i class="pi pi-fw pi-arrow-left" style="font-size: 0.75rem"></i> Voltar
@@ -8,124 +9,100 @@
   <h1 class="title text-center">{{ title }}</h1>
   <p class="description text-center mt-2">{{ description }}</p>
 
-  <lib-image-compare></lib-image-compare>
+  <lib-image-compare *ngIf="mainResult.disease"
+    [originalImageUrl]="diagnosis?.photoUrl || ''"
+    [diseaseImageUrl]="mainResult.disease.referenceImageUrl || ''">
 
-  <!-- <lib-card> -->
+  </lib-image-compare>
+
   <div class="bg-gray-900 text-white p-4 rounded-lg w-full mt-3">
-    <!-- Cabeçalho -->
     <div class="flex justify-between items-center mb-2">
-      <h1 class="text-xl font-bold">Ferrugem</h1>
-      <span class="text-sm text-gray-300">classe: fungo</span>
+      <h1 class="text-xl font-bold">{{ mainResult.imageBook }}</h1>
+      <span class="text-sm text-gray-300">classe: {{ mainResult.disease.class }}</span>
     </div>
 
-    <!-- Semelhança -->
-    <h2 class="text-sm mb-4">Semelhança: 87%</h2>
+    <h2 class="text-sm mb-4">Semelhança: {{ mainResult.similarity * 100 }}%</h2>
 
-    <!-- Descrição -->
     <p class="text-justify text-sm leading-relaxed mb-4">
-      A ferrugem é uma doença fúngica que afeta diversas plantas, incluindo
-      culturas agrícolas como soja, feijão, trigo e milho. Ela é causada por
-      fungos do gênero Puccinia e se manifesta como manchas amareladas ou
-      alaranjadas nas folhas, que podem evoluir para pústulas contendo esporos
-      do fungo. A ferrugem pode causar desfolha precoce, redução da fotossíntese
-      e, consequentemente, diminuição da produtividade das plantas. O controle
-      da ferrugem envolve práticas agrícolas como o uso de variedades
-      resistentes, rotação de culturas, aplicação de fungicidas e manejo
-      adequado do solo e da irrigação.
+      {{ mainResult.disease.description }}
     </p>
   </div>
 
-  <!-- Botões -->
-  <div class="relative w-full max-w-md mx-auto p-3 mb-5 mt-5">
+  <!-- Accordion -->
+  <lib-accordion *ngIf="mainResult?.disease"
+    [symptoms]="mainResult.disease.symptoms"
+    [prevention]="mainResult.disease.prevention" 
+    [recommendation]="mainResult.disease.recommendation"
+  ></lib-accordion>
+
+  <lib-get-location
+    [setShapesFromParent]="diagnosis?.locationShapes"
+    [editable]="false"
+  ></lib-get-location>
+
+  <!-- Outros resultados -->
+  <div *ngIf="otherResults.length" class="relative w-full max-w-md mx-auto p-3 mb-5 mt-5">
     <h1 class="text-xl font-bold mb-3">Também pode ser:</h1>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <a
-        href="/reports.component copy.html"
+        *ngFor="let result of otherResults"
+        [routerLink]="['/app/diagnoses', result.name]"
         class="border border-green-500 bg-gray-900 text-green-400 px-4 py-3 rounded-xl shadow-md text-center hover:bg-green-500 hover:text-white transition transform hover:scale-105"
       >
-        Phoma (75%)
-      </a>
-      <a
-        href="/pagina2"
-        class="border border-green-500 bg-gray-900 text-green-400 px-4 py-3 rounded-xl shadow-md text-center hover:bg-green-500 hover:text-white transition transform hover:scale-105"
-      >
-        Ácaro Branco (65%)
-      </a>
-      <a
-        href="/pagina3"
-        class="border border-green-500 bg-gray-900 text-green-400 px-4 py-3 rounded-xl shadow-md text-center hover:bg-green-500 hover:text-white transition transform hover:scale-105"
-      >
-        Bicho Mineiro (60%)
-      </a>
-      <a
-        href="/pagina4"
-        class="border border-green-500 bg-gray-900 text-green-400 px-4 py-3 rounded-xl shadow-md text-center hover:bg-green-500 hover:text-white transition transform hover:scale-105"
-      >
-        Ferrugem (60%)
+        {{ result.imageBook }} ({{ result.similarity * 100 }}%)
       </a>
     </div>
   </div>
 
-  <!-- </lib-card> -->
+  <!-- Feedback -->
+  <section
+    *ngIf="!feedbackSent"
+    class="bg-gray-900 text-white p-6 rounded-lg w-full max-w-md mx-auto mt-6 shadow-lg"
+  >
+    <h2 class="text-lg font-semibold mb-4 text-center text-green-400">
+      Essa indicação foi válida?
+    </h2>
 
-  <lib-accordion> </lib-accordion>
-
-<!-- feedback.component.html -->
-<section
-  *ngIf="!feedbackSent"
-  class="bg-gray-900 text-white p-6 rounded-lg w-full max-w-md mx-auto mt-6 shadow-lg"
->
-  <!-- Título -->
-  <h2 class="text-lg font-semibold mb-4 text-center text-green-400">
-    Essa indicação foi válida?
-  </h2>
-
-  <!-- Opções -->
-  <div class="flex justify-center space-x-4 mb-4">
-    <button
-      class="px-5 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition"
-      (click)="submitFeedback('sim')"
-    >
-      Sim
-    </button>
-    <button
-      class="px-5 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition"
-      (click)="showCommentBox('nao')"
-    >
-      Não
-    </button>
-    <button
-      class="px-5 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition"
-      (click)="showCommentBox('parcial')"
-    >
-      Parcial
-    </button>
-  </div>
-
-  <!-- Campo de comentário só aparece se negativo -->
-  <div *ngIf="showComment">
-    <textarea
-      [formControl]="commentControl"
-      placeholder="Deixe um comentário (opcional)"
-      class="w-full p-3 rounded-lg border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 mb-4"
-    ></textarea>
-
-    <!-- Botão de envio -->
-    <div class="text-center">
+    <div class="flex justify-center space-x-4 mb-4">
       <button
-        class="px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
-        (click)="submitFeedback(selectedOption, commentControl.value ?? '')"
+        class="px-5 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition"
+        (click)="submitFeedback('sim')"
       >
-        Enviar Feedback
+        Sim
+      </button>
+      <button
+        class="px-5 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition"
+        (click)="showCommentBox('nao')"
+      >
+        Não
+      </button>
+      <button
+        class="px-5 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition"
+        (click)="showCommentBox('parcial')"
+      >
+        Parcial
       </button>
     </div>
+
+    <div *ngIf="showComment">
+      <textarea
+        [formControl]="commentControl"
+        placeholder="Deixe um comentário (opcional)"
+        class="w-full p-3 rounded-lg border border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 mb-4"
+      ></textarea>
+
+      <div class="text-center">
+        <button
+          class="px-6 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition"
+          (click)="submitFeedback(selectedOption, commentControl.value ?? '')"
+        >
+          Enviar Feedback
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div *ngIf="feedbackSent" class="text-center text-green-400 font-semibold mt-4">
+    Obrigado pelo feedback! ✅
   </div>
-</section>
-
-<!-- Mensagem final -->
-<div *ngIf="feedbackSent" class="text-center text-green-400 font-semibold mt-4">
-  Obrigado pelo feedback! ✅
-</div>
-
-
 </lib-card>

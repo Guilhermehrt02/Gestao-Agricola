@@ -24,6 +24,7 @@ import { GoogleMapsService, LocationShapeData } from '@farm/core';
 })
 export class GetLocationComponent implements AfterViewInit, OnChanges {
   private activeInfoWindow: google.maps.InfoWindow | null = null;
+  @Input() editable = true;
   @Input() setPositionFromParent?: { latitude: number; longitude: number };
   @Input() setShapesFromParent?: LocationShapeData[];
 
@@ -83,7 +84,17 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     this.map = new google.maps.Map(mapEl, {
       center,
       zoom: 15,
+      mapTypeId: google.maps.MapTypeId.SATELLITE,
     });
+
+    this.map.addListener('click', () => {
+      if (this.activeInfoWindow) {
+        this.activeInfoWindow.close();
+        this.activeInfoWindow = null;
+      }
+    });
+
+    if(!this.editable) return;
 
     const drawingManager = new google.maps.drawing.DrawingManager({
       drawingMode: null,
@@ -133,6 +144,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           'Polígono sem nome';
 
         addShapeToList(polygon, 'polygon', label);
+        this.fitMapToShapes();
 
         const centroid = getPolygonCenter(polygon);
 
@@ -182,6 +194,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           'Ponto sem nome';
 
         addShapeToList(marker, 'marker', label);
+        this.fitMapToShapes();
 
         const content = this.createInfoWindowContent(label, () => {
           marker.setMap(null);
@@ -207,13 +220,6 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         });
       },
     );
-
-    this.map.addListener('click', () => {
-      if (this.activeInfoWindow) {
-        this.activeInfoWindow.close();
-        this.activeInfoWindow = null;
-      }
-    });
   }
 
   private createInfoWindowContent(
@@ -236,21 +242,22 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     const title = document.createElement('span');
     title.textContent = label;
     title.style.flex = '1';
-
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = '❌';
-    closeBtn.style.cursor = 'pointer';
-    closeBtn.style.backgroundColor = 'transparent';
-    closeBtn.style.border = '1px solid #ccc';
-    closeBtn.style.borderRadius = '4px';
-    closeBtn.style.fontSize = '16px';
-    closeBtn.style.padding = '0 6px';
-    closeBtn.style.color = 'black';
-
-    closeBtn.onclick = onDelete;
-
     content.appendChild(title);
-    content.appendChild(closeBtn);
+
+    if(this.editable){
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '❌';
+      closeBtn.style.cursor = 'pointer';
+      closeBtn.style.backgroundColor = 'transparent';
+      closeBtn.style.border = '1px solid #ccc';
+      closeBtn.style.borderRadius = '4px';
+      closeBtn.style.fontSize = '16px';
+      closeBtn.style.padding = '0 6px';
+      closeBtn.style.color = 'black';
+
+      closeBtn.onclick = onDelete;
+      content.appendChild(closeBtn);
+    }
 
     return content;
   }
@@ -315,13 +322,14 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         const path = shape.coordinates.map(
           (coord) => new google.maps.LatLng(coord.lat, coord.lng),
         );
+
         const polygon = new google.maps.Polygon({
           paths: path,
           fillColor: '#FF0000',
           fillOpacity: 0.35,
           strokeWeight: 2,
-          editable: true,
-          draggable: true,
+          editable: this.editable,
+          draggable: this.editable,
           map: this.map,
         });
 
@@ -353,11 +361,12 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         this.activeInfoWindow = infoWindow;
       });
 
-
         polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
+
         polygon
           .getPath()
           .addListener('insert_at', () => this.emitCurrentShapes());
+
         polygon
           .getPath()
           .addListener('remove_at', () => this.emitCurrentShapes());
@@ -366,9 +375,10 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           shape.coordinates[0].lat,
           shape.coordinates[0].lng,
         );
+
         const marker = new google.maps.Marker({
           position: pos,
-          draggable: true,
+          draggable: this.editable,
           map: this.map,
         });
 
@@ -391,13 +401,15 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         if (this.activeInfoWindow) {
           this.activeInfoWindow.close();
         }
+
         infoWindow.open(this.map, marker);
+
         this.activeInfoWindow = infoWindow;
       });
 
-
         marker.addListener('dragend', () => {
           this.emitCurrentShapes();
+
           this.emitCoords(
             marker.getPosition()!.lat(),
             marker.getPosition()!.lng(),
@@ -407,6 +419,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     });
 
     this.emitCurrentShapes();
+    this.fitMapToShapes();
   }
 
   public placeOrMoveMarker(lat: number, lng: number, emit = false) {
@@ -418,7 +431,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       this.marker = new google.maps.Marker({
         position,
         map: this.map,
-        draggable: true,
+        draggable: this.editable,
       });
 
       this.marker.addListener('dragend', () => {
@@ -463,5 +476,29 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     const bounds = new google.maps.LatLngBounds();
     polygon.getPath().forEach((latLng) => bounds.extend(latLng));
     return bounds.getCenter();
+  }
+
+  private fitMapToShapes(): void {
+    if (this.drawnShapes.length === 0) return;
+
+    const bounds = new google.maps.LatLngBounds();
+
+    this.drawnShapes.forEach(({ mapObject, type }) => {
+      if (type === 'marker' && mapObject instanceof google.maps.Marker) {
+        const pos = mapObject.getPosition();
+        if (pos) bounds.extend(pos);
+      }
+      if (type === 'polygon' && mapObject instanceof google.maps.Polygon) {
+        mapObject.getPath().forEach((latLng) => bounds.extend(latLng));
+      }
+    });
+
+    if (this.drawnShapes.length === 1) {
+      this.map.setCenter(bounds.getCenter());
+
+      this.map.setZoom(15);
+    } else {
+      this.map.fitBounds(bounds);
+    }
   }
 }
