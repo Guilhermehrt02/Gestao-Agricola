@@ -1,7 +1,7 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Accordion, Gallery, ImageCompare, CardComponent } from '@farm/ui';
+import { Accordion, Gallery, ImageCompare, CardComponent, GetLocationComponent } from '@farm/ui';
 import { Diagnosis } from '@farm/core';
 import { DiagnosisResultFacade } from './diagnosis-result.facade';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -10,13 +10,15 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
 @Component({
   selector: 'lib-diagnosis-result',
   imports: [
-    CommonModule, 
-    Accordion, 
-    Gallery, 
-    RouterModule, 
-    ImageCompare, 
+    CommonModule,
+    Accordion,
+    Gallery,
+    RouterModule,
+    ImageCompare,
     CardComponent,
-    ReactiveFormsModule],
+    ReactiveFormsModule,
+    GetLocationComponent
+],
   templateUrl: './diagnosis-result.html',
   styleUrl: './diagnosis-result.css',
 })
@@ -31,6 +33,9 @@ export class DiagnosisResult implements OnInit, OnDestroy {
 
   title = "Resultado do Diagnóstico";
   description = "Veja abaixo o resultado do diagnóstico realizado para a sua lavoura.";
+
+  mainResult?: any;
+  otherResults: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -50,6 +55,8 @@ export class DiagnosisResult implements OnInit, OnDestroy {
       if (!diagnosis) return;
 
       this.diagnosis = diagnosis;
+      this.mainResult = diagnosis.result.imageSimilarities[0];
+      this.otherResults = diagnosis.result.imageSimilarities.slice(1);
     });
 
     this.facade.loading$.subscribe((loading) => {
@@ -60,6 +67,7 @@ export class DiagnosisResult implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.facade.reset();
   }
+
   showCommentBox(option: 'nao' | 'parcial') {
     this.selectedOption = option;
     this.showComment = true;

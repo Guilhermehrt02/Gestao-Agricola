@@ -19,6 +19,7 @@ namespace Infrastructure.Persistence.Repositories
                     .ThenInclude(ls => ls.Coordinates)
                 .Include(x => x.Result)
                     .ThenInclude(dr => dr.Similarities)
+                        .ThenInclude(s => s.Disease)
                 .Where(d => _context.UserFarms
                     .Where(uf => uf.UserId == userId)
                     .Select(uf => uf.FarmId)
@@ -36,6 +37,7 @@ namespace Infrastructure.Persistence.Repositories
                     .ThenInclude(ls => ls.Coordinates)
                 .Include(x => x.Result)
                     .ThenInclude(dr => dr.Similarities)
+                        .ThenInclude(s => s.Disease)
                 .Join(farmIds, d => d.FarmId, fId => fId, (d, fId) => d)
                 .ToListAsync();
         }
@@ -50,6 +52,7 @@ namespace Infrastructure.Persistence.Repositories
                     .ThenInclude(ls => ls.Coordinates)
                 .Include(x => x.Result)
                     .ThenInclude(dr => dr.Similarities)
+                        .ThenInclude(s => s.Disease)
                 .Where(d => d.Id == diagnosisId)
                 .FirstOrDefaultAsync();
         }

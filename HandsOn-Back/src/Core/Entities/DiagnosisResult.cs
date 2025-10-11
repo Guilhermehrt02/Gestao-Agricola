@@ -15,5 +15,8 @@ namespace Core.Entities
         public DiagnosisResult DiagnosisResult { get; set; } = null!;
         public string ImageBook { get; set; } = string.Empty;
         public double Similarity { get; set; }
+
+        public Guid? DiseaseId { get; set; }
+        public Disease? Disease { get; set; }
     }
 }

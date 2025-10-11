@@ -60,6 +60,7 @@ namespace Infrastructure
             services.AddScoped<IPlotRepository, PlotRepository>();
             services.AddScoped<IDiagnosisRepository, DiagnosisRepository>();
             services.AddScoped<IUserFarmRepository, UserFarmRepository>();
+            services.AddScoped<IDiseaseRepository, DiseaseRepository>();
 
             return services;
         }

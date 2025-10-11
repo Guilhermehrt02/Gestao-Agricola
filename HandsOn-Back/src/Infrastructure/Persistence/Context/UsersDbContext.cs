@@ -21,6 +21,7 @@ namespace Infrastructure.Persistence.Context
         public DbSet<LocationShape> LocationShapes { get; set; }
         public DbSet<UserFarm> UserFarms { get; set; }
         public DbSet<DiagnosisResult> DiagnosisResults { get; set; }
+        public DbSet<Disease> Diseases { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -261,6 +262,56 @@ namespace Infrastructure.Persistence.Context
                 .HasOne(uf => uf.Farm)
                 .WithMany()
                 .HasForeignKey(uf => uf.FarmId);
+
+            modelBuilder.Entity<Disease>(entity =>
+            {
+                entity.HasKey(d => d.Id);
+
+                entity.Property(d => d.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(d => d.Description)
+                    .HasMaxLength(1000);
+
+                entity.Property(d => d.Class)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(d => d.ReferenceImageUrl)
+                    .HasMaxLength(500);
+
+                entity.Property(d => d.CreatedAt)
+                    .IsRequired();
+
+                entity.Property(d => d.UpdatedAt)
+                    .IsRequired();
+
+                entity.Property(d => d.Symptoms)
+                    .HasMaxLength(1000);
+
+                entity.Property(d => d.Prevention)
+                    .HasMaxLength(1000);
+
+                entity.Property(d => d.Recommendation)
+                    .HasMaxLength(1000);
+            });
+
+            modelBuilder.Entity<ImageSimilarity>(entity =>
+            {
+                entity.HasKey(ims => ims.Id);
+
+                entity.Property(ims => ims.ImageBook)
+                    .IsRequired()
+                    .HasMaxLength(500);
+
+                entity.Property(ims => ims.Similarity)
+                    .IsRequired();
+
+                entity.HasOne(ims => ims.Disease)
+                    .WithMany()
+                    .HasForeignKey(ims => ims.DiseaseId);
+                });
         }
     }
 }
