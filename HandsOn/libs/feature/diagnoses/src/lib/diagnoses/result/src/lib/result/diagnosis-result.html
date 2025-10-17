@@ -9,30 +9,33 @@
   <h1 class="title text-center">{{ title }}</h1>
   <p class="description text-center mt-2">{{ description }}</p>
 
-  <lib-image-compare *ngIf="mainResult.disease"
+  <lib-image-compare
+    *ngIf="mainResult.disease"
     [originalImageUrl]="diagnosis?.photoUrl || ''"
-    [diseaseImageUrl]="mainResult.disease.referenceImageUrl || ''">
-
+    [diseaseImageUrl]="mainResult.disease?.referenceImageUrl || ''"
+  >
   </lib-image-compare>
 
   <div class="bg-gray-900 text-white p-4 rounded-lg w-full mt-3">
     <div class="flex justify-between items-center mb-2">
       <h1 class="text-xl font-bold">{{ mainResult.imageBook }}</h1>
-      <span class="text-sm text-gray-300">classe: {{ mainResult.disease.class }}</span>
+      <span class="text-sm text-gray-300"
+        >classe: {{ mainResult.disease?.class }}</span
+      >
     </div>
 
     <h2 class="text-sm mb-4">Semelhança: {{ mainResult.similarity * 100 }}%</h2>
 
     <p class="text-justify text-sm leading-relaxed mb-4">
-      {{ mainResult.disease.description }}
+      {{ mainResult.disease?.description }}
     </p>
   </div>
 
   <!-- Accordion -->
-  <lib-accordion *ngIf="mainResult?.disease"
-    [symptoms]="mainResult.disease.symptoms"
-    [prevention]="mainResult.disease.prevention" 
-    [recommendation]="mainResult.disease.recommendation"
+  <lib-accordion
+    [symptoms]="mainResult.disease?.symptoms"
+    [prevention]="mainResult.disease?.prevention"
+    [recommendation]="mainResult.disease?.recommendation"
   ></lib-accordion>
 
   <lib-get-location
@@ -41,16 +44,21 @@
   ></lib-get-location>
 
   <!-- Outros resultados -->
-  <div *ngIf="otherResults.length" class="relative w-full max-w-md mx-auto p-3 mb-5 mt-5">
+  <div
+    *ngIf="otherResults.length"
+    class="relative w-full max-w-md mx-auto p-3 mb-5 mt-5"
+  >
     <h1 class="text-xl font-bold mb-3">Também pode ser:</h1>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <a
+      <button
         *ngFor="let result of otherResults"
-        [routerLink]="['/app/diagnoses', result.name]"
-        class="border border-green-500 bg-gray-900 text-green-400 px-4 py-3 rounded-xl shadow-md text-center hover:bg-green-500 hover:text-white transition transform hover:scale-105"
+        (click)="selectResult(result)"
+        (keyup.enter)="selectResult(result)"
+        type="button"
+        class="border border-green-500 bg-gray-900 text-green-400 px-4 py-3 rounded-xl shadow-md text-center hover:bg-green-500 hover:text-white transition transform hover:scale-105 cursor-pointer w-full"
       >
         {{ result.imageBook }} ({{ result.similarity * 100 }}%)
-      </a>
+      </button>
     </div>
   </div>
 
@@ -102,7 +110,10 @@
     </div>
   </section>
 
-  <div *ngIf="feedbackSent" class="text-center text-green-400 font-semibold mt-4">
+  <div
+    *ngIf="feedbackSent"
+    class="text-center text-green-400 font-semibold mt-4"
+  >
     Obrigado pelo feedback! ✅
   </div>
 </lib-card>
