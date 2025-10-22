@@ -67,6 +67,11 @@ export class MasterPageComponent implements OnInit, OnDestroy {
           icon: 'pi pi-fw pi-list',
           routerLink: '/app/diagnoses/diagnosis',
         },
+        {
+          label: 'Mapa da Fazenda',
+          icon: 'pi pi-fw pi-map',
+          routerLink: '/app/farmMapView',
+        }
       ],
     });
 

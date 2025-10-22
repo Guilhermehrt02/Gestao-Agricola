@@ -4,6 +4,8 @@ import { RequestService } from '../request/request.service';
 import { Diagnosis } from '../../models/diagnosis.model'; 
 import { HttpContext } from '@angular/common/http';
 import { BYPASS_INTERCEPTORS } from '../../interceptors/authentication/authentication.interceptor';
+import { FarmMapInput } from '../../models/farm-map-input.model';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root',
@@ -26,6 +28,39 @@ export class DiagnosisService extends RequestService {
             .pipe(catchError(this.handleError));
     }
 
+    getDiagnosesByFilter(farmMapInput: FarmMapInput) {
+        let params = new HttpParams()
+            .set('startDate', this.formatDate(farmMapInput.startDate))
+            .set('endDate', this.formatDate(farmMapInput.endDate));
+
+        if (farmMapInput.farmId) {
+            params = params.set('farmId', farmMapInput.farmId);
+        }
+
+        if (farmMapInput.plotId) {
+            params = params.set('plotId', farmMapInput.plotId);
+        }
+
+        if (farmMapInput.cultureId) {
+            params = params.set('cultureId', farmMapInput.cultureId);
+        }
+
+        if (farmMapInput.diseaseId) {
+            params = params.set('diseaseId', farmMapInput.diseaseId);
+        }
+
+        if (farmMapInput.harvestId) {
+            params = params.set('harvestId', farmMapInput.harvestId);
+        }
+
+        return this.httpClient
+            .get<Diagnosis[]>(`${this.apiUrl}/diagnosis/filter`, {
+                ...this.httpOptionsBypassInterceptor,
+                params
+            })
+            .pipe(catchError(this.handleError));
+    }
+
     createDiagnosis(diagnosis: Diagnosis) {
         return this.httpClient
             .post<Diagnosis>(`${this.apiUrl}/diagnosis`, JSON.stringify(diagnosis), this.httpOptions)
@@ -44,4 +79,11 @@ export class DiagnosisService extends RequestService {
             .pipe(catchError(this.handleError));
     }
 
+    private formatDate(date: Date): string {
+      if (!(date instanceof Date)) return '';
+      const year = date.getFullYear();
+      const month = `${date.getMonth() + 1}`.padStart(2, '0');
+      const day = `${date.getDate()}`.padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
 }

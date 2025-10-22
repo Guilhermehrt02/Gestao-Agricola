@@ -1,3 +1,4 @@
+/* eslint-disable @angular-eslint/prefer-inject */
 import { Injectable } from '@angular/core';
 import { ReportService } from '../services/reports/report.service';
 import { NotificationService } from '../services/notification/notification.service';

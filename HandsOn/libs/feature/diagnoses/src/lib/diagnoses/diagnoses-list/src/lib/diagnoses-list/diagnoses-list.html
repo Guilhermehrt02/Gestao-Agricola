@@ -75,19 +75,19 @@
                 <p-button
                   *ngIf="item.status === 'Processed'"
                   icon="pi pi-eye"
-                  class="p-button-rounded p-button-success"
+                  class="p-button-rounded p-button"
                   (onClick)="onView(item)"
                 ></p-button>
 
                 <p-button
                   icon="pi pi-pencil"
-                  class="p-button-rounded p-button-outlined"
+                  class="p-button-rounded p-button"
                   (onClick)="onEdit(item)"
                 ></p-button>
 
                 <p-button
                   icon="pi pi-trash"
-                  class="p-button-rounded p-button-danger"
+                  class="p-button-rounded p-button"
                   (onClick)="onDelete(item)"
                 ></p-button>
               </div>

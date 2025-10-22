@@ -35,6 +35,7 @@
       "@farm/expenses-list": [
         "libs/feature/finance/src/lib/finance/expenses-list/src/index.ts"
       ],
+      "@farm/farmMapView": ["libs/feature/farmMapView/src/index.ts"],
       "@farm/finance": ["libs/feature/finance/src/index.ts"],
       "@farm/footer": [
         "libs/master-page/src/lib/master-page/footer/src/index.ts"

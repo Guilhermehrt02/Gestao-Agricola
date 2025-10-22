@@ -5,6 +5,8 @@ import { tap } from 'rxjs/operators';
 import { Diagnosis} from '../models/diagnosis.model';
 import { NotificationService } from '../services/notification/notification.service';
 import { DiagnosisService } from '../services/diagnosis/diagnosis.service';
+import { Farm } from '../models/farm.model';
+import { FarmMapInput } from '../models/farm-map-input.model';
 
 @Injectable({
     providedIn: 'root',
@@ -49,6 +51,20 @@ export class DiagnosisFacade {
                         'Não foi possível carregar o diagnóstico!'
                     );
                 }
+            })
+        );
+    }
+
+    getDiagnosesByFilter(farmMapInput: FarmMapInput): Observable<Diagnosis[]> {
+        this.loadingSubject.next(true);
+        return this.diagnosisService.getDiagnosesByFilter(farmMapInput).pipe(
+            tap({
+                error: () => {
+                    this.notificationService.error(
+                        'Erro!',
+                        'Não foi possível carregar os diagnósticos!'
+                    );
+                },
             })
         );
     }

@@ -19,6 +19,7 @@ export * from './lib/models/farm.model';
 export * from './lib/models/harvest.model';
 export * from './lib/models/plot.model';
 export * from './lib/models/locationShape.model';
+export * from './lib/models/farm-map-input.model';
 
 // services
 export * from './lib/services/authentication/authentication.service';

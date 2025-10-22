@@ -36,6 +36,11 @@ export const masterPageRoutes: Route[] = [
           import('@farm/diagnoses').then((m) => m.diagnosesRoutes),
       },
       {
+        path: 'farmMapView',
+        loadChildren: () =>
+          import('@farm/farmMapView').then((m) => m.farmMapViewRoutes),
+      },
+      {
         path: '**',
         redirectTo: 'not-found',
       },

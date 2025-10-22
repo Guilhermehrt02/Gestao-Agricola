@@ -28,3 +28,4 @@ export * from './lib/modules/report-summary/report-summary.component';
 export * from './lib/modules/date-range-filter/date-range-filter.component';
 export * from './lib/modules/diagnosis-form/diagnosis-form';
 export * from './lib/modules/get-location/get-location.component';
+export * from './lib/modules/date-type-filter/date-type-filter.component';

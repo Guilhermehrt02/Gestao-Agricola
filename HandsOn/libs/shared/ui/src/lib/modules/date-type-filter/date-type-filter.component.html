@@ -82,7 +82,7 @@
     <div class="flex flex-wrap gap-2">
       <lib-select
         [options]="expenseCategories"
-        placeholder="Filtrar por categoria"
+        placeholder="Filtrar por fazenda"
         [control]="category"
         [multiple]="true"
         class="flex-1"
@@ -90,7 +90,25 @@
 
       <lib-select
         [options]="revenueSources"
-        placeholder="Filtrar por fonte"
+        placeholder="Filtrar por talhão"
+        [control]="source"
+        [multiple]="true"
+        class="flex-1"
+      ></lib-select>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <lib-select
+        [options]="expenseCategories"
+        placeholder="Filtrar por colheita"
+        [control]="category"
+        [multiple]="true"
+        class="flex-1"
+      ></lib-select>
+
+      <lib-select
+        [options]="revenueSources"
+        placeholder="Filtrar por doença"
         [control]="source"
         [multiple]="true"
         class="flex-1"
