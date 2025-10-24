@@ -4,8 +4,6 @@ import { RequestService } from '../request/request.service';
 import { Diagnosis } from '../../models/diagnosis.model'; 
 import { HttpContext } from '@angular/common/http';
 import { BYPASS_INTERCEPTORS } from '../../interceptors/authentication/authentication.interceptor';
-import { FarmMapInput } from '../../models/farm-map-input.model';
-import { HttpParams } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root',
@@ -25,39 +23,6 @@ export class DiagnosisService extends RequestService {
     getDiagnosisById(id: string) {
         return this.httpClient
             .get<Diagnosis>(`${this.apiUrl}/diagnosis/${id}`, this.httpOptions)
-            .pipe(catchError(this.handleError));
-    }
-
-    getDiagnosesByFilter(farmMapInput: FarmMapInput) {
-        let params = new HttpParams()
-            .set('startDate', this.formatDate(farmMapInput.startDate))
-            .set('endDate', this.formatDate(farmMapInput.endDate));
-
-        if (farmMapInput.farmId) {
-            params = params.set('farmId', farmMapInput.farmId);
-        }
-
-        if (farmMapInput.plotId) {
-            params = params.set('plotId', farmMapInput.plotId);
-        }
-
-        if (farmMapInput.cultureId) {
-            params = params.set('cultureId', farmMapInput.cultureId);
-        }
-
-        if (farmMapInput.diseaseId) {
-            params = params.set('diseaseId', farmMapInput.diseaseId);
-        }
-
-        if (farmMapInput.harvestId) {
-            params = params.set('harvestId', farmMapInput.harvestId);
-        }
-
-        return this.httpClient
-            .get<Diagnosis[]>(`${this.apiUrl}/diagnosis/filter`, {
-                ...this.httpOptionsBypassInterceptor,
-                params
-            })
             .pipe(catchError(this.handleError));
     }
 

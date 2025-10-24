@@ -1,9 +1,12 @@
 <lib-card>
     <h2 class="text-xl text-center font-semibold mb-4">Mapa das propriedades</h2>
     <lib-date-type-filter
+        [diagnoses]="data"
+        (locationShapesFiltered)="onLocationShapesFiltered($event)"
     ></lib-date-type-filter>
 
     <lib-get-location
         [editable]="false"
+        [setShapesFromParent]="locationShapes"
     ></lib-get-location>
 </lib-card>

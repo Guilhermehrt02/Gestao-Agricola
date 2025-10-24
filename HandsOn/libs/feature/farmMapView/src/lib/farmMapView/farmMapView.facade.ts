@@ -3,46 +3,46 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
-  FarmMapInput,
   Diagnosis,
-  DiagnosisFacade
+  DiagnosisFacade,
+  AuthFacade
 } from '@farm/core';
-import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class FarmMapViewComponentFacade {
     private loadingSubject = new BehaviorSubject<boolean>(false);
-
-    private mapDataSubject = new BehaviorSubject<Diagnosis[] | null>(
-      null,
-    );
+    private diagnosisSubject = new BehaviorSubject<Diagnosis[]>([]);
+    
+    userId: string | undefined;
 
     loading$: Observable<boolean> = this.loadingSubject.asObservable();
-    mapData$: Observable<Diagnosis[] | null> = this.mapDataSubject.asObservable();
+    diagnoses$: Observable<Diagnosis[]> = this.diagnosisSubject.asObservable();
 
-    constructor(private diagnosisFacade: DiagnosisFacade, private router: Router) {}
+    constructor(
+        private diagnosisFacade: DiagnosisFacade, 
+        private authFacade: AuthFacade,
+    ) {}
 
-    load(farmMapInput: FarmMapInput) {
+    load() {
+        const data = this.authFacade.decodedToken;
+
+        this.userId = data.nameid;
+
         this.loadingSubject.next(true);
 
         this.diagnosisFacade
-        .getDiagnosesByFilter(farmMapInput)
+        .getAllDiagnoses(this.userId)
         .pipe(
             tap(
             (diagnosisData) => {
-                this.mapDataSubject.next(diagnosisData);
+                this.diagnosisSubject.next(diagnosisData);
                 this.loadingSubject.next(false);
             },
-            (error) => {
-                const code = error.code;
-                if (code === 400 || code === 404) this.router.navigate(['/404']);
+            () => {
+                this.loadingSubject.next(false);
             },
             ),
         )
         .subscribe();
-    }
-
-    submit(farmInput: FarmMapInput) {
-        this.load(farmInput);
     }
 }

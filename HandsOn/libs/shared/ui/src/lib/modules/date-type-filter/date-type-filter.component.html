@@ -5,13 +5,13 @@
     Filtros do Mapa
   </h2>
 
-  <form [formGroup]="form" class="space-y-4">
+  <form [formGroup]="form" class="space-y-4" (ngSubmit)="onFilterChange()">
 
     <div class="flex flex-wrap gap-2">
       <lib-select
         [options]="farms"
         placeholder="Filtrar por fazenda"
-        formControlName="farm"
+        [control]="farm"
         [multiple]="true"
         class="flex-1"
       ></lib-select>
@@ -19,7 +19,7 @@
       <lib-select
         [options]="plots"
         placeholder="Filtrar por talhão"
-        formControlName="plot"
+        [control]="plot"
         [multiple]="true"
         class="flex-1"
       ></lib-select>
@@ -29,7 +29,7 @@
       <lib-select
         [options]="harvests"
         placeholder="Filtrar por colheita"
-        formControlName="harvest"
+        [control]="harvest"
         [multiple]="true"
         class="flex-1"
       ></lib-select>
@@ -37,7 +37,7 @@
       <lib-select
         [options]="problems"
         placeholder="Filtrar por problema"
-        formControlName="problem"
+        [control]="problem"
         [multiple]="true"
         class="flex-1"
       ></lib-select>
@@ -47,15 +47,15 @@
       <lib-select
         [options]="cultures"
         placeholder="Filtrar por cultivo"
-        formControlName="culture"
+        [control]="culture"
         [multiple]="true"
         class="flex-1"
       ></lib-select>
 
       <lib-select
-        [options]="status"
+        [options]="statusOptions"
         placeholder="Filtrar por status"
-        formControlName="status"
+        [control]="status"
         [multiple]="true"
         class="flex-1"
       ></lib-select>
@@ -65,14 +65,14 @@
       <lib-input
         [label]="'Data Inicial'"
         [type]="'date'"
-        formControlName="startDate"
+        [control]="startDate"
         class="flex-1"
       ></lib-input>
 
       <lib-input
         [label]="'Data Final'"
         [type]="'date'"
-        formControlName="endDate"
+        [control]="endDate"
         class="flex-1"
       ></lib-input>
     </div>
@@ -81,7 +81,7 @@
       <lib-button
         label="Aplicar filtros"
         [disabled]="form.invalid"
-        (click)="getFilterValues()"
+        type="submit"
       ></lib-button>
     </div>
   </form>
