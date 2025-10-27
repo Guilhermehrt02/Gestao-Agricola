@@ -23,7 +23,9 @@ namespace Application.Services
         {
             var userId = Guid.Parse(actionUser.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NotFoundException("User not found"));
 
+            Console.WriteLine($"Fetching farms for user ID: {userId}");
             var farms = await _farmRepository.GetAllByUserIdAsync(userId);
+            Console.WriteLine($"Fetching completed. Number of farms found: {farms.Count()}");
             return farms.Select(FarmViewModel.FromEntity);
         }
 

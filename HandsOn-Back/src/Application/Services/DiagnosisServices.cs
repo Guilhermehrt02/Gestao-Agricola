@@ -36,7 +36,9 @@ namespace Application.Services
 
         public async Task<IEnumerable<DiagnosisViewModel>> GetAllByUserIdAsync(Guid userId)
         {
+            Console.WriteLine($"###############    Fetching diagnoses for user ID: {userId}");
             var diagnosis = await _diagnosisRepository.GetAllByUserIdAsync(userId);
+            Console.WriteLine($"###############    Fetching completed. Number of diagnoses found: {diagnosis.Count()}");
             return diagnosis.Select(DiagnosisViewModel.FromEntity);
         }
 

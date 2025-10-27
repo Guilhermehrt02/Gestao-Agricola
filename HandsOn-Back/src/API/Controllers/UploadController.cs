@@ -32,6 +32,18 @@ namespace API.Controllers
             });
         }
 
+        // [HttpPost("Classifier")]
+        // public async Task<IActionResult> Classifier([FromForm] IFormFile file)
+        // {
+        //     var response = await _uploadServices.RunClassifier(file);
+
+        //     return Ok(new
+        //     {
+        //         Message = "Executed successfully",
+        //         Response = response
+        //     });
+        // }
+
         [HttpPost("Classifier")]
         public async Task<IActionResult> Classifier([FromForm] IFormFile file)
         {

@@ -19,7 +19,7 @@ namespace Core.Entities
         public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
-        public List<LocationShape>? LocationShapes { get; set; }
+        public List<LocationShape> LocationShapes { get; set; } = new(); // ✅
 
         public Diagnosis() { }
 
