@@ -1,7 +1,13 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Accordion, Gallery, ImageCompare, CardComponent, GetLocationComponent } from '@farm/ui';
+import {
+  Accordion,
+  Gallery,
+  ImageCompare,
+  CardComponent,
+  GetLocationComponent,
+} from '@farm/ui';
 import { Diagnosis } from '@farm/core';
 import { DiagnosisResultFacade } from './diagnosis-result.facade';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -17,8 +23,8 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
     ImageCompare,
     CardComponent,
     ReactiveFormsModule,
-    GetLocationComponent
-],
+    GetLocationComponent,
+  ],
   templateUrl: './diagnosis-result.html',
   styleUrl: './diagnosis-result.css',
 })
@@ -31,15 +37,17 @@ export class DiagnosisResult implements OnInit, OnDestroy {
   commentControl = new FormControl('');
   feedbackSent = false;
 
-  title = "Resultado do Diagnóstico";
-  description = "Veja abaixo o resultado do diagnóstico realizado para a sua lavoura.";
+  title = 'Resultado do Diagnóstico';
+  description =
+    'Veja abaixo o resultado do diagnóstico realizado para a sua lavoura.';
 
   mainResult?: any;
+  currentResult?: any;
   otherResults: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
-    public facade: DiagnosisResultFacade
+    public facade: DiagnosisResultFacade,
   ) {}
 
   ngOnInit() {
@@ -47,7 +55,7 @@ export class DiagnosisResult implements OnInit, OnDestroy {
 
     this.id = this.route.snapshot.paramMap.get('id') || undefined;
 
-    if(!this.id) return;
+    if (!this.id) return;
 
     this.facade.load(this.id);
 
@@ -56,6 +64,7 @@ export class DiagnosisResult implements OnInit, OnDestroy {
 
       this.diagnosis = diagnosis;
       this.mainResult = diagnosis.result.imageSimilarities[0];
+      this.currentResult = diagnosis.result.imageSimilarities[0];
       this.otherResults = diagnosis.result.imageSimilarities.slice(1);
     });
 
@@ -79,5 +88,20 @@ export class DiagnosisResult implements OnInit, OnDestroy {
     this.selectedOption = 'sim';
     this.commentControl.setValue('');
     this.feedbackSent = true;
+  }
+
+  selectResult(result: any) {
+    const oldMainResult = this.mainResult ? { ...this.mainResult } : null;
+
+    this.mainResult = { ...result };
+
+    this.otherResults = [
+      ...(oldMainResult ? [oldMainResult] : []),
+      ...this.otherResults.filter(r => r !== result),
+    ];
+
+    this.otherResults.sort((a, b) => b.similarity - a.similarity);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
