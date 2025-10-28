@@ -211,8 +211,8 @@ namespace Application.Services
             var results = new List<dynamic>
             {
                 new { ImagesBook = "ferrugem", Similarity = 0.74 },
-                new { ImagesBook = "crisalida", Similarity = 0.8 },
-                new { ImagesBook = "bicho mineiro", Similarity = 0.71 }
+                new { ImagesBook = "Phoma", Similarity = 0.7 },
+                new { ImagesBook = "bicho mineiro", Similarity = 0.8 }
             };
             if (results != null && results.Count > 0)
             {
