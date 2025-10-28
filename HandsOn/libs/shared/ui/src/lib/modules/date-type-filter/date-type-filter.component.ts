@@ -179,6 +179,10 @@ export class DateTypeFilterComponent implements OnChanges {
       const selectedProblemIds = (filter.problem || []).map((p: any) => p.value);
       const selectedCultureIds = (filter.culture || []).map((c: any) => c.value);
       const selectedStatus = (filter.status || []).map((s: any) => s.value);
+      const selectedDates = {
+        start: filter.startDate ? new Date(filter.startDate) : null,
+        end: filter.endDate ? new Date(filter.endDate) : new Date(),
+      };
 
       const matchHarvest =
         !selectedHarvestIds.length || selectedHarvestIds.includes(d.harvest?.id);
@@ -195,13 +199,29 @@ export class DateTypeFilterComponent implements OnChanges {
       const matchStatus =
         !selectedStatus.length || selectedStatus.includes(d.status);
 
+      let matchDate = true;
+
+      if (selectedDates.start) {
+        const diagnosisDate = new Date(d.date);
+        if (selectedDates.start > diagnosisDate || selectedDates.end < diagnosisDate) {
+          matchDate = false;
+        }
+      } else if (selectedDates.end) {
+        const diagnosisDate = new Date(d.date);
+
+        if (selectedDates.end < diagnosisDate) {
+          matchDate = false;
+        }
+      }
+
       return (
         matchHarvest &&
         matchFarm &&
         matchPlot &&
         matchProblem &&
         matchCulture &&
-        matchStatus
+        matchStatus &&
+        matchDate
       );
     });
 
