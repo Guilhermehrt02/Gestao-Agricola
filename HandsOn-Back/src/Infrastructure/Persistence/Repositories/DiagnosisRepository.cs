@@ -11,30 +11,6 @@ namespace Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<Diagnosis>> GetAllByUserIdAsync(Guid userId)
         {
-            // 1. Verificar se o usuário tem fazendas
-            var userFarms = await _context.UserFarms
-                .Where(uf => uf.UserId == userId)
-                .ToListAsync();
-
-            Console.WriteLine($"######## UserFarms encontrados: {userFarms.Count}");
-            foreach (var uf in userFarms)
-            {
-                Console.WriteLine($"######## FarmId: {uf.FarmId}");
-            }
-
-            // 2. Verificar se existem diagnósticos para essas fazendas
-            var farmIds = userFarms.Select(uf => uf.FarmId).ToList();
-            var diagnosesCount = await _context.Diagnoses
-                .Where(d => farmIds.Contains(d.FarmId))
-                .CountAsync();
-
-            Console.WriteLine($"######## Diagnoses encontrados para essas fazendas: {diagnosesCount}");
-
-            // 3. Verificar todos os diagnósticos (sem filtro)
-            var allDiagnoses = await _context.Diagnoses.CountAsync();
-            Console.WriteLine($"######## Total de diagnoses no banco: {allDiagnoses}");
-
-            // Query original
             return await _context.Diagnoses
                 .Include(x => x.Farm)
                 .Include(x => x.Harvest)
@@ -45,7 +21,9 @@ namespace Infrastructure.Persistence.Repositories
                     .ThenInclude(dr => dr.Similarities)
                         .ThenInclude(s => s.Disease)
                 .Where(d => _context.UserFarms
-                    .Any(uf => uf.UserId == userId && uf.FarmId == d.FarmId))
+                    .Where(uf => uf.UserId == userId)
+                    .Select(uf => uf.FarmId)
+                    .Contains(d.FarmId))
                 .ToListAsync();
         }
 
