@@ -6,7 +6,7 @@ import { DateTypeFilterComponent,
   CardComponent 
 } from '@farm/ui';
 import { FarmMapViewComponentFacade } from './farmMapView.facade';
-import { Diagnosis } from '@farm/core';
+import { Diagnosis, MapLocation } from '@farm/core';
 
 @Component({
   selector: 'lib-farm-map-view',
@@ -36,7 +36,7 @@ export class FarmMapView implements OnInit {
     this.facade.load();
   }
 
-  onLocationShapesFiltered(filteredLocationShapes: any[]) {
+  onLocationShapesFiltered(filteredLocationShapes: MapLocation[]) {
     this.locationShapes = filteredLocationShapes;
   }
 }

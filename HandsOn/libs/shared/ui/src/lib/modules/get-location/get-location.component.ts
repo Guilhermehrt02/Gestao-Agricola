@@ -1,3 +1,4 @@
+/* eslint-disable @angular-eslint/prefer-inject */
 import {
   Component,
   ElementRef,
@@ -13,7 +14,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { Geolocation } from '@capacitor/geolocation';
 import { ButtonComponent } from '../../components/button/button.component';
-import { GoogleMapsService, LocationShapeData } from '@farm/core';
+import { GoogleMapsService, LocationShapeData, MapLocation } from '@farm/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'lib-get-location',
@@ -36,6 +38,10 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
   }>();
 
   @Output() shapesDrawn = new EventEmitter<any[]>();
+  
+  constructor(
+      private router: Router,
+    ) {}
 
   private readonly googleMapsService = inject(GoogleMapsService);
 
@@ -147,8 +153,10 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         this.fitMapToShapes();
 
         const centroid = getPolygonCenter(polygon);
-
-        const content = this.createInfoWindowContent(label, () => {
+        const location: MapLocation = {
+          label,
+        };
+        const content = this.createInfoWindowContent(location, () => {
           polygon.setMap(null);
           this.removeShape(polygon);
         });
@@ -196,7 +204,11 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         addShapeToList(marker, 'marker', label);
         this.fitMapToShapes();
 
-        const content = this.createInfoWindowContent(label, () => {
+        const location: MapLocation = {
+          label,
+        };
+
+        const content = this.createInfoWindowContent(location, () => {
           marker.setMap(null);
           this.removeShape(marker);
         });
@@ -223,44 +235,96 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
   }
 
   private createInfoWindowContent(
-    label: string,
-    onDelete: () => void,
+    location: MapLocation,
+    onDelete: () => void
   ): HTMLElement {
+    const { label, diagnosisInfo } = location;
+
     const content = document.createElement('div');
     content.style.backgroundColor = 'white';
     content.style.color = 'black';
-    content.style.padding = '8px';
-    content.style.borderRadius = '4px';
+    content.style.padding = '10px';
+    content.style.borderRadius = '8px';
     content.style.border = '1px solid #ccc';
-    content.style.fontSize = '14px';
+    content.style.fontSize = '13px';
+    content.style.maxWidth = '240px';
+    content.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
     content.style.display = 'flex';
-    content.style.justifyContent = 'space-between';
-    content.style.alignItems = 'center';
-    content.style.gap = '8px';
-    content.style.maxWidth = '200px';
+    content.style.flexDirection = 'column';
+    content.style.gap = '6px';
 
-    const title = document.createElement('span');
-    title.textContent = label;
-    title.style.flex = '1';
+    const title = document.createElement('h4');
+    title.textContent = label || 'Diagnóstico';
+    title.style.margin = '0';
+    title.style.fontSize = '15px';
+    title.style.fontWeight = '600';
+    title.style.color = '#1a4d2e';
     content.appendChild(title);
 
-    if(this.editable){
-      const closeBtn = document.createElement('button');
-      closeBtn.textContent = '❌';
-      closeBtn.style.cursor = 'pointer';
-      closeBtn.style.backgroundColor = 'transparent';
-      closeBtn.style.border = '1px solid #ccc';
-      closeBtn.style.borderRadius = '4px';
-      closeBtn.style.fontSize = '16px';
-      closeBtn.style.padding = '0 6px';
-      closeBtn.style.color = 'black';
+    if (diagnosisInfo) {
+      const infoList = document.createElement('div');
+      infoList.style.display = 'flex';
+      infoList.style.flexDirection = 'column';
+      infoList.style.gap = '2px';
 
-      closeBtn.onclick = onDelete;
-      content.appendChild(closeBtn);
+      const addLine = (label: string, value?: string | Date) => {
+        if (!value) return;
+        const line = document.createElement('div');
+        line.innerHTML = `<strong>${label}:</strong> ${value}`;
+        infoList.appendChild(line);
+      };
+
+      addLine('Doença', diagnosisInfo.diseaseName);
+      addLine('Fazenda', diagnosisInfo.farm);
+      addLine('Talhão', diagnosisInfo.plot);
+      addLine('Colheita', diagnosisInfo.harvest);
+      addLine('Status', diagnosisInfo.status);
+      addLine('Data', diagnosisInfo.date ? new Date(diagnosisInfo.date).toLocaleDateString() : undefined);
+
+      content.appendChild(infoList);
     }
+
+    const footer = document.createElement('div');
+    footer.style.display = 'flex';
+    footer.style.justifyContent = 'space-between';
+    footer.style.alignItems = 'center';
+    footer.style.marginTop = '8px';
+    footer.style.gap = '6px';
+
+    if (diagnosisInfo?.status === 'Processed' && diagnosisInfo.diagnosisId) {
+      const viewBtn = document.createElement('button');
+      viewBtn.textContent = 'Ver diagnóstico';
+      viewBtn.style.backgroundColor = '#166534';
+      viewBtn.style.color = 'white';
+      viewBtn.style.border = 'none';
+      viewBtn.style.borderRadius = '4px';
+      viewBtn.style.padding = '4px 8px';
+      viewBtn.style.fontSize = '12px';
+      viewBtn.style.cursor = 'pointer';
+      viewBtn.onclick = () =>
+        this.navigateToViewDiagnosis(diagnosisInfo.diagnosisId || '');
+      footer.appendChild(viewBtn);
+    }
+
+    if (this.editable) {
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Excluir';
+      deleteBtn.style.backgroundColor = '#b91c1c';
+      deleteBtn.style.color = 'white';
+      deleteBtn.style.border = 'none';
+      deleteBtn.style.borderRadius = '4px';
+      deleteBtn.style.padding = '4px 8px';
+      deleteBtn.style.fontSize = '12px';
+      deleteBtn.style.cursor = 'pointer';
+      deleteBtn.onclick = onDelete;
+      footer.appendChild(deleteBtn);
+    }
+
+    if (footer.children.length > 0) content.appendChild(footer);
 
     return content;
   }
+
 
   private removeShape(shapeObj: google.maps.Polygon | google.maps.Marker) {
     this.drawnShapes = this.drawnShapes.filter((s) => s.mapObject !== shapeObj);
@@ -316,16 +380,16 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     }
   }
 
-  loadShapes(shapes: LocationShapeData[]) {
+  loadShapes(shapes: any[]) {
     shapes.forEach((shape) => {
       if (shape.type === 'polygon') {
         const path = shape.coordinates.map(
-          (coord) => new google.maps.LatLng(coord.lat, coord.lng),
+          (coord: any) => new google.maps.LatLng(coord.lat, coord.lng),
         );
 
         const polygon = new google.maps.Polygon({
           paths: path,
-          fillColor: '#FF0000',
+          fillColor: shape.color || '#FF0000',
           fillOpacity: 0.35,
           strokeWeight: 2,
           editable: this.editable,
@@ -341,7 +405,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
         const centroid = this.getPolygonCenter(polygon);
 
-        const content = this.createInfoWindowContent(shape.label, () => {
+        const content = this.createInfoWindowContent(shape, () => {
           polygon.setMap(null);
           this.removeShape(polygon);
         });
@@ -410,10 +474,10 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         marker.addListener('dragend', () => {
           this.emitCurrentShapes();
 
-          this.emitCoords(
-            marker.getPosition()!.lat(),
-            marker.getPosition()!.lng(),
-          );
+          const pos = marker.getPosition();
+          if (pos) {
+            this.emitCoords(pos.lat(), pos.lng());
+          }
         });
       }
     });
@@ -500,5 +564,9 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     } else {
       this.map.fitBounds(bounds);
     }
+  }
+
+  navigateToViewDiagnosis(id: string): void {
+    this.router.navigate([`/app/diagnoses/diagnosis/${id}/result`]);
   }
 }

@@ -14,7 +14,7 @@ import {
 } from '../../components/select/select.component';
 import { ButtonComponent } from '../../components/button/button.component';
 import { InputComponent } from '../../components/input/input.component';
-import { Diagnosis, DiagnosisStatus } from '@farm/core';
+import { Diagnosis, DiagnosisStatus, MapLocation } from '@farm/core';
 
 @Component({
   selector: 'lib-date-type-filter',
@@ -74,7 +74,40 @@ export class DateTypeFilterComponent implements OnChanges {
 
     this.diagnoses = this.diagnoses.filter((d) => d.locationShapes.length > 0);
 
+    const uniqueDiseases = Array.from(
+      new Set(
+        this.diagnoses.map(
+          (d) => d.result?.imageSimilarities?.[0]?.disease?.id
+        )
+      )
+    ).filter((v): v is string => Boolean(v));
+
+    const diseaseColorMap = new Map<string, string>();
+    uniqueDiseases.forEach((id, index) => {
+      const hue = (index * 360) / uniqueDiseases.length;
+      const color = `hsl(${hue}, 70%, 50%)`;
+      diseaseColorMap.set(id, color);
+    });
+
     (this.diagnoses || []).forEach((d) => {
+      const diseaseId = d.result?.imageSimilarities?.[0]?.disease?.id;
+      const color = (diseaseId ? diseaseColorMap.get(diseaseId) : undefined) || '#95a5a6';
+      const diseaseName = d.result?.imageSimilarities?.[0]?.disease?.name;
+
+      d.locationShapes.forEach((shape: MapLocation) => {
+        shape.color = color;
+        shape.diagnosisInfo = {
+          diagnosisId: d.id,
+          diseaseName: diseaseName || 'Desconhecida',
+          farm: d.farm?.name || 'Desconhecida',
+          plot: d.plot?.name || 'Desconhecida',
+          harvest: d.harvest?.name || 'Desconhecida',
+          status: d.status,
+          date: d.date
+        };
+      });
+
+
       if (d.farm?.id && !farmsMap.has(d.farm.id)) {
         farmsMap.set(d.farm.id, d.farm.name);
       }
@@ -86,7 +119,12 @@ export class DateTypeFilterComponent implements OnChanges {
       if (d.harvest?.id && !harvestsMap.has(d.harvest.id)) {
         harvestsMap.set(d.harvest.id, d.harvest.name);
       }
-    }); 
+
+      
+      if (diseaseId && diseaseName && !problemsMap.has(diseaseId)) {
+        problemsMap.set(diseaseId, diseaseName);
+      }
+    });
 
     this.farms = Array.from(farmsMap, ([value, label]) => ({ label, value }));
     this.plots = Array.from(plotsMap, ([value, label]) => ({ label, value }));
@@ -167,7 +205,7 @@ export class DateTypeFilterComponent implements OnChanges {
       );
     });
 
-
+ 
     this.locationShapesFiltered.emit(filteredDiagnoses.map((d) => d.locationShapes).flat());
   }
 
