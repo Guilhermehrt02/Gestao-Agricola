@@ -11,6 +11,7 @@
 
   <lib-image-compare
     *ngIf="mainResult.disease"
+    [attr.key]="mainResult.disease.referenceImageUrl"
     [originalImageUrl]="diagnosis?.photoUrl || ''"
     [diseaseImageUrl]="mainResult.disease?.referenceImageUrl || ''"
   >

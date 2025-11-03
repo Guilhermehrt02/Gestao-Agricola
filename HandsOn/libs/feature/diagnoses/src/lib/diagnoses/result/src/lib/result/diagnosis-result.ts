@@ -3,7 +3,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   Accordion,
-  Gallery,
   ImageCompare,
   CardComponent,
   GetLocationComponent,
@@ -18,7 +17,6 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
   imports: [
     CommonModule,
     Accordion,
-    Gallery,
     RouterModule,
     ImageCompare,
     CardComponent,
