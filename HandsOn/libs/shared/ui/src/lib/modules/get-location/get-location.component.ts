@@ -27,6 +27,7 @@ import { Router } from '@angular/router';
 export class GetLocationComponent implements AfterViewInit, OnChanges {
   private activeInfoWindow: google.maps.InfoWindow | null = null;
   @Input() editable = true;
+  @Input() clearAllDrawings = true;
   @Input() setPositionFromParent?: { latitude: number; longitude: number };
   @Input() setShapesFromParent?: LocationShapeData[];
 

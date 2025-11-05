@@ -2,12 +2,12 @@
   <lib-button
     label="Obter Localização Atual"
     type="button"
-    [severity]="'secondary'"
+    [severity]="'help'"
     [loading]="loading"
     (click)="detectLocation()"
   ></lib-button>
 
-  <lib-button
+  <lib-button *ngIf="clearAllDrawings"
     label="Limpar Desenhos"
     type="button"
     [severity]="'warn'"

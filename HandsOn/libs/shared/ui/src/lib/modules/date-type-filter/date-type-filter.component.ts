@@ -35,6 +35,8 @@ export class DateTypeFilterComponent implements OnChanges {
 
   selectedFilter: any = null;
   form!: FormGroup;
+  showCustomPicker = true;
+
 
   farms: SelectOption[] = [];
   plots: SelectOption[] = [];
@@ -227,6 +229,11 @@ export class DateTypeFilterComponent implements OnChanges {
 
  
     this.locationShapesFiltered.emit(filteredDiagnoses.map((d) => d.locationShapes).flat());
+    this.toggleCustomPicker();
+  }
+
+  toggleCustomPicker() {
+    this.showCustomPicker = !this.showCustomPicker;
   }
 
 }

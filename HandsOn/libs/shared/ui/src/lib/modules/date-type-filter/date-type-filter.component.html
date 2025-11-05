@@ -1,12 +1,27 @@
 <div
   class="p-4 bg-gray-900 border border-green-700 rounded-md shadow-md space-y-4 mb-4"
 >
-  <h2 class="text-lg font-semibold text-green-400 mb-2">
-    Filtros do Mapa
-  </h2>
+  <div class="flex flex-wrap items-center justify-between w-full">
+    <h2 class="text-lg font-semibold text-green-400 mb-2">Filtros do Mapa</h2>
 
-  <form [formGroup]="form" class="space-y-4" (ngSubmit)="onFilterChange()">
+    <button
+      class="ml-4 px-4 py-2 border rounded font-medium flex items-center gap-2 transition"
+      [ngClass]="{
+        'bg-green-900 text-white border-blue-500': showCustomPicker,
+        'bg-gray-700 text-white border-gray-600': !showCustomPicker
+      }"
+      (click)="toggleCustomPicker()"
+    >
+      <i class="pi pi-angle-down"></i>
+    </button>
+  </div>
 
+  <form
+    *ngIf="showCustomPicker"
+    [formGroup]="form"
+    class="space-y-4"
+    (ngSubmit)="onFilterChange()"
+  >
     <div class="flex flex-wrap gap-2">
       <lib-select
         [options]="farms"
@@ -42,7 +57,7 @@
         class="flex-1"
       ></lib-select>
     </div>
-    
+
     <div class="flex flex-wrap gap-2">
       <lib-select
         [options]="cultures"
