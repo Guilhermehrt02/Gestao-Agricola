@@ -5,9 +5,17 @@
         (locationShapesFiltered)="onLocationShapesFiltered($event)"
     ></lib-date-type-filter>
 
+    <lib-map-layers
+        [rawLayers]="locationShapes"
+        (toggleVisibility)="onToggleLayer($event)"
+        (focusLayer)="onFocusLayer($event)">
+    </lib-map-layers>
+
     <lib-get-location
-        [editable]="true"
+        #mapContainer
+        [editable]="editable"
         [clearAllDrawings]="false"
         [setShapesFromParent]="locationShapes"
+        [setFocusFromParent]="focusedLocationShape"
     ></lib-get-location>
 </lib-card>

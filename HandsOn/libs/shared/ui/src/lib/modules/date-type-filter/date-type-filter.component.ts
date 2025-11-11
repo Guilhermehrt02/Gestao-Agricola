@@ -37,7 +37,6 @@ export class DateTypeFilterComponent implements OnChanges {
   form!: FormGroup;
   showCustomPicker = true;
 
-
   farms: SelectOption[] = [];
   plots: SelectOption[] = [];
   harvests: SelectOption[] = [];
@@ -98,12 +97,17 @@ export class DateTypeFilterComponent implements OnChanges {
 
       d.locationShapes.forEach((shape: MapLocation) => {
         shape.color = color;
-        shape.diagnosisInfo = {
-          diagnosisId: d.id,
-          diseaseName: diseaseName || 'Desconhecida',
-          farm: d.farm?.name || 'Desconhecida',
-          plot: d.plot?.name || 'Desconhecida',
-          harvest: d.harvest?.name || 'Desconhecida',
+        shape.class = 'diagnosis';
+        shape.hasShapes = true;
+        shape.info = {
+          id: d.id,
+          name: diseaseName || 'Desconhecida',
+          farmName: d.farm?.name,
+          farmId: d.farm?.id,
+          plotId: d.plot?.id,
+          plotName: d.plot?.name || 'Desconhecida',
+          harvestId: d.harvest?.id,
+          harvestName: d.harvest?.name || 'Desconhecida',
           status: d.status,
           date: d.date
         };
@@ -122,7 +126,6 @@ export class DateTypeFilterComponent implements OnChanges {
         harvestsMap.set(d.harvest.id, d.harvest.name);
       }
 
-      
       if (diseaseId && diseaseName && !problemsMap.has(diseaseId)) {
         problemsMap.set(diseaseId, diseaseName);
       }
@@ -134,9 +137,15 @@ export class DateTypeFilterComponent implements OnChanges {
     this.problems = Array.from(problemsMap, ([value, label]) => ({ label, value }));
     this.cultures = Array.from(culturesMap, ([value, label]) => ({ label, value }));
 
-    this.locationShapesFiltered.emit(
-      this.diagnoses.map((d) => d.locationShapes).flat(),
-    );
+    const locationShapes = this.diagnoses.map((d) => d.locationShapes).flat();
+
+    const allSet = {
+      diagnoses: locationShapes, 
+      farms: Array.from(farmsMap.keys()), 
+      plots: Array.from(plotsMap.keys())
+    };
+
+    this.locationShapesFiltered.emit(allSet);
   }
 
   get startDate(): FormControl {
@@ -173,11 +182,11 @@ export class DateTypeFilterComponent implements OnChanges {
 
   onFilterChange() {
     const filter = this.form.getRawValue();
+    const selectedFarmIds = (filter.farm || []).map((f: any) => f.value);
+    const selectedPlotIds = (filter.plot || []).map((p: any) => p.value);
 
     const filteredDiagnoses = (this.diagnoses || []).filter((d) => {
       const selectedHarvestIds = (filter.harvest || []).map((h: any) => h.value);
-      const selectedFarmIds = (filter.farm || []).map((f: any) => f.value);
-      const selectedPlotIds = (filter.plot || []).map((p: any) => p.value);
       const selectedProblemIds = (filter.problem || []).map((p: any) => p.value);
       const selectedCultureIds = (filter.culture || []).map((c: any) => c.value);
       const selectedStatus = (filter.status || []).map((s: any) => s.value);
@@ -227,8 +236,16 @@ export class DateTypeFilterComponent implements OnChanges {
       );
     });
 
- 
-    this.locationShapesFiltered.emit(filteredDiagnoses.map((d) => d.locationShapes).flat());
+    const filteredLocationShapes = filteredDiagnoses.map((d) => d.locationShapes).flat();
+    
+    const filteredSet = {
+      diagnoses: filteredLocationShapes,
+      farms: selectedFarmIds, 
+      plots: selectedPlotIds
+    };
+
+    this.locationShapesFiltered.emit(filteredSet);
+
     this.toggleCustomPicker();
   }
 

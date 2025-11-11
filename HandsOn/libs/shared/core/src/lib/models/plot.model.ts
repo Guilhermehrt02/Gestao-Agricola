@@ -8,4 +8,7 @@ export interface Plot {
     longitude?: number;
     createdAt: Date;
     updatedAt: Date;
+    locationShapes?: any[];
+    totalArea?: number;
+    affectedArea?: number;
 }

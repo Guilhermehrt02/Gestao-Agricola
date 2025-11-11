@@ -29,6 +29,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
   @Input() editable = true;
   @Input() clearAllDrawings = true;
   @Input() setPositionFromParent?: { latitude: number; longitude: number };
+  @Input() setFocusFromParent?: LocationShapeData;
   @Input() setShapesFromParent?: LocationShapeData[];
 
   @ViewChild('mapContainer', { static: false }) mapElementRef!: ElementRef;
@@ -118,7 +119,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         fillOpacity: 0.35,
         strokeWeight: 2,
         editable: true,
-        draggable: true,
+        draggable: false,
       },
     });
 
@@ -239,7 +240,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     location: MapLocation,
     onDelete: () => void
   ): HTMLElement {
-    const { label, diagnosisInfo } = location;
+    const { label, info } = location;
 
     const content = document.createElement('div');
     content.style.backgroundColor = 'white';
@@ -262,7 +263,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     title.style.color = '#1a4d2e';
     content.appendChild(title);
 
-    if (diagnosisInfo) {
+    if (info) {
       const infoList = document.createElement('div');
       infoList.style.display = 'flex';
       infoList.style.flexDirection = 'column';
@@ -275,12 +276,12 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         infoList.appendChild(line);
       };
 
-      addLine('Doença', diagnosisInfo.diseaseName);
-      addLine('Fazenda', diagnosisInfo.farm);
-      addLine('Talhão', diagnosisInfo.plot);
-      addLine('Colheita', diagnosisInfo.harvest);
-      addLine('Status', diagnosisInfo.status);
-      addLine('Data', diagnosisInfo.date ? new Date(diagnosisInfo.date).toLocaleDateString() : undefined);
+      addLine('Doença', info.name);
+      addLine('Fazenda', info.farmName);
+      addLine('Talhão', info.plotName);
+      addLine('Colheita', info.harvestName);
+      addLine('Status', info.status);
+      addLine('Data', info.date ? new Date(info.date).toLocaleDateString() : undefined);
 
       content.appendChild(infoList);
     }
@@ -292,7 +293,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     footer.style.marginTop = '8px';
     footer.style.gap = '6px';
 
-    if (diagnosisInfo?.status === 'Processed' && diagnosisInfo.diagnosisId) {
+    if (info?.status === 'Processed' && info.id) {
       const viewBtn = document.createElement('button');
       viewBtn.textContent = 'Ver diagnóstico';
       viewBtn.style.backgroundColor = '#166534';
@@ -303,7 +304,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       viewBtn.style.fontSize = '12px';
       viewBtn.style.cursor = 'pointer';
       viewBtn.onclick = () =>
-        this.navigateToViewDiagnosis(diagnosisInfo.diagnosisId || '');
+        this.navigateToViewDiagnosis(info.id || '');
       footer.appendChild(viewBtn);
     }
 
@@ -363,6 +364,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
   }
 
   private lastShapes: LocationShapeData[] | null = null;
+  private lastFocus: LocationShapeData | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
@@ -377,6 +379,20 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         this.lastShapes = this.setShapesFromParent;
         this.clearDrawings();
         this.loadShapes(this.setShapesFromParent);
+      }
+    }
+
+    if (
+      changes['setFocusFromParent'] &&
+      this.setFocusFromParent &&
+      this.map
+    ){
+      const isDifferent =
+        JSON.stringify(this.lastFocus) !==
+        JSON.stringify(this.setFocusFromParent);
+      if (isDifferent) {
+        this.lastFocus = this.setFocusFromParent;
+        this.setFocus(this.setFocusFromParent);
       }
     }
   }
@@ -394,7 +410,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           fillOpacity: 0.35,
           strokeWeight: 2,
           editable: this.editable,
-          draggable: this.editable,
+          draggable: false,
           map: this.map,
         });
 
@@ -416,15 +432,22 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           position: centroid,
         });
 
-        polygon.addListener('click', (e: google.maps.MapMouseEvent) => {
-        if (this.activeInfoWindow) {
-          this.activeInfoWindow.close();
-        }
-        
-        infoWindow.setPosition(e.latLng);
-        infoWindow.open(this.map);
-        this.activeInfoWindow = infoWindow;
-      });
+        polygon.addListener('mouseover', (e: google.maps.MapMouseEvent) => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
+          
+          infoWindow.setPosition(e.latLng);
+          infoWindow.open(this.map);
+          this.activeInfoWindow = infoWindow;
+        });
+
+        polygon.addListener('mouseout', () => {
+          if (this.activeInfoWindow === infoWindow) {
+            infoWindow.close();
+            this.activeInfoWindow = null;
+          }
+        });
 
         polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
 
@@ -443,7 +466,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
         const marker = new google.maps.Marker({
           position: pos,
-          draggable: this.editable,
+          draggable: false,
           map: this.map,
         });
 
@@ -462,15 +485,22 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           content,
         });
 
-        marker.addListener('click', () => {
-        if (this.activeInfoWindow) {
-          this.activeInfoWindow.close();
-        }
+        marker.addListener('mouseover', () => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
 
-        infoWindow.open(this.map, marker);
+          infoWindow.open(this.map, marker);
 
-        this.activeInfoWindow = infoWindow;
-      });
+          this.activeInfoWindow = infoWindow;
+        });
+
+        marker.addListener('mouseout', () => {
+          if (this.activeInfoWindow === infoWindow) {
+            infoWindow.close();
+            this.activeInfoWindow = null;
+          }
+        });
 
         marker.addListener('dragend', () => {
           this.emitCurrentShapes();
@@ -496,7 +526,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       this.marker = new google.maps.Marker({
         position,
         map: this.map,
-        draggable: this.editable,
+        draggable: false,
       });
 
       this.marker.addListener('dragend', () => {
@@ -569,5 +599,22 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
   navigateToViewDiagnosis(id: string): void {
     this.router.navigate([`/app/diagnoses/diagnosis/${id}/result`]);
+  }
+
+  setFocus(shape: LocationShapeData) {
+    let position = null;
+    if (shape.type === 'polygon') {
+      position = this.getPolygonCenter(
+        new google.maps.Polygon({
+          paths: shape.coordinates.map((coord) => new google.maps.LatLng(coord.lat, coord.lng)),
+        })
+      );
+    } else if (shape.type === 'marker') {
+      position = new google.maps.LatLng(shape.coordinates[0].lat, shape.coordinates[0].lng);
+    }
+
+    if (position) {
+      this.map.setCenter(position);
+    }
   }
 }
