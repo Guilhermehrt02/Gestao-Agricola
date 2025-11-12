@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -32,9 +33,9 @@ export class FarmMapView implements OnInit {
   farmsShapes: any[] = [];
   plotsShapes: any[] = [];
   focusedLocationShape: any;
+  creatable: boolean = false;
 
   @ViewChild('mapContainer', { read: ElementRef }) mapContainerRef!: ElementRef;
-
 
   constructor(private facade: FarmMapViewComponentFacade) {}
 
@@ -178,5 +179,20 @@ export class FarmMapView implements OnInit {
       }
     });
     return shapes;
+  }
+
+  onCreateShape() {
+    this.creatable = !this.creatable;
+
+    if (this.creatable && this.mapContainerRef?.nativeElement) {
+      this.mapContainerRef.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }
+
+  onSetFocusByDrawing(shape: any) {
+    this.focusedLocationShape = shape;
   }
 }

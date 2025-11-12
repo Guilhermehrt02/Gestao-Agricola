@@ -32,6 +32,7 @@ export class MapLayersComponent implements OnChanges {
   @Output() toggleVisibility = new EventEmitter<MapLayer>();
   @Output() focusLayer = new EventEmitter<MapLayer>();
   @Output() addLayer = new EventEmitter<string>();
+  @Output() createShape = new EventEmitter<void>();
 
   layers: MapLayer[] = [];
   adding = false;
@@ -129,8 +130,7 @@ export class MapLayersComponent implements OnChanges {
     this.showLayerList = !this.showLayerList;
   }
 
-  onCreateShape(layer: MapLayer) {
-    console.log('Criar desenho para', layer.label);
-    // aqui vai a lógica para desenhar no mapa
+  onCreateShape() {
+    this.createShape.emit();
   }
 }
