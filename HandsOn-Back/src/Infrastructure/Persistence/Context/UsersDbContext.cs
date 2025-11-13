@@ -311,7 +311,20 @@ namespace Infrastructure.Persistence.Context
                 entity.HasOne(ims => ims.Disease)
                     .WithMany()
                     .HasForeignKey(ims => ims.DiseaseId);
-                });
+            });
+
+            modelBuilder.Entity<Farm>()
+                .HasMany(f => f.LocationShapes)
+                .WithOne(ls => ls.Farm)
+                .HasForeignKey(ls => ls.FarmId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Plot>()
+                .HasMany(p => p.LocationShapes)
+                .WithOne(ls => ls.Plot)
+                .HasForeignKey(ls => ls.PlotId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

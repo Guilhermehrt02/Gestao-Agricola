@@ -9,16 +9,18 @@
         [rawLayers]="locationShapes"
         (toggleVisibility)="onToggleLayer($event)"
         (focusLayer)="onFocusLayer($event)"
-        (createShape)="onCreateShape()"
+        (createShape)="onCreateShape($event.type, $event.data)"
     ></lib-map-layers>
 
     <lib-get-location
         #mapContainer
         [editable]="editable"
         [creatable]="creatable"
+        [createTarget]="createTarget"
         [clearAllDrawings]="false"
         [setShapesFromParent]="locationShapes"
         [setFocusFromParent]="focusedLocationShape"
         (setFocusByDrawing)="onSetFocusByDrawing($event)"
+        (shapeCreated)="onShapeCreated($event)"
     ></lib-get-location>
 </lib-card>

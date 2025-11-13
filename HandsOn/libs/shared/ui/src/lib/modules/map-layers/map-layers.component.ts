@@ -32,7 +32,7 @@ export class MapLayersComponent implements OnChanges {
   @Output() toggleVisibility = new EventEmitter<MapLayer>();
   @Output() focusLayer = new EventEmitter<MapLayer>();
   @Output() addLayer = new EventEmitter<string>();
-  @Output() createShape = new EventEmitter<void>();
+  @Output() createShape = new EventEmitter<{ type: 'farm' | 'plot'; data: any }>();
 
   layers: MapLayer[] = [];
   adding = false;
@@ -40,7 +40,8 @@ export class MapLayersComponent implements OnChanges {
   showLayerList = true;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['rawLayers']) {
+    if (changes['rawLayers'] && 
+      changes['rawLayers'].currentValue.length !== changes['rawLayers'].previousValue?.length) {
       this.buildLayerGroups();
     }
   }
@@ -54,7 +55,7 @@ export class MapLayersComponent implements OnChanges {
         farmsMap[farmId] = {
           label: item.label || item.info?.name || 'Fazenda sem nome',
           class: 'farm',
-          visible: true,
+          visible: item.visible,
           focusable: true,
           data: item.data ?? { hasShapes: false, item },
           children: [],
@@ -68,7 +69,7 @@ export class MapLayersComponent implements OnChanges {
         const plotLayer: MapLayer = {
           label: item.label || item.info?.name || 'Talhão sem nome',
           class: 'plot',
-          visible: true,
+          visible: item.visible,
           focusable: true,
           data: item,
           children: [],
@@ -76,19 +77,7 @@ export class MapLayersComponent implements OnChanges {
 
         if (farmId && farmsMap[farmId]) {
           farmsMap[farmId].children?.push(plotLayer);
-        } else {
-          const orphanFarmId = '_sem_fazenda';
-          if (!farmsMap[orphanFarmId]) {
-            farmsMap[orphanFarmId] = {
-              label: 'Sem fazenda',
-              class: 'farm',
-              visible: true,
-              focusable: false,
-              children: [],
-            };
-          }
-          farmsMap[orphanFarmId].children?.push(plotLayer);
-        }
+        } 
       }
     }
 
@@ -98,7 +87,7 @@ export class MapLayersComponent implements OnChanges {
         const diagnosisLayer: MapLayer = {
           label: item.label || item.info?.diseaseName || 'Diagnóstico',
           class: 'diagnosis',
-          visible: true,
+          visible: item.visible,
           focusable: true,
           data: item,
         };
@@ -118,7 +107,6 @@ export class MapLayersComponent implements OnChanges {
   }
 
   onToggle(layer: MapLayer) {
-    layer.visible = !layer.visible;
     this.toggleVisibility.emit(layer);
   }
 
@@ -130,7 +118,7 @@ export class MapLayersComponent implements OnChanges {
     this.showLayerList = !this.showLayerList;
   }
 
-  onCreateShape() {
-    this.createShape.emit();
+  onCreateShape(type: 'farm' | 'plot', data: any) {
+    this.createShape.emit({ type, data });
   }
 }

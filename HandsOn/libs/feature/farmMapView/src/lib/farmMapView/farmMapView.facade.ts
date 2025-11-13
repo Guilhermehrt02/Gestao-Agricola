@@ -1,48 +1,90 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import {
   Diagnosis,
   DiagnosisFacade,
-  AuthFacade
+  AuthFacade,
+  Farm,
+  FarmFacade,
+  Plot,
 } from '@farm/core';
 
 @Injectable({ providedIn: 'root' })
 export class FarmMapViewComponentFacade {
-    private loadingSubject = new BehaviorSubject<boolean>(false);
-    private diagnosisSubject = new BehaviorSubject<Diagnosis[]>([]);
-    
-    userId: string | undefined;
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  private diagnosisSubject = new BehaviorSubject<Diagnosis[]>([]);
+  private farmsSubject = new BehaviorSubject<Farm[]>([]);
+  private plotsSubject = new BehaviorSubject<Plot[]>([]);
 
-    loading$: Observable<boolean> = this.loadingSubject.asObservable();
-    diagnoses$: Observable<Diagnosis[]> = this.diagnosisSubject.asObservable();
+  userId: string | undefined;
 
-    constructor(
-        private diagnosisFacade: DiagnosisFacade, 
-        private authFacade: AuthFacade,
-    ) {}
+  loading$: Observable<boolean> = this.loadingSubject.asObservable();
+  diagnoses$: Observable<Diagnosis[]> = this.diagnosisSubject.asObservable();
+  farms$: Observable<Farm[]> = this.farmsSubject.asObservable();
+  plots$: Observable<Plot[]> = this.plotsSubject.asObservable();
 
-    load() {
-        const data = this.authFacade.decodedToken;
+  constructor(
+    private diagnosisFacade: DiagnosisFacade,
+    private authFacade: AuthFacade,
+    private farmFacade: FarmFacade,
+  ) {}
 
-        this.userId = data.nameid;
+  load() {
+    const data = this.authFacade.decodedToken;
+    this.userId = data.nameid;
 
-        this.loadingSubject.next(true);
+    this.loadingSubject.next(true);
 
-        this.diagnosisFacade
-        .getAllDiagnoses(this.userId)
-        .pipe(
-            tap(
-            (diagnosisData) => {
-                this.diagnosisSubject.next(diagnosisData);
-                this.loadingSubject.next(false);
-            },
-            () => {
-                this.loadingSubject.next(false);
-            },
-            ),
-        )
-        .subscribe();
-    }
+    this.diagnosisFacade
+      .getAllDiagnoses(this.userId)
+      .pipe(
+        tap({
+          next: (diagnosisData) => this.diagnosisSubject.next(diagnosisData),
+          error: () => this.loadingSubject.next(false),
+        }),
+      )
+      .subscribe();
+
+    this.farmFacade
+      .getFarms()
+      .pipe(
+        switchMap((farms) => {
+          this.farmsSubject.next(farms);
+
+          const plotRequests = farms.map((farm) =>
+            this.farmFacade.getPlotsByFarm(farm.id),
+          );
+
+          return forkJoin(plotRequests).pipe(
+            map((plotsArray) => plotsArray.flat()),
+          );
+        }),
+        tap({
+          next: (allPlots) => {
+            this.plotsSubject.next(allPlots);
+            this.loadingSubject.next(false);
+          },
+          error: () => this.loadingSubject.next(false),
+        }),
+      )
+      .subscribe();
+  }
+
+  updateFarm(farm: Farm) {
+    this.loadingSubject.next(true);
+
+    this.farmFacade.updateFarm(farm).subscribe(() => {
+      this.loadingSubject.next(false);
+    });
+  }
+
+  updatePlot(plot: any) {
+    this.loadingSubject.next(true);
+
+    this.farmFacade.updatePlot(plot).subscribe(() => {
+      this.loadingSubject.next(false);
+    });
+  }
 }

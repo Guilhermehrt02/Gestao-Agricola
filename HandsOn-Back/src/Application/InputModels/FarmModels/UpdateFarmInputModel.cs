@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Core.Entities;
 
 namespace Application.InputModels.FarmModels
 {
@@ -12,5 +13,6 @@ namespace Application.InputModels.FarmModels
         [MaxLength(200, ErrorMessage = "Location cannot exceed 200 characters.")]
         [RegularExpression(@"^[a-zA-Z0-9\s,.'-]+$", ErrorMessage = "Location can only contain letters, numbers, spaces, commas, periods, and hyphens.")]
         public string? Location { get; set; }
+        public List<LocationShape>? LocationShapes { get; set; }
     }
 }

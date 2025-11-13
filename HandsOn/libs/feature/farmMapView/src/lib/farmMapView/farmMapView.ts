@@ -9,7 +9,7 @@ import {
   MapLayersComponent,
 } from '@farm/ui';
 import { FarmMapViewComponentFacade } from './farmMapView.facade';
-import { Diagnosis, Farm, MapLocation, Plot } from '@farm/core';
+import { Diagnosis, Farm, LocationShapeData, MapLocation, Plot } from '@farm/core';
 
 @Component({
   selector: 'lib-farm-map-view',
@@ -34,6 +34,7 @@ export class FarmMapView implements OnInit {
   plotsShapes: any[] = [];
   focusedLocationShape: any;
   creatable: boolean = false;
+  createTarget: { type: 'farm' | 'plot'; data: any } = { type: 'farm', data: null };
 
   @ViewChild('mapContainer', { read: ElementRef }) mapContainerRef!: ElementRef;
 
@@ -73,10 +74,12 @@ export class FarmMapView implements OnInit {
         updatedAt: new Date()
       },
     ];
+    this.farms = farms;
+    this.plots = plots;
 
-    this.farmsShapes = this.getFarmsShapes(farms);
+    this.farmsShapes = this.getFarmsShapes(this.farms);
 
-    this.plotsShapes = this.getPlotsShapes(plots);
+    this.plotsShapes = this.getPlotsShapes(this.plots);
 
     this.facade.load();
   }
@@ -104,8 +107,16 @@ export class FarmMapView implements OnInit {
   }
 
   onToggleLayer(layer: any) {
-    console.log('Visibilidade alterada:', layer);
+    if(!layer.data) return;
     
+    const shapeIndex = this.locationShapes.findIndex(
+      (s) => s.id === layer.data.id
+    );
+
+    if (shapeIndex !== -1) {
+      this.locationShapes[shapeIndex].visible = layer.visible;
+      this.locationShapes = [...this.locationShapes];
+    }
   }
 
   onFocusLayer(layer: any) {
@@ -181,8 +192,9 @@ export class FarmMapView implements OnInit {
     return shapes;
   }
 
-  onCreateShape() {
+  onCreateShape(type: 'farm' | 'plot', data: any) {
     this.creatable = !this.creatable;
+    this.createTarget = { type, data };
 
     if (this.creatable && this.mapContainerRef?.nativeElement) {
       this.mapContainerRef.nativeElement.scrollIntoView({
@@ -194,5 +206,17 @@ export class FarmMapView implements OnInit {
 
   onSetFocusByDrawing(shape: any) {
     this.focusedLocationShape = shape;
+  }
+
+  onShapeCreated(shape: LocationShapeData) {
+    const farm = this.farms.find(f => f.id === shape.info?.farmId);
+    const plot = this.plots.find(p => p.id === shape.info?.plotId);
+
+    if (farm) {
+      this.facade.updateFarm(farm);
+    }
+    if (plot) {
+      this.facade.updatePlot(plot);
+    }
   }
 }

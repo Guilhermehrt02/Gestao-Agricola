@@ -84,4 +84,42 @@ export class FarmFacade {
             })
         );
     }
+
+    updateFarm(farm: Farm): Observable<Farm> {
+        return this.farmService.updateFarm(farm).pipe(
+            tap({
+                next: () => {
+                    this.notificationService.success(
+                        'Sucesso!',
+                        'Fazenda atualizada com sucesso!'
+                    );
+                },
+                error: () => {
+                    this.notificationService.error(
+                        'Erro!',
+                        'Não foi possível atualizar a fazenda!'
+                    );
+                }
+            })
+        );
+    }
+
+    updatePlot(plot: Plot): Observable<Plot> {
+        return this.plotService.updatePlot(plot).pipe(
+            tap({
+                next: () => {
+                    this.notificationService.success(
+                        'Sucesso!',
+                        'Talhão atualizado com sucesso!'
+                    );
+                },
+                error: () => {
+                    this.notificationService.error(
+                        'Erro!',
+                        'Não foi possível atualizar o talhão!'
+                    );
+                }
+            })
+        );
+    }
 }

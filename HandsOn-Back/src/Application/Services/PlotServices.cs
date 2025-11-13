@@ -47,6 +47,25 @@ namespace Application.Services
 
             var plot = await _plotRepository.GetByIdAsync(id) ?? throw new NotFoundException("Plot not found");
 
+            List<LocationShape>? locationShapes = null;
+            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Count > 0)
+            {
+                await _plotRepository.DeleteLocationShapesByPlotIdAsync(plot.Id);
+
+                locationShapes = inputModel.LocationShapes
+                    .Select(ls => new LocationShape
+                    {
+                        Type = ls.Type,
+                        Label = ls.Label,
+                        Plot = plot,
+                        Coordinates = ls.Coordinates.Select(c => new Coordinate
+                        {
+                            Lat = c.Lat,
+                            Lng = c.Lng
+                        }).ToList()
+                    }).ToList();
+            }
+
             plot.Update(
                 inputModel.Name,
                 inputModel.FarmId,

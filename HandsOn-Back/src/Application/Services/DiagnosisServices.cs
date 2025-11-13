@@ -62,22 +62,6 @@ namespace Application.Services
             if (plot.FarmId != farm.Id)
                 throw new InvalidOperationException("The selected plot does not belong to the selected farm.");
 
-            List<LocationShape> locationShapes = new List<LocationShape>();
-
-            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Count > 0)
-            {
-                locationShapes = inputModel.LocationShapes.Select(shape => new LocationShape
-                {
-                    Type = shape.Type,
-                    Label = shape.Label,
-                    Coordinates = shape.Coordinates.Select(coord => new Coordinate
-                    {
-                        Lat = coord.Lat,
-                        Lng = coord.Lng
-                    }).ToList()
-                }).ToList();
-            }
-
             var diagnosis = new Diagnosis
             {
                 UserId = userId,
@@ -90,8 +74,23 @@ namespace Application.Services
                 Date = inputModel.Date,
                 Latitude = inputModel.Latitude,
                 Longitude = inputModel.Longitude,
-                LocationShapes = locationShapes
             };
+            List<LocationShape> locationShapes = new List<LocationShape>();
+
+            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Count > 0)
+            {
+                locationShapes = inputModel.LocationShapes.Select(shape => new LocationShape
+                {
+                    Type = shape.Type,
+                    Label = shape.Label,
+                    Diagnosis = diagnosis,
+                    Coordinates = shape.Coordinates.Select(coord => new Coordinate
+                    {
+                        Lat = coord.Lat,
+                        Lng = coord.Lng
+                    }).ToList()
+                }).ToList();
+            }
 
             await _diagnosisRepository.AddAsync(diagnosis);
 
@@ -155,6 +154,7 @@ namespace Application.Services
                 {
                     Type = shape.Type,
                     Label = shape.Label,
+                    Diagnosis = diagnosis,
                     Coordinates = shape.Coordinates.Select(coord => new Coordinate
                     {
                         Lat = coord.Lat,

@@ -9,5 +9,6 @@ namespace Core.Repositories
         Task<Farm> AddAsync(Farm farm);
         Task<Farm> UpdateAsync(Farm farm);
         Task<Farm> DeleteAsync(Farm farm);
+        Task DeleteLocationShapesByFarmIdAsync(Guid farmId);
     }
 }

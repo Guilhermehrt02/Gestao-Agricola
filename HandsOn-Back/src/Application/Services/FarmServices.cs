@@ -58,10 +58,30 @@ namespace Application.Services
 
             var farm = await _farmRepository.GetByIdAsync(id) ?? throw new NotFoundException("Farm not found");
 
+            List<LocationShape>? locationShapes = null;
+            if (inputModel.LocationShapes != null && inputModel.LocationShapes.Count > 0)
+            {
+                await _farmRepository.DeleteLocationShapesByFarmIdAsync(farm.Id);
+
+                locationShapes = inputModel.LocationShapes
+                    .Select(ls => new LocationShape
+                    {
+                        Type = ls.Type,
+                        Label = ls.Label,
+                        Farm = farm,
+                        Coordinates = ls.Coordinates.Select(c => new Coordinate
+                        {
+                            Lat = c.Lat,
+                            Lng = c.Lng
+                        }).ToList()
+                    }).ToList();
+            }
+
             farm.Update(
                 inputModel.Name,
                 inputModel.Location,
-                inputModel.UserId
+                inputModel.UserId,
+                locationShapes
             );
 
             await _farmRepository.UpdateAsync(farm);

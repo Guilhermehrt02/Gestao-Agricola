@@ -35,7 +35,7 @@ export class DateTypeFilterComponent implements OnChanges {
 
   selectedFilter: any = null;
   form!: FormGroup;
-  showCustomPicker = true;
+  showCustomPicker = false;
 
   farms: SelectOption[] = [];
   plots: SelectOption[] = [];
@@ -99,6 +99,7 @@ export class DateTypeFilterComponent implements OnChanges {
         shape.color = color;
         shape.class = 'diagnosis';
         shape.hasShapes = true;
+        shape.visible = true;
         shape.info = {
           id: d.id,
           name: diseaseName || 'Desconhecida',

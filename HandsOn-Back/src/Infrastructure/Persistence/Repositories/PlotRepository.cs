@@ -13,6 +13,8 @@ namespace Infrastructure.Persistence.Repositories
         public async Task<Plot?> GetByIdAsync(Guid plotId)
         {
             return await _context.Plots
+                .Include(p => p.LocationShapes)
+                    .ThenInclude(ls => ls.Coordinates)
                 .Where(p => p.Id == plotId)
                 .FirstOrDefaultAsync();
         }
@@ -20,6 +22,8 @@ namespace Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Plot>> GetAllByFarmIdAsync(Guid farmId)
         {
             return await _context.Plots
+                .Include(p => p.LocationShapes)
+                    .ThenInclude(ls => ls.Coordinates)
                 .Where(p => p.FarmId == farmId)
                 .ToListAsync();
         }
@@ -43,6 +47,13 @@ namespace Infrastructure.Persistence.Repositories
             var result = _context.Plots.Remove(plot);
             await _context.SaveChangesAsync();
             return result.Entity;
+        }
+
+        public async Task DeleteLocationShapesByPlotIdAsync(Guid plotId)
+        {
+            var locationShapes = _context.LocationShapes.Where(ls => ls.PlotId == plotId);
+            _context.LocationShapes.RemoveRange(locationShapes);
+            await _context.SaveChangesAsync();
         }
     }
 }

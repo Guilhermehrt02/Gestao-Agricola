@@ -5,6 +5,7 @@ export interface MapLocation {
   label?: string;
   coordinates?: { lat: number; lng: number }[];
   color?: string;
+  visible?: boolean;
   info?: {
     id?: string;
     name?: string;

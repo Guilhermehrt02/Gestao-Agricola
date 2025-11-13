@@ -32,7 +32,7 @@
               <p-checkbox
                 [(ngModel)]="layer.visible"
                 [disabled]="!layer.data || !layer.data.hasShapes"
-                (click)="onToggle(layer)"
+                (onChange)="onToggle(layer)"
               >
               </p-checkbox>
 
@@ -63,7 +63,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Criar desenho"
-                (click)="onCreateShape()"
+                (click)="onCreateShape(layer.class, layer.data.info)"
               ></button>
             </div>
       </div>
@@ -79,7 +79,7 @@
               <p-checkbox
                 [(ngModel)]="sub.visible"
                 [disabled]="!sub.data?.hasShapes"
-                (click)="onToggle(sub)"
+                (onChange)="onToggle(sub)"
               >
               </p-checkbox>
 
@@ -110,7 +110,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Criar desenho"
-                (click)="onCreateShape()"
+                (click)="onCreateShape(sub.class, sub.data.info)"
               ></button>
             </div>
           </div>

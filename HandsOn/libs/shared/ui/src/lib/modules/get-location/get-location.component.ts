@@ -32,7 +32,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
   @Input() setPositionFromParent?: { latitude: number; longitude: number };
   @Input() setFocusFromParent?: LocationShapeData;
   @Input() setShapesFromParent?: LocationShapeData[];
-
+  @Input() createTarget?: { type: 'farm' | 'plot'; data: any };
 
   @ViewChild('mapContainer', { static: false }) mapElementRef!: ElementRef;
 
@@ -43,6 +43,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
   @Output() shapesDrawn = new EventEmitter<any[]>();
   @Output() setFocusByDrawing = new EventEmitter<google.maps.Marker | google.maps.Polygon>();
+  @Output() shapeCreated = new EventEmitter<LocationShapeData>();
   
   constructor(
       private router: Router,
@@ -369,43 +370,42 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     this.emitCurrentShapes();
   }
 
-  private lastShapes: LocationShapeData[] | null = null;
   private lastFocus: LocationShapeData | null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['setShapesFromParent'] &&
-      this.setShapesFromParent &&
-      this.map
-    ) {
-      const isDifferent =
-        JSON.stringify(this.lastShapes) !==
-        JSON.stringify(this.setShapesFromParent);
-      if (isDifferent) {
-        this.lastShapes = this.setShapesFromParent;
-        this.clearDrawings();
-        this.loadShapes(this.setShapesFromParent);
-      }
+    if (changes['setShapesFromParent'] && this.map) {
+      const newShapes = this.setShapesFromParent || [];
+
+      newShapes.forEach(newShape => {
+        const existing = this.drawnShapes.find(s => s.id === newShape.id);
+
+        if (existing) {
+          const shouldBeVisible = newShape.visible;
+          const isVisible = !!existing.mapObject.getMap();
+          
+          if (shouldBeVisible && !isVisible) {
+            existing.mapObject.setMap(this.map);
+          } else if (!shouldBeVisible && isVisible) {
+            existing.mapObject.setMap(null);
+          }
+        }
+      });
     }
 
-    if (
-      changes['setFocusFromParent'] &&
-      this.setFocusFromParent &&
-      this.map
-    ){
-      const isDifferent =
-        JSON.stringify(this.lastFocus) !==
+    if ( changes['setFocusFromParent'] && this.setFocusFromParent && this.map ) {
+      const isDifferent = JSON.stringify(this.lastFocus) !==
         JSON.stringify(this.setFocusFromParent);
+
       if (isDifferent) {
         this.lastFocus = this.setFocusFromParent;
         this.setFocus(this.setFocusFromParent);
       }
     }
 
-    if (changes['creatable'] && this.map) {
+    if (changes['creatable'] && this.map && this.createTarget) {
       this.clearHighlight();
-      
-      if (this.creatable) this.createDrawingManager();
+
+      if (this.creatable) this.createDrawingManager(this.createTarget);
       else this.destroyDrawingManager();
     }
   }
@@ -662,8 +662,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     }
   }
 
-
-  private createDrawingManager() {
+  createDrawingManager({type, data}: {type?: 'farm' | 'plot', data?: any} = {}) {
     if(!this.creatable || !this.map) return;
 
     const drawingManager = new google.maps.drawing.DrawingManager({
@@ -747,6 +746,22 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
             this.activeInfoWindow = null;
           }
         });
+        
+        const shapeData: LocationShapeData = {
+          type: 'polygon',
+          label,
+          id: this.drawnShapes[this.drawnShapes.length -1].id,
+          info: {
+            farmId: type === 'farm' ? data.id : undefined,
+            plotId: type === 'plot' ? data.id : undefined,
+          },
+          coordinates: polygon.getPath().getArray().map(latLng => ({
+            lat: latLng.lat(),
+            lng: latLng.lng(),
+          })),
+        };
+
+        this.shapeCreated.emit(shapeData);
 
         this.creatable = false;
         this.destroyDrawingManager();
@@ -805,13 +820,27 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           }
         });
 
-        
-
         marker.addListener('dragend', () => {
           this.emitCurrentShapes();
           const pos = marker.getPosition();
           if (pos) this.emitCoords(pos.lat(), pos.lng());
         });
+
+        const shapeData: LocationShapeData = {
+          type: 'marker',
+          label,
+          id: this.drawnShapes[this.drawnShapes.length -1].id,
+          info: {
+            farmId: type === 'farm' ? data.farmId : undefined,
+            plotId: type === 'plot' ? data.plotId : undefined,
+          },
+          coordinates: [{
+            lat: marker.getPosition()?.lat() || 0,
+            lng: marker.getPosition()?.lng() || 0,
+          }],
+        };
+
+        this.shapeCreated.emit(shapeData);
 
         this.creatable = false;
         this.destroyDrawingManager();

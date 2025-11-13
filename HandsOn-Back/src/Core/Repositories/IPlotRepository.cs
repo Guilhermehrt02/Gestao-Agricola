@@ -9,5 +9,6 @@ namespace Core.Repositories
         Task<Plot> AddAsync(Plot plot);
         Task<Plot> UpdateAsync(Plot plot);
         Task<Plot> DeleteAsync(Plot plot);
+        Task DeleteLocationShapesByPlotIdAsync(Guid plotId);
     }
 }

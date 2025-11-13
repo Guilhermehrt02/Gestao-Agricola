@@ -19,4 +19,10 @@ export class FarmService extends RequestService {
             .get<Farm[]>(`${this.apiUrl}/farm`, this.httpOptionsBypassInterceptor)
             .pipe(catchError(this.handleError));
     }
+
+    updateFarm(farm: Farm) {
+        return this.httpClient
+            .put<Farm>(`${this.apiUrl}/farm/${farm.id}`, JSON.stringify(farm), this.httpOptions)
+            .pipe(catchError(this.handleError));
+    }
 }

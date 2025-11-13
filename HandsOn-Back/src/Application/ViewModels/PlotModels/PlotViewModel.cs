@@ -1,4 +1,5 @@
 using Core.Entities;
+using Application.ViewModels.DiagnosisModels;
 
 namespace Application.ViewModels
 {
@@ -13,6 +14,7 @@ namespace Application.ViewModels
         public double? Longitude { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public List<LocationShapeViewModel>? LocationShapes { get; set; }
 
         public static PlotViewModel FromEntity(Plot plot)
         {
@@ -26,7 +28,10 @@ namespace Application.ViewModels
                 Latitude = plot.Latitude,
                 Longitude = plot.Longitude,
                 CreatedAt = plot.CreatedAt,
-                UpdatedAt = plot.UpdatedAt
+                UpdatedAt = plot.UpdatedAt,
+                LocationShapes = plot.LocationShapes?
+                    .Select(LocationShapeViewModel.FromEntity)
+                    .ToList()
             };
         }
     }

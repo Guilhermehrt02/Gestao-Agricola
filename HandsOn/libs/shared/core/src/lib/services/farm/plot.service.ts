@@ -19,4 +19,10 @@ export class PlotService extends RequestService {
             .get<Plot[]>(`${this.apiUrl}/plot/farm/${farmId}`, this.httpOptionsBypassInterceptor)
             .pipe(catchError(this.handleError));
     }
+
+    updatePlot(plot: Plot) {
+        return this.httpClient
+            .put<Plot>(`${this.apiUrl}/plot/${plot.id}`, JSON.stringify(plot), this.httpOptions)
+            .pipe(catchError(this.handleError));
+    }
 }

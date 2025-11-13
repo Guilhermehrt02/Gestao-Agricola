@@ -4,11 +4,12 @@ export interface LocationShapeData {
   label: string;
   coordinates: { lat: number; lng: number }[];
   color?: string;
-  diagnosisInfo?: {
+  visible?: boolean;
+  info?: {
     diagnosisId?: string;
     diseaseName?: string;
-    farm?: string;
-    plot?: string;
-    harvest?: string;
+    farmId?: string;
+    plotId?: string;
+    harvestId?: string;
   };
 }

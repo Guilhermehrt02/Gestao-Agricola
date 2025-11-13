@@ -11,20 +11,22 @@ namespace Core.Entities
         public double? Longitude { get; set; }  // Coordenada GPS
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public List<LocationShape>? LocationShapes { get; set; }
 
         public Plot() { }
 
-        public Plot(Guid farmId, string name, double? area = null, string? description = null, double? latitude = null, double? longitude = null)
+        public Plot(Guid farmId, string name, double? area = null, string? description = null, double? latitude = null, double? longitude = null, List<LocationShape>? locationShapes = null)
         {
             FarmId = farmId;
             Name = name;
             Area = area;
             Description = description;
+            LocationShapes = locationShapes;
             Latitude = latitude;
             Longitude = longitude;
         }
 
-        public void Update(string? name, Guid? farmId, double? area, string? description, double? latitude = null, double? longitude = null)
+        public void Update(string? name, Guid? farmId, double? area, string? description, double? latitude = null, double? longitude = null, List<LocationShape>? locationShapes = null)
         {
             Name = name ?? Name;
             FarmId = farmId ?? FarmId; 
@@ -33,6 +35,7 @@ namespace Core.Entities
             Latitude = latitude ?? Latitude;
             Longitude = longitude ?? Longitude;
             UpdatedAt = DateTime.Now; 
+            LocationShapes = locationShapes ?? LocationShapes;
         }
     }
 }
