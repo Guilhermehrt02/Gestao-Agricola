@@ -5,6 +5,7 @@ export interface LocationShapeData {
   coordinates: { lat: number; lng: number }[];
   color?: string;
   visible?: boolean;
+  hasShapes?: boolean;
   info?: {
     diagnosisId?: string;
     diseaseName?: string;

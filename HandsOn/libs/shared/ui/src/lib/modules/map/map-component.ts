@@ -18,25 +18,21 @@ import { GoogleMapsService, LocationShapeData, MapLocation } from '@farm/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'lib-get-location',
+  selector: 'lib-map-component',
   standalone: true,
   imports: [CommonModule, ButtonComponent],
-  templateUrl: './get-location.component.html',
-  styleUrls: ['./get-location.component.css'],
+  templateUrl: './map-component.html',
+  styleUrls: ['./map-component.css'],
 })
-export class GetLocationComponent implements AfterViewInit, OnChanges {
+export class MapComponent implements AfterViewInit, OnChanges {
   private activeInfoWindow: google.maps.InfoWindow | null = null;
   @Input() editable = true;
-  @Input() setPositionFromParent?: { latitude: number; longitude: number };
-  @Input() setShapesFromParent?: LocationShapeData[];
+  @Input() creatable = true;
   @Input() clearAllDrawings = true;
-  private isUpdatingFromParent = false;
-
-  @Input() set shapesFromParent(value: LocationShapeData[]) {
-    this.isUpdatingFromParent = true;
-    this.loadShapes(value);
-    this.isUpdatingFromParent = false;
-  }
+  @Input() setPositionFromParent?: { latitude: number; longitude: number };
+  @Input() setFocusFromParent?: LocationShapeData;
+  @Input() setShapesFromParent?: LocationShapeData[];
+  @Input() createTarget?: { type: 'farm' | 'plot' | 'diagnosis'; data: any };
 
   @ViewChild('mapContainer', { static: false }) mapElementRef!: ElementRef;
 
@@ -46,6 +42,8 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
   }>();
 
   @Output() shapesDrawn = new EventEmitter<any[]>();
+  @Output() setFocusByDrawing = new EventEmitter<google.maps.Marker | google.maps.Polygon>();
+  @Output() shapeCreated = new EventEmitter<LocationShapeData>();
   
   constructor(
       private router: Router,
@@ -55,21 +53,29 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
   map!: google.maps.Map;
   marker!: google.maps.Marker;
+  mapReady = false;
 
   loading = false;
   error: string | null = null;
 
   drawnShapes: Array<{
-    mapObject: google.maps.Polygon | google.maps.Marker;
+    mapObject: google.maps.Polygon | google.maps.Marker | null;
     type: string;
     label: string;
+    id: string;
   }> = [];
+
+  private drawingManager!: google.maps.drawing.DrawingManager | null;
+  private highlightedPolygon: google.maps.Polygon | null = null;
+  @Output() mapIsReady = new EventEmitter<void>();
+
 
   async ngAfterViewInit(): Promise<void> {
     await this.googleMapsService.loadGoogleMaps();
 
     const coords = await this.getInitialCoordinates();
     this.initMap(coords.latitude, coords.longitude);
+    this.mapIsReady.emit();
 
     if (this.setShapesFromParent && this.setShapesFromParent.length > 0) {
       this.loadShapes(this.setShapesFromParent);
@@ -101,6 +107,8 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       mapTypeId: google.maps.MapTypeId.SATELLITE,
     });
 
+    this.mapReady = true;
+
     this.map.addListener('click', () => {
       if (this.activeInfoWindow) {
         this.activeInfoWindow.close();
@@ -108,7 +116,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       }
     });
 
-    if(!this.editable) return;
+    if(!this.creatable) return;
 
     const drawingManager = new google.maps.drawing.DrawingManager({
       drawingMode: null,
@@ -125,7 +133,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
         fillOpacity: 0.35,
         strokeWeight: 2,
         editable: true,
-        draggable: true,
+        draggable: false,
       },
     });
 
@@ -136,8 +144,8 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       type: string,
       label: string,
     ) => {
-      this.drawnShapes.push({ mapObject: shapeObj, type, label });
-      this.onUserChangedShapes();
+      this.drawnShapes.push({ mapObject: shapeObj, type, label, id: this.generateId() });
+      this.emitCurrentShapes();
     };
 
     function getPolygonCenter(
@@ -158,8 +166,6 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           'Polígono sem nome';
 
         addShapeToList(polygon, 'polygon', label);
-        // this.drawnShapes.push({ mapObject: polygon, type: 'polygon', label });
-
         this.fitMapToShapes();
 
         const centroid = getPolygonCenter(polygon);
@@ -212,8 +218,6 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           'Ponto sem nome';
 
         addShapeToList(marker, 'marker', label);
-        // this.drawnShapes.push({ mapObject: marker, type: 'marker', label });
-
         this.fitMapToShapes();
 
         const location: MapLocation = {
@@ -337,7 +341,6 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
     return content;
   }
 
-
   private removeShape(shapeObj: google.maps.Polygon | google.maps.Marker) {
     this.drawnShapes = this.drawnShapes.filter((s) => s.mapObject !== shapeObj);
     this.emitCurrentShapes();
@@ -367,29 +370,106 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
   clearDrawings(): void {
     this.drawnShapes.forEach(({ mapObject }) => {
-      mapObject.setMap(null);
+      mapObject?.setMap(null);
     });
     this.drawnShapes = [];
+    this.emitCurrentShapes();
   }
 
-  onUserChangedShapes() {
-    if (this.isUpdatingFromParent) return;
-
-    this.shapesDrawn.emit(this.drawnShapes);
+  private lastFocus: LocationShapeData | null = null;
+  private areShapesEqual(a: any[], b: any[]): boolean {
+    if (!a || !b) return false;
+    return JSON.stringify(a) === JSON.stringify(b);
   }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['shapesFromParent'] && !changes['shapesFromParent'].firstChange) {
-      this.isUpdatingFromParent = true;
+    if (!this.mapReady) return;
 
-      const newShapes = changes['shapesFromParent'].currentValue;
-      this.loadShapes(newShapes); 
+    const shapeChange = changes['setShapesFromParent'];
 
-      this.isUpdatingFromParent = false;
+    if (
+      shapeChange &&
+      this.setShapesFromParent &&
+      !this.areShapesEqual(shapeChange.previousValue, shapeChange.currentValue)
+    ) {
+      const newShapes = this.setShapesFromParent || [];
+      const shapesToLoad: any[] = [];
+
+      newShapes.forEach(newShape => {
+        const existing = this.drawnShapes.find(s => s.id === newShape.id);
+        const isVisibilityOnly = newShape.hasShapes === false;
+
+        // -------------------------------
+        // 1. SHAPE SEM GEOMETRIA (visibilidade somente)
+        // -------------------------------
+        if (isVisibilityOnly) {
+          if (!existing) {
+            // Cria placeholder na lista
+            this.drawnShapes.push({
+              mapObject: null,
+              type: newShape.type,
+              label: newShape.label,
+              id: newShape.id,
+            });
+          }
+          return; // Nada mais a fazer
+        }
+
+        // -------------------------------
+        // 2. SHAPE COM GEOMETRIA (tem shapes)
+        // -------------------------------
+        if (existing) {
+          // Atualizar visibilidade do shape já desenhado
+          const shouldBeVisible = newShape.visible;
+          const isVisible = existing.mapObject ? !!existing.mapObject.getMap() : false;
+
+          if (existing.mapObject) {
+            if (shouldBeVisible && !isVisible) existing.mapObject.setMap(this.map);
+            if (!shouldBeVisible && isVisible) existing.mapObject.setMap(null);
+          }
+        } else {
+          // Ainda não existe → carregar depois
+          shapesToLoad.push(newShape);
+        }
+      });
+
+      // -------------------------------
+      // 3. Carregar shapes que ainda não existem
+      // -------------------------------
+      if (shapesToLoad.length > 0) {
+        this.loadShapes(shapesToLoad);
+      }
+    }
+
+
+    if ( changes['setFocusFromParent'] && this.setFocusFromParent && this.map ) {
+      const isDifferent = JSON.stringify(this.lastFocus) !==
+        JSON.stringify(this.setFocusFromParent);
+
+      if (isDifferent) {
+        this.lastFocus = this.setFocusFromParent;
+        this.setFocus(this.setFocusFromParent);
+      }
+    }
+
+    if (changes['creatable'] && this.map && this.createTarget) {
+      this.clearHighlight();
+
+      if (this.creatable) this.createDrawingManager(this.createTarget);
+      else this.destroyDrawingManager();
     }
   }
 
   loadShapes(shapes: any[]) {
     shapes.forEach((shape) => {
+      if (!shape.id) {
+        shape.id = this.generateId();
+      }
+
+      if (shape.hasShapes === false) {
+        return; 
+      }
+
       if (shape.type === 'polygon') {
         const path = shape.coordinates.map(
           (coord: any) => new google.maps.LatLng(coord.lat, coord.lng),
@@ -401,14 +481,15 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           fillOpacity: 0.35,
           strokeWeight: 2,
           editable: this.editable,
-          draggable: this.editable,
+          draggable: false,
           map: this.map,
         });
 
         this.drawnShapes.push({
           mapObject: polygon,
           type: 'polygon',
-          label: shape.label,
+          label: shape.label || 'Polígono sem nome',
+          id: shape.id,
         });
 
         const centroid = this.getPolygonCenter(polygon);
@@ -423,16 +504,31 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           position: centroid,
         });
 
-        polygon.addListener('click', (e: google.maps.MapMouseEvent) => {
-        if (this.activeInfoWindow) {
-          this.activeInfoWindow.close();
-        }
-        
-        infoWindow.setPosition(e.latLng);
-        infoWindow.open(this.map);
-        this.activeInfoWindow = infoWindow;
-      });
+        polygon.addListener('mouseover', (e: google.maps.MapMouseEvent) => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
+          
+          infoWindow.setPosition(e.latLng);
+          infoWindow.open(this.map);
+          this.activeInfoWindow = infoWindow;
+        });
 
+        polygon.addListener('mouseout', () => {
+          if (this.activeInfoWindow === infoWindow) {
+            infoWindow.close();
+            this.activeInfoWindow = null;
+          }
+        });
+
+        polygon.addListener('click', () => {
+          this.clearHighlight();
+
+          this.setFocus(shape);
+
+          this.setFocusByDrawing.emit(shape);
+        });
+        
         polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
 
         polygon
@@ -450,7 +546,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
         const marker = new google.maps.Marker({
           position: pos,
-          draggable: this.editable,
+          draggable: false,
           map: this.map,
         });
 
@@ -458,6 +554,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           mapObject: marker,
           type: 'marker',
           label: shape.label,
+          id: shape.id,
         });
 
         const content = this.createInfoWindowContent(shape.label, () => {
@@ -469,15 +566,22 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           content,
         });
 
-        marker.addListener('click', () => {
-        if (this.activeInfoWindow) {
-          this.activeInfoWindow.close();
-        }
+        marker.addListener('mouseover', () => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
 
-        infoWindow.open(this.map, marker);
+          infoWindow.open(this.map, marker);
 
-        this.activeInfoWindow = infoWindow;
-      });
+          this.activeInfoWindow = infoWindow;
+        });
+
+        marker.addListener('mouseout', () => {
+          if (this.activeInfoWindow === infoWindow) {
+            infoWindow.close();
+            this.activeInfoWindow = null;
+          }
+        });
 
         marker.addListener('dragend', () => {
           this.emitCurrentShapes();
@@ -488,6 +592,10 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
           }
         });
       }
+    });
+
+    this.map.addListener('click', (e: google.maps.MapMouseEvent) => {
+      this.clearHighlight();
     });
 
     this.emitCurrentShapes();
@@ -503,7 +611,7 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
       this.marker = new google.maps.Marker({
         position,
         map: this.map,
-        draggable: this.editable,
+        draggable: false,
       });
 
       this.marker.addListener('dragend', () => {
@@ -576,5 +684,243 @@ export class GetLocationComponent implements AfterViewInit, OnChanges {
 
   navigateToViewDiagnosis(id: string): void {
     this.router.navigate([`/app/diagnoses/diagnosis/${id}/result`]);
+  }
+
+  setFocus(shape: LocationShapeData) {
+    const drawing = this.findDrawingByShape(shape);
+    if (!drawing) return;
+
+    if (shape.type === 'polygon' && drawing instanceof google.maps.Polygon) {
+      const bounds = new google.maps.LatLngBounds();
+      shape.coordinates.forEach(coord =>
+        bounds.extend(new google.maps.LatLng(coord.lat, coord.lng))
+      );
+
+      this.clearHighlight();
+
+      this.highlightedPolygon = new google.maps.Polygon({
+        paths: drawing.getPath(),
+        strokeColor: '#00FF7F',      
+        strokeOpacity: 1,
+        strokeWeight: 4,             
+        fillOpacity: 0,              
+        zIndex: 9999,                
+        map: this.map,
+      });
+
+      this.map.fitBounds(bounds);
+    } else if (shape.type === 'marker') {
+      const position = new google.maps.LatLng(shape.coordinates[0].lat, shape.coordinates[0].lng);
+      this.map.setCenter(position);
+      this.map.setZoom(17);
+    }
+  }
+
+  createDrawingManager({type, data}: {type?: 'farm' | 'plot' | 'diagnosis', data?: any} = {}) {
+    if(!this.creatable || !this.map) return;
+
+    const drawingManager = new google.maps.drawing.DrawingManager({
+      drawingMode: null,
+      drawingControl: true,
+      drawingControlOptions: {
+        position: google.maps.ControlPosition.TOP_CENTER,
+        drawingModes: [
+          google.maps.drawing.OverlayType.MARKER,
+          google.maps.drawing.OverlayType.POLYGON,
+        ],
+      },
+      polygonOptions: {
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        strokeWeight: 2,
+        editable: false,
+        draggable: false,
+      },
+    });
+
+    this.drawingManager = drawingManager;
+
+    drawingManager.setMap(this.map);
+
+    const addShapeToList = (
+      shapeObj: google.maps.Polygon | google.maps.Marker,
+      type: string,
+      label: string,
+    ) => {
+      this.drawnShapes.push({ mapObject: shapeObj, type, label, id: this.generateId() });
+      this.emitCurrentShapes();
+    };
+
+    function getPolygonCenter(
+      polygon: google.maps.Polygon,
+    ): google.maps.LatLng {
+      const bounds = new google.maps.LatLngBounds();
+      polygon.getPath().forEach((latLng) => bounds.extend(latLng));
+      return bounds.getCenter();
+    }
+
+    // POLYGON
+    google.maps.event.addListener(
+      drawingManager,
+      'polygoncomplete',
+      (polygon: google.maps.Polygon) => {
+        const label =
+          prompt('Nome do polígono:', 'Polígono sem nome') ||
+          'Polígono sem nome';
+
+        addShapeToList(polygon, 'polygon', label);
+        this.fitMapToShapes();
+
+        const centroid = getPolygonCenter(polygon);
+        const location: MapLocation = {
+          label,
+        };
+        const content = this.createInfoWindowContent(location, () => {
+          polygon.setMap(null);
+          this.removeShape(polygon);
+        });
+        
+        const infoWindow = new google.maps.InfoWindow({
+          content,
+          position: centroid,
+        });
+
+        polygon.addListener('mouseover', (e: google.maps.MapMouseEvent) => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
+          infoWindow.setPosition(e.latLng);
+          infoWindow.open(this.map);
+          this.activeInfoWindow = infoWindow;
+        });
+
+        polygon.addListener('mouseout', () => {
+          if (this.activeInfoWindow === infoWindow) {
+            infoWindow.close();
+            this.activeInfoWindow = null;
+          }
+        });
+        
+        const shapeData: LocationShapeData = {
+          type: 'polygon',
+          label,
+          id: this.drawnShapes[this.drawnShapes.length -1].id,
+          info: {
+            farmId: type === 'farm' ? data.id : undefined,
+            plotId: type === 'plot' ? data.id : undefined,
+          },
+          coordinates: polygon.getPath().getArray().map(latLng => ({
+            lat: latLng.lat(),
+            lng: latLng.lng(),
+          })),
+        };
+
+        this.shapeCreated.emit(shapeData);
+
+        this.creatable = false;
+        this.destroyDrawingManager();
+
+        polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
+        polygon
+          .getPath()
+          .addListener('insert_at', () => this.emitCurrentShapes());
+        polygon
+          .getPath()
+          .addListener('remove_at', () => this.emitCurrentShapes());
+      },
+    );
+
+    // MARKER
+    google.maps.event.addListener(
+      drawingManager,
+      'markercomplete',
+      (marker: google.maps.Marker) => {
+        if (this.marker) this.marker.setMap(null);
+        this.marker = marker;
+        this.marker.setDraggable(true);
+
+        const label =
+          prompt('Nome do local ou ponto:', 'Ponto sem nome') ||
+          'Ponto sem nome';
+
+        addShapeToList(marker, 'marker', label);
+        this.fitMapToShapes();
+
+        const location: MapLocation = {
+          label,
+        };
+
+        const content = this.createInfoWindowContent(location, () => {
+          marker.setMap(null);
+          this.removeShape(marker);
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content,
+        });
+
+        marker.addListener('mouseover', () => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
+          infoWindow.open(this.map, marker);
+          this.activeInfoWindow = infoWindow;
+        });
+
+        marker.addListener('mouseout', () => {
+          if (this.activeInfoWindow === infoWindow) {
+            infoWindow.close();
+            this.activeInfoWindow = null;
+          }
+        });
+
+        marker.addListener('dragend', () => {
+          this.emitCurrentShapes();
+          const pos = marker.getPosition();
+          if (pos) this.emitCoords(pos.lat(), pos.lng());
+        });
+
+        const shapeData: LocationShapeData = {
+          type: 'marker',
+          label,
+          id: this.drawnShapes[this.drawnShapes.length -1].id,
+          info: {
+            farmId: type === 'farm' ? data.farmId : undefined,
+            plotId: type === 'plot' ? data.plotId : undefined,
+          },
+          coordinates: [{
+            lat: marker.getPosition()?.lat() || 0,
+            lng: marker.getPosition()?.lng() || 0,
+          }],
+        };
+
+        this.shapeCreated.emit(shapeData);
+
+        this.creatable = false;
+        this.destroyDrawingManager();
+      },
+    );
+  }
+
+  private destroyDrawingManager() {
+    if(!this.map || !this.drawingManager) return;
+
+    this.drawingManager.setMap(null);
+    this.drawingManager = null;
+  }
+
+  private clearHighlight() {
+    if (this.highlightedPolygon) {
+      this.highlightedPolygon.setMap(null);
+      this.highlightedPolygon = null;
+    }
+  }
+
+  generateId(): string {
+    return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+  }
+
+  findDrawingByShape(shape: LocationShapeData): google.maps.Polygon | google.maps.Marker | null {
+    return this.drawnShapes.find((s) => s.id === shape.id)?.mapObject || null;
   }
 }

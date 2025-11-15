@@ -1,0 +1,21 @@
+<div class="flex gap-2">
+  <lib-button
+    label="Obter Localização Atual"
+    type="button"
+    [severity]="'help'"
+    [loading]="loading"
+    (click)="detectLocation()"
+  ></lib-button>
+
+  <lib-button *ngIf="clearAllDrawings"
+    label="Limpar Desenhos"
+    type="button"
+    [severity]="'warn'"
+    (click)="clearDrawings()"
+  ></lib-button>
+</div>
+
+
+<p *ngIf="error" class="text-red-600 text-sm mt-2">{{ error }}</p>
+
+<div #mapContainer style="width: 100%; height: 400px;" class="rounded-md shadow"></div>

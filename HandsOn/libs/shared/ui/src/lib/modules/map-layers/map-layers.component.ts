@@ -18,6 +18,7 @@ interface MapLayer {
   focusable?: boolean;
   children?: MapLayer[];
   data?: any;
+  hideShapeOnly?: boolean;
 }
 
 @Component({
@@ -32,7 +33,17 @@ export class MapLayersComponent implements OnChanges {
   @Output() toggleVisibility = new EventEmitter<MapLayer>();
   @Output() focusLayer = new EventEmitter<MapLayer>();
   @Output() addLayer = new EventEmitter<string>();
-  @Output() createShape = new EventEmitter<{ type: 'farm' | 'plot'; data: any }>();
+  @Output() createShape = new EventEmitter<{ type: 'farm' | 'plot' | 'diagnosis'; data: any }>();
+  @Output() editShape = new EventEmitter<{ type: 'farm' | 'plot' | 'diagnosis'; data: any }>();
+  @Output() toggleOnlyFarmShape = new EventEmitter<{
+    id: string;
+    hide: boolean;
+  }>();
+  @Output() toggleOnlyPlotShape = new EventEmitter<{
+    id: string;
+    hide: boolean;
+  }>();
+
 
   layers: MapLayer[] = [];
   adding = false;
@@ -40,8 +51,7 @@ export class MapLayersComponent implements OnChanges {
   showLayerList = true;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['rawLayers'] && 
-      changes['rawLayers'].currentValue.length !== changes['rawLayers'].previousValue?.length) {
+    if (changes['rawLayers'] && !changes['rawLayers'].isFirstChange() && changes['rawLayers'].currentValue !== changes['rawLayers'].previousValue) {
       this.buildLayerGroups();
     }
   }
@@ -57,7 +67,7 @@ export class MapLayersComponent implements OnChanges {
           class: 'farm',
           visible: item.visible,
           focusable: true,
-          data: item.data ?? { hasShapes: false, item },
+          data: item,
           children: [],
         };
       }
@@ -118,7 +128,33 @@ export class MapLayersComponent implements OnChanges {
     this.showLayerList = !this.showLayerList;
   }
 
-  onCreateShape(type: 'farm' | 'plot', data: any) {
+  onCreateShape(type: 'farm' | 'plot' | 'diagnosis', data: any) {
     this.createShape.emit({ type, data });
+  }
+
+  onEditShape(type: 'farm' | 'plot' | 'diagnosis', data: any) {
+    this.editShape.emit({ type, data });
+  }
+
+  onToggleOnlyFarmShape(layer: MapLayer) {
+    if (!layer.data?.hasShapes) return;
+
+    layer.hideShapeOnly = !layer.hideShapeOnly;
+
+    this.toggleOnlyFarmShape.emit({
+      id: layer.data.info.id,
+      hide: layer.hideShapeOnly
+    });
+  }
+
+  onToggleOnlyPlotShape(layer: MapLayer) {
+    if (!layer.data?.hasShapes) return;
+
+    layer.hideShapeOnly = !layer.hideShapeOnly;
+
+    this.toggleOnlyPlotShape.emit({
+      id: layer.data.info.id,
+      hide: layer.hideShapeOnly
+    });
   }
 }

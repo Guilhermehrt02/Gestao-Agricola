@@ -9,6 +9,7 @@ export interface MapLocation {
   info?: {
     id?: string;
     name?: string;
+    diseaseName?: string;
     farmId?: string;
     farmName?: string;
     plotId?: string;

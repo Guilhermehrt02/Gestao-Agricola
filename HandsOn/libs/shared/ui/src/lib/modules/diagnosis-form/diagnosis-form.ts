@@ -63,6 +63,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
 
   diagnosisForm: FormGroup;
   photoFile: File | null = null;
+  drawingShape: LocationShapeData[] = [];
 
   uploadTypeOptions: SelectOption[] = Object.entries(
     DiagnosisUploadTypeLabels,
@@ -290,11 +291,7 @@ export class DiagnosisForm implements OnInit, OnChanges {
   }
 
   onShapesDrawn(shapes: LocationShapeData[]) {
-    const shapesControl = this.diagnosisForm.get('locationShapes');
-    if (shapesControl) {
-      shapesControl.setValue(shapes);
-      shapesControl.markAsDirty();
-      shapesControl.updateValueAndValidity();
-    }
+    this.drawingShape = shapes;
   }
+
 }

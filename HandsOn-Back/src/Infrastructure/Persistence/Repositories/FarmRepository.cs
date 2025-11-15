@@ -24,7 +24,10 @@ namespace Infrastructure.Persistence.Repositories
             return await _context.Farms
                 .Include(f => f.LocationShapes)
                     .ThenInclude(ls => ls.Coordinates)
-                .Where(f => f.UserId == userId)
+                .Where(f => _context.UserFarms
+                    .Where(uf => uf.UserId == userId)
+                    .Select(uf => uf.FarmId)
+                    .Contains(f.Id))
                 .ToListAsync();
         }
 

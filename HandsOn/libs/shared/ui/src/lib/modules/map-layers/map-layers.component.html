@@ -53,17 +53,35 @@
             </div>
 
             <div class="flex items-center space-x-1">
+              <button
+                *ngIf="layer.data?.hasShapes"
+                pButton
+                [icon]="layer.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                class="p-button-rounded p-button-text p-button-sm text-white"
+                title="Mostrar/ocultar apenas o desenho da fazenda"
+                (click)="onToggleOnlyFarmShape(layer)"
+              ></button>
               <!-- Mostrar botão de criar se não tiver shape -->
               <button
                 *ngIf="
-                  !layer.data?.hasShapes &&
-                  (layer.class === 'farm' || layer.class === 'plot')
+                  !layer.data?.hasShapes
+                "
+                pButton
+                icon="pi pi-plus"
+                class="p-button-rounded p-button-text p-button-sm text-white"
+                title="Criar desenho"
+                (click)="onCreateShape('farm', layer.data.info)"
+              ></button>
+
+              <button
+                *ngIf="
+                  layer.data?.hasShapes
                 "
                 pButton
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm text-white"
-                title="Criar desenho"
-                (click)="onCreateShape(layer.class, layer.data.info)"
+                title="Editar desenho"
+                (click)="onEditShape('farm', layer.data.info)"
               ></button>
             </div>
       </div>
@@ -100,17 +118,35 @@
             </div>
 
             <div class="flex items-center space-x-1">
-              <!-- Mostrar botão de criar se não tiver shape -->
+              <button
+                *ngIf="sub.data?.hasShapes"
+                pButton
+                [icon]="sub.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                class="p-button-rounded p-button-text p-button-sm text-white"
+                title="Mostrar/ocultar apenas o desenho do talhão"
+                (click)="onToggleOnlyPlotShape(sub)"
+              ></button>
+
               <button
                 *ngIf="
-                  !sub.data?.hasShapes &&
-                  (sub.class === 'farm' || sub.class === 'plot')
+                  !sub.data?.hasShapes
+                "
+                pButton
+                icon="pi pi-plus"
+                class="p-button-rounded p-button-text p-button-sm text-white"
+                title="Criar desenho"
+                (click)="onCreateShape('plot', sub.data.info)"
+              ></button>
+
+              <button
+                *ngIf="
+                  sub.data?.hasShapes
                 "
                 pButton
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm text-white"
-                title="Criar desenho"
-                (click)="onCreateShape(sub.class, sub.data.info)"
+                title="Editar desenho"
+                (click)="onEditShape('plot', sub.data.info)"
               ></button>
             </div>
           </div>
@@ -138,6 +174,29 @@
                     {{ child.label }}
                   </label>
                 </div>
+
+                  <div class="flex items-center space-x-1">
+                    <button
+                      *ngIf="
+                        child.data?.hasShapes === false
+                      "
+                      pButton
+                      icon="pi pi-plus"
+                      class="p-button-rounded p-button-text p-button-sm text-white"
+                      title="Criar desenho"
+                      (click)="onCreateShape('diagnosis', child.data.info)"
+                    ></button>
+                      <button
+                        *ngIf="
+                          child.data?.hasShapes
+                        "
+                        pButton
+                        icon="pi pi-pencil"
+                        class="p-button-rounded p-button-text p-button-sm text-white"
+                        title="Editar desenho"
+                        (click)="onEditShape('diagnosis', child.data.info)"
+                      ></button>
+                  </div>
               </div>
             </li>
           </ul>

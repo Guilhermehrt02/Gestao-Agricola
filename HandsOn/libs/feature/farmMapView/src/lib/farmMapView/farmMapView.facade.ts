@@ -37,40 +37,39 @@ export class FarmMapViewComponentFacade {
 
     this.loadingSubject.next(true);
 
-    this.diagnosisFacade
-      .getAllDiagnoses(this.userId)
+    const farms$ = this.farmFacade.getFarms();
+    const diagnoses$ = this.diagnosisFacade.getAllDiagnoses(this.userId);
+
+    const plots$ = farms$.pipe(
+      switchMap((farms) => {
+        this.farmsSubject.next(farms);
+
+        const plotRequests = farms.map(farm =>
+          this.farmFacade.getPlotsByFarm(farm.id)
+        );
+
+        return forkJoin(plotRequests).pipe(
+          map((plotsArray) => plotsArray.flat())
+        );
+      })
+    );
+
+    forkJoin([farms$, plots$, diagnoses$])
       .pipe(
         tap({
-          next: (diagnosisData) => this.diagnosisSubject.next(diagnosisData),
-          error: () => this.loadingSubject.next(false),
-        }),
-      )
-      .subscribe();
-
-    this.farmFacade
-      .getFarms()
-      .pipe(
-        switchMap((farms) => {
-          this.farmsSubject.next(farms);
-
-          const plotRequests = farms.map((farm) =>
-            this.farmFacade.getPlotsByFarm(farm.id),
-          );
-
-          return forkJoin(plotRequests).pipe(
-            map((plotsArray) => plotsArray.flat()),
-          );
-        }),
-        tap({
-          next: (allPlots) => {
-            this.plotsSubject.next(allPlots);
-            this.loadingSubject.next(false);
+          next: ([farms, plots, diagnoses]) => {
+            this.farmsSubject.next(farms);
+            this.plotsSubject.next(plots);
+            this.diagnosisSubject.next(diagnoses);
           },
-          error: () => this.loadingSubject.next(false),
-        }),
+          error: () => this.loadingSubject.next(false)
+        })
       )
-      .subscribe();
+      .subscribe(() => {
+        this.loadingSubject.next(false);
+      });
   }
+
 
   updateFarm(farm: Farm) {
     this.loadingSubject.next(true);

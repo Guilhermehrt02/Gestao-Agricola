@@ -93,7 +93,7 @@
         latitude: diagnosisForm.get('latitude')?.value, 
         longitude: diagnosisForm.get('longitude')?.value 
       }"
-      [setShapesFromParent]="diagnosisForm.get('locationShapes')?.value"
+      [setShapesFromParent]="drawingShape"
       (locationDetected)="onLocationDetected($event)"
       (shapesDrawn)="onShapesDrawn($event)"
     ></lib-get-location>

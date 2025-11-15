@@ -1,18 +1,21 @@
 <lib-card>
     <h2 class="text-xl text-center font-semibold mb-4">Mapa das propriedades</h2>
-    <lib-date-type-filter
+    <!-- <lib-date-type-filter
         [diagnoses]="data"
         (locationShapesFiltered)="onLocationShapesFiltered($event)"
-    ></lib-date-type-filter>
+    ></lib-date-type-filter> -->
 
     <lib-map-layers
         [rawLayers]="locationShapes"
         (toggleVisibility)="onToggleLayer($event)"
         (focusLayer)="onFocusLayer($event)"
         (createShape)="onCreateShape($event.type, $event.data)"
+        (editShape)="onEditShape($event.type, $event.data)"
+        (toggleOnlyFarmShape)="onToggleOnlyFarmShape($event)"
+        (toggleOnlyPlotShape)="onToggleOnlyPlotShape($event)"
     ></lib-map-layers>
 
-    <lib-get-location
+    <lib-map-component
         #mapContainer
         [editable]="editable"
         [creatable]="creatable"
@@ -22,5 +25,5 @@
         [setFocusFromParent]="focusedLocationShape"
         (setFocusByDrawing)="onSetFocusByDrawing($event)"
         (shapeCreated)="onShapeCreated($event)"
-    ></lib-get-location>
+    ></lib-map-component>
 </lib-card>

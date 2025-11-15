@@ -226,17 +226,32 @@ namespace Infrastructure.Persistence.Context
                     .IsRequired();
             });
 
-            modelBuilder.Entity<Diagnosis>()
-                .HasMany(d => d.LocationShapes)
-                .WithOne(ls => ls.Diagnosis)
-                .HasForeignKey(ls => ls.DiagnosisId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<LocationShape>(entity =>
+            {
+                entity.HasKey(ls => ls.Id);
 
-            modelBuilder.Entity<LocationShape>()
-                .HasMany(ls => ls.Coordinates)
-                .WithOne(c => c.LocationShape)
-                .HasForeignKey(c => c.LocationShapeId)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(ls => ls.Diagnosis)
+                    .WithMany(d => d.LocationShapes)
+                    .HasForeignKey(ls => ls.DiagnosisId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ls => ls.Farm)
+                    .WithMany(f => f.LocationShapes)
+                    .HasForeignKey(ls => ls.FarmId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ls => ls.Plot)
+                    .WithMany(p => p.LocationShapes)
+                    .HasForeignKey(ls => ls.PlotId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.Property(ls => ls.Type)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(ls => ls.Label)
+                    .HasMaxLength(200);
+            });
 
             modelBuilder.Entity<Diagnosis>()
                 .HasOne(d => d.Result)
@@ -312,19 +327,6 @@ namespace Infrastructure.Persistence.Context
                     .WithMany()
                     .HasForeignKey(ims => ims.DiseaseId);
             });
-
-            modelBuilder.Entity<Farm>()
-                .HasMany(f => f.LocationShapes)
-                .WithOne(ls => ls.Farm)
-                .HasForeignKey(ls => ls.FarmId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Plot>()
-                .HasMany(p => p.LocationShapes)
-                .WithOne(ls => ls.Plot)
-                .HasForeignKey(ls => ls.PlotId)
-                .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }
