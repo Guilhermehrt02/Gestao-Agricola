@@ -6,9 +6,6 @@
     ></lib-date-type-filter> -->
 
     <lib-map-layers
-        [rawLayers]="locationShapes"
-        (toggleVisibility)="onToggleLayer($event)"
-        (focusLayer)="onFocusLayer($event)"
         (createShape)="onCreateShape($event.type, $event.data)"
         (editShape)="onEditShape($event.type, $event.data)"
         (toggleOnlyFarmShape)="onToggleOnlyFarmShape($event)"

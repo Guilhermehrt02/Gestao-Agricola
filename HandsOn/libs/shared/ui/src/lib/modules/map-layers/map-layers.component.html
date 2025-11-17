@@ -1,3 +1,4 @@
+<!-- eslint-disable @angular-eslint/template/alt-text -->
 <!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
 <!-- eslint-disable @angular-eslint/template/elements-content -->
 <!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
@@ -31,7 +32,8 @@
         <div class="flex items-center space-x-2">
               <p-checkbox
                 [(ngModel)]="layer.visible"
-                [disabled]="!layer.data || !layer.data.hasShapes"
+                binary="true"
+                inputId="{{ layer.label }}"
                 (onChange)="onToggle(layer)"
               >
               </p-checkbox>
@@ -96,7 +98,8 @@
             <div class="flex items-center space-x-2">
               <p-checkbox
                 [(ngModel)]="sub.visible"
-                [disabled]="!sub.data?.hasShapes"
+                binary="true"
+                inputId="{{ sub.label }}"
                 (onChange)="onToggle(sub)"
               >
               </p-checkbox>
@@ -159,13 +162,21 @@
             <li *ngFor="let child of sub.children">
               <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                  <p-checkbox
-                    [(ngModel)]="child.visible"
-                    binary="true"
-                    inputId="{{ child.label }}"
-                    (onChange)="onToggle(child)"
-                  >
-                  </p-checkbox>
+                  <!-- Ícone do tipo (MOSTRAR SÓ SE hasShapes = true) -->
+                  <span *ngIf="child.data?.hasShapes">
+                    <img
+                      *ngIf="child.data?.type === 'polygon'"
+                      src="https://mt.googleapis.com/vt/icon/name=icons/onion/1492-wht-polygon-blank.png&filter=ffC2185B"
+                      class="w-4 h-4 object-contain opacity-80"
+                    />
+
+                    <img
+                      *ngIf="child.data?.type === 'marker'"
+                      src="https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png"
+                      class="w-4 h-4 object-contain opacity-80"
+                    />
+                  </span>
+
 
                   <label
                     class="text-gray-400 text-sm cursor-pointer hover:text-green-200 transition"

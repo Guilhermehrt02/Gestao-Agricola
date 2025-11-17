@@ -21,7 +21,7 @@ export * from './lib/models/plot.model';
 export * from './lib/models/locationShape.model';
 export * from './lib/models/mapLocation.model';
 export * from './lib/models/farm-map-input.model';
-
+export * from './lib/models/map-element.model';
 
 // services
 export * from './lib/services/authentication/authentication.service';
@@ -34,6 +34,7 @@ export * from './lib/services/revenue/revenue.service';
 export * from './lib/services/reports/report.service';
 export * from './lib/services/diagnosis/diagnosis.service';
 export * from './lib/services/google-maps/google-maps.service';
+export * from './lib/services/google-maps/Map-state.service';
 
 
 // facades

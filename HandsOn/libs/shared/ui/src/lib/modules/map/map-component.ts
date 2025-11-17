@@ -10,12 +10,20 @@ import {
   OnChanges,
   Input,
   SimpleChanges,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Geolocation } from '@capacitor/geolocation';
 import { ButtonComponent } from '../../components/button/button.component';
-import { GoogleMapsService, LocationShapeData, MapLocation } from '@farm/core';
+import { GoogleMapsService, 
+  LocationShapeData, 
+  MapElement, 
+  MapLocation, 
+  MapStateService 
+} from '@farm/core';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'lib-map-component',
@@ -24,7 +32,7 @@ import { Router } from '@angular/router';
   templateUrl: './map-component.html',
   styleUrls: ['./map-component.css'],
 })
-export class MapComponent implements AfterViewInit, OnChanges {
+export class MapComponent implements AfterViewInit, /*OnChanges,*/ OnInit, OnDestroy {
   private activeInfoWindow: google.maps.InfoWindow | null = null;
   @Input() editable = true;
   @Input() creatable = true;
@@ -33,6 +41,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
   @Input() setFocusFromParent?: LocationShapeData;
   @Input() setShapesFromParent?: LocationShapeData[];
   @Input() createTarget?: { type: 'farm' | 'plot' | 'diagnosis'; data: any };
+  @Input() mapElements?: MapElement[];
 
   @ViewChild('mapContainer', { static: false }) mapElementRef!: ElementRef;
 
@@ -47,13 +56,13 @@ export class MapComponent implements AfterViewInit, OnChanges {
   
   constructor(
       private router: Router,
+      private mapState: MapStateService
     ) {}
 
   private readonly googleMapsService = inject(GoogleMapsService);
 
   map!: google.maps.Map;
   marker!: google.maps.Marker;
-  mapReady = false;
 
   loading = false;
   error: string | null = null;
@@ -67,19 +76,173 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
   private drawingManager!: google.maps.drawing.DrawingManager | null;
   private highlightedPolygon: google.maps.Polygon | null = null;
-  @Output() mapIsReady = new EventEmitter<void>();
+  
+  private sub = new Subscription();
+  private elements: MapElement[] = [];
+  private mapReady = false;
 
+  private mapReadySubject = new BehaviorSubject<boolean>(false);
+  mapReady$ = this.mapReadySubject.asObservable();
 
-  async ngAfterViewInit(): Promise<void> {
-    await this.googleMapsService.loadGoogleMaps();
+  ngAfterViewInit() {
+    this.googleMapsService.loadGoogleMaps().then(async () => {
+      const coords = await this.getInitialCoordinates();
+      this.initMap(coords.latitude, coords.longitude);
 
-    const coords = await this.getInitialCoordinates();
-    this.initMap(coords.latitude, coords.longitude);
-    this.mapIsReady.emit();
+      this.mapReady = true;
+      this.mapReadySubject.next(true);
+    });
+  }
 
-    if (this.setShapesFromParent && this.setShapesFromParent.length > 0) {
-      this.loadShapes(this.setShapesFromParent);
-    }
+  ngOnInit(): void {
+    this.sub = new Subscription();
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
+  }
+
+  syncElements(shapes: MapElement[]) {
+    if (!this.map) return;
+
+    this.clearAllMapObjects();
+
+    shapes.forEach((shape) => {
+      if (shape.hasShapes === false || shape.visible === false) {
+        return; 
+      }
+
+      if (!shape.id) {
+        shape.id = this.generateId();
+      }
+
+      if (shape.type === 'polygon' && 
+        shape.info?.coordinates && 
+        shape.info.coordinates.length > 0
+      ) {
+        const path = shape.info.coordinates.map(
+          (coord: any) => new google.maps.LatLng(coord.lat, coord.lng),
+        );
+
+        const polygon = new google.maps.Polygon({
+          paths: path,
+          fillColor: shape.color || '#FF0000',
+          fillOpacity: 0.35,
+          strokeWeight: 2,
+          editable: this.editable,
+          draggable: false,
+          map: this.map,
+        });
+
+        shape.mapObject = polygon;
+
+        const centroid = this.getPolygonCenter(polygon);
+
+        const content = this.createInfoWindowContent(shape, () => {
+          polygon.setMap(null);
+          this.removeShape(polygon);
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content,
+          position: centroid,
+        });
+
+        polygon.addListener('mouseover', (e: google.maps.MapMouseEvent) => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
+          
+          infoWindow.setPosition(e.latLng);
+          infoWindow.open(this.map);
+          this.activeInfoWindow = infoWindow;
+        });
+
+        polygon.addListener('mouseout', () => {
+          if (this.activeInfoWindow === infoWindow) {
+            infoWindow.close();
+            this.activeInfoWindow = null;
+          }
+        });
+
+        polygon.addListener('click', () => {
+          this.clearHighlight();
+
+          this.setFocus(shape);
+
+          this.setFocusByDrawing.emit(shape.mapObject);
+        });
+        
+        polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
+
+        polygon 
+          .getPath()
+          .addListener('insert_at', () => this.emitCurrentShapes());
+
+        polygon
+          .getPath()
+          .addListener('remove_at', () => this.emitCurrentShapes());
+      } else if (shape.type === 'marker' && 
+        shape.info?.coordinates && 
+        shape.info.coordinates.length > 0
+      ) {
+        const pos = new google.maps.LatLng(
+          shape.info.coordinates[0].lat,
+          shape.info.coordinates[0].lng,
+        );
+
+        const marker = new google.maps.Marker({
+          position: pos,
+          draggable: false,
+          map: this.map,
+        });
+
+        shape.mapObject = marker;
+
+        const content = this.createInfoWindowContent(shape, () => {
+          marker.setMap(null);
+          this.removeShape(marker);
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content,
+        });
+
+        marker.addListener('mouseover', () => {
+          if (this.activeInfoWindow) {
+            this.activeInfoWindow.close();
+          }
+
+          infoWindow.open(this.map, marker);
+
+          this.activeInfoWindow = infoWindow;
+        });
+
+        marker.addListener('mouseout', () => {
+          if (this.activeInfoWindow === infoWindow) {
+            infoWindow.close();
+            this.activeInfoWindow = null;
+          }
+        });
+
+        marker.addListener('dragend', () => {
+          this.emitCurrentShapes();
+
+          const pos = marker.getPosition();
+          if (pos) {
+            this.emitCoords(pos.lat(), pos.lng());
+          }
+        });
+      }
+    });
+
+    this.elements = shapes;
+
+    this.map.addListener('click', (e: google.maps.MapMouseEvent) => {
+      this.clearHighlight();
+    });
+
+    this.fitMapToShapes();
   }
 
   async getInitialCoordinates(): Promise<{
@@ -115,143 +278,10 @@ export class MapComponent implements AfterViewInit, OnChanges {
         this.activeInfoWindow = null;
       }
     });
-
-    if(!this.creatable) return;
-
-    const drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: null,
-      drawingControl: true,
-      drawingControlOptions: {
-        position: google.maps.ControlPosition.TOP_CENTER,
-        drawingModes: [
-          google.maps.drawing.OverlayType.MARKER,
-          google.maps.drawing.OverlayType.POLYGON,
-        ],
-      },
-      polygonOptions: {
-        fillColor: '#FF0000',
-        fillOpacity: 0.35,
-        strokeWeight: 2,
-        editable: true,
-        draggable: false,
-      },
-    });
-
-    drawingManager.setMap(this.map);
-
-    const addShapeToList = (
-      shapeObj: google.maps.Polygon | google.maps.Marker,
-      type: string,
-      label: string,
-    ) => {
-      this.drawnShapes.push({ mapObject: shapeObj, type, label, id: this.generateId() });
-      this.emitCurrentShapes();
-    };
-
-    function getPolygonCenter(
-      polygon: google.maps.Polygon,
-    ): google.maps.LatLng {
-      const bounds = new google.maps.LatLngBounds();
-      polygon.getPath().forEach((latLng) => bounds.extend(latLng));
-      return bounds.getCenter();
-    }
-
-    // POLYGON
-    google.maps.event.addListener(
-      drawingManager,
-      'polygoncomplete',
-      (polygon: google.maps.Polygon) => {
-        const label =
-          prompt('Nome do polígono:', 'Polígono sem nome') ||
-          'Polígono sem nome';
-
-        addShapeToList(polygon, 'polygon', label);
-        this.fitMapToShapes();
-
-        const centroid = getPolygonCenter(polygon);
-        const location: MapLocation = {
-          label,
-        };
-        const content = this.createInfoWindowContent(location, () => {
-          polygon.setMap(null);
-          this.removeShape(polygon);
-        });
-
-        const infoWindow = new google.maps.InfoWindow({
-          content,
-          position: centroid,
-        });
-
-        polygon.addListener('click', (e: google.maps.MapMouseEvent) => {
-        if (this.activeInfoWindow) {
-          this.activeInfoWindow.close();
-        }
-        infoWindow.setPosition(e.latLng);
-        infoWindow.open(this.map);
-        this.activeInfoWindow = infoWindow;
-      });
-
-
-        infoWindow.close();
-
-        polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
-        polygon
-          .getPath()
-          .addListener('insert_at', () => this.emitCurrentShapes());
-        polygon
-          .getPath()
-          .addListener('remove_at', () => this.emitCurrentShapes());
-      },
-    );
-
-    // MARKER
-    google.maps.event.addListener(
-      drawingManager,
-      'markercomplete',
-      (marker: google.maps.Marker) => {
-        if (this.marker) this.marker.setMap(null);
-        this.marker = marker;
-        this.marker.setDraggable(true);
-
-        const label =
-          prompt('Nome do local ou ponto:', 'Ponto sem nome') ||
-          'Ponto sem nome';
-
-        addShapeToList(marker, 'marker', label);
-        this.fitMapToShapes();
-
-        const location: MapLocation = {
-          label,
-        };
-
-        const content = this.createInfoWindowContent(location, () => {
-          marker.setMap(null);
-          this.removeShape(marker);
-        });
-
-        const infoWindow = new google.maps.InfoWindow({
-          content,
-        });
-
-        marker.addListener('click', () => {
-          if (this.activeInfoWindow) {
-            this.activeInfoWindow.close();
-          }
-          infoWindow.open(this.map, marker);
-          this.activeInfoWindow = infoWindow;
-        });
-
-        marker.addListener('dragend', () => {
-          this.emitCurrentShapes();
-          const pos = marker.getPosition();
-          if (pos) this.emitCoords(pos.lat(), pos.lng());
-        });
-      },
-    );
   }
 
   private createInfoWindowContent(
-    location: MapLocation,
+    location: MapElement,
     onDelete: () => void
   ): HTMLElement {
     const { label, info } = location;
@@ -291,6 +321,9 @@ export class MapComponent implements AfterViewInit, OnChanges {
       };
 
       addLine('Doença', info.diseaseName);
+      addLine('Área total (ha)', info.totalArea?.toString());
+      addLine('Área afetada (ha)', info.affectedArea?.toString());
+      addLine('Coordenadas', info.coordinates ? info.coordinates.map(c => `(${c.lat.toFixed(4)}, ${c.lng.toFixed(4)})`).join('; ') : undefined);
       addLine('Fazenda', info.farmName);
       addLine('Talhão', info.plotName);
       addLine('Colheita', info.harvestName);
@@ -382,225 +415,225 @@ export class MapComponent implements AfterViewInit, OnChanges {
     return JSON.stringify(a) === JSON.stringify(b);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (!this.mapReady) return;
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (!this.mapReady) return;
 
-    const shapeChange = changes['setShapesFromParent'];
+  //   const shapeChange = changes['setShapesFromParent'];
 
-    if (
-      shapeChange &&
-      this.setShapesFromParent &&
-      !this.areShapesEqual(shapeChange.previousValue, shapeChange.currentValue)
-    ) {
-      const newShapes = this.setShapesFromParent || [];
-      const shapesToLoad: any[] = [];
+  //   if (
+  //     shapeChange &&
+  //     this.setShapesFromParent &&
+  //     !this.areShapesEqual(shapeChange.previousValue, shapeChange.currentValue)
+  //   ) {
+  //     const newShapes = this.setShapesFromParent || [];
+  //     const shapesToLoad: any[] = [];
 
-      newShapes.forEach(newShape => {
-        const existing = this.drawnShapes.find(s => s.id === newShape.id);
-        const isVisibilityOnly = newShape.hasShapes === false;
+  //     newShapes.forEach(newShape => {
+  //       const existing = this.drawnShapes.find(s => s.id === newShape.id);
+  //       const isVisibilityOnly = newShape.hasShapes === false;
 
-        // -------------------------------
-        // 1. SHAPE SEM GEOMETRIA (visibilidade somente)
-        // -------------------------------
-        if (isVisibilityOnly) {
-          if (!existing) {
-            // Cria placeholder na lista
-            this.drawnShapes.push({
-              mapObject: null,
-              type: newShape.type,
-              label: newShape.label,
-              id: newShape.id,
-            });
-          }
-          return; // Nada mais a fazer
-        }
+  //       // -------------------------------
+  //       // 1. SHAPE SEM GEOMETRIA (visibilidade somente)
+  //       // -------------------------------
+  //       if (isVisibilityOnly) {
+  //         if (!existing) {
+  //           // Cria placeholder na lista
+  //           this.drawnShapes.push({
+  //             mapObject: null,
+  //             type: newShape.type,
+  //             label: newShape.label,
+  //             id: newShape.id,
+  //           });
+  //         }
+  //         return; // Nada mais a fazer
+  //       }
 
-        // -------------------------------
-        // 2. SHAPE COM GEOMETRIA (tem shapes)
-        // -------------------------------
-        if (existing) {
-          // Atualizar visibilidade do shape já desenhado
-          const shouldBeVisible = newShape.visible;
-          const isVisible = existing.mapObject ? !!existing.mapObject.getMap() : false;
+  //       // -------------------------------
+  //       // 2. SHAPE COM GEOMETRIA (tem shapes)
+  //       // -------------------------------
+  //       if (existing) {
+  //         // Atualizar visibilidade do shape já desenhado
+  //         const shouldBeVisible = newShape.visible;
+  //         const isVisible = existing.mapObject ? !!existing.mapObject.getMap() : false;
 
-          if (existing.mapObject) {
-            if (shouldBeVisible && !isVisible) existing.mapObject.setMap(this.map);
-            if (!shouldBeVisible && isVisible) existing.mapObject.setMap(null);
-          }
-        } else {
-          // Ainda não existe → carregar depois
-          shapesToLoad.push(newShape);
-        }
-      });
+  //         if (existing.mapObject) {
+  //           if (shouldBeVisible && !isVisible) existing.mapObject.setMap(this.map);
+  //           if (!shouldBeVisible && isVisible) existing.mapObject.setMap(null);
+  //         }
+  //       } else {
+  //         // Ainda não existe → carregar depois
+  //         shapesToLoad.push(newShape);
+  //       }
+  //     });
 
-      // -------------------------------
-      // 3. Carregar shapes que ainda não existem
-      // -------------------------------
-      if (shapesToLoad.length > 0) {
-        this.loadShapes(shapesToLoad);
-      }
-    }
+  //     // -------------------------------
+  //     // 3. Carregar shapes que ainda não existem
+  //     // -------------------------------
+  //     if (shapesToLoad.length > 0) {
+  //       this.loadShapes(shapesToLoad);
+  //     }
+  //   }
 
 
-    if ( changes['setFocusFromParent'] && this.setFocusFromParent && this.map ) {
-      const isDifferent = JSON.stringify(this.lastFocus) !==
-        JSON.stringify(this.setFocusFromParent);
+  //   if ( changes['setFocusFromParent'] && this.setFocusFromParent && this.map ) {
+  //     const isDifferent = JSON.stringify(this.lastFocus) !==
+  //       JSON.stringify(this.setFocusFromParent);
 
-      if (isDifferent) {
-        this.lastFocus = this.setFocusFromParent;
-        this.setFocus(this.setFocusFromParent);
-      }
-    }
+  //     if (isDifferent) {
+  //       this.lastFocus = this.setFocusFromParent;
+  //       this.setFocus(this.setFocusFromParent);
+  //     }
+  //   }
 
-    if (changes['creatable'] && this.map && this.createTarget) {
-      this.clearHighlight();
+  //   if (changes['creatable'] && this.map && this.createTarget) {
+  //     this.clearHighlight();
 
-      if (this.creatable) this.createDrawingManager(this.createTarget);
-      else this.destroyDrawingManager();
-    }
-  }
+  //     // if (this.creatable) this.createDrawingManager(this.createTarget);
+  //     // else this.destroyDrawingManager();
+  //   }
+  // }
 
-  loadShapes(shapes: any[]) {
-    shapes.forEach((shape) => {
-      if (!shape.id) {
-        shape.id = this.generateId();
-      }
+  // loadShapes(shapes: any[]) {
+  //   shapes.forEach((shape) => {
+  //     if (!shape.id) {
+  //       shape.id = this.generateId();
+  //     }
 
-      if (shape.hasShapes === false) {
-        return; 
-      }
+  //     if (shape.hasShapes === false) {
+  //       return; 
+  //     }
 
-      if (shape.type === 'polygon') {
-        const path = shape.coordinates.map(
-          (coord: any) => new google.maps.LatLng(coord.lat, coord.lng),
-        );
+  //     if (shape.type === 'polygon') {
+  //       const path = shape.coordinates.map(
+  //         (coord: any) => new google.maps.LatLng(coord.lat, coord.lng),
+  //       );
 
-        const polygon = new google.maps.Polygon({
-          paths: path,
-          fillColor: shape.color || '#FF0000',
-          fillOpacity: 0.35,
-          strokeWeight: 2,
-          editable: this.editable,
-          draggable: false,
-          map: this.map,
-        });
+  //       const polygon = new google.maps.Polygon({
+  //         paths: path,
+  //         fillColor: shape.color || '#FF0000',
+  //         fillOpacity: 0.35,
+  //         strokeWeight: 2,
+  //         editable: this.editable,
+  //         draggable: false,
+  //         map: this.map,
+  //       });
 
-        this.drawnShapes.push({
-          mapObject: polygon,
-          type: 'polygon',
-          label: shape.label || 'Polígono sem nome',
-          id: shape.id,
-        });
+  //       this.drawnShapes.push({
+  //         mapObject: polygon,
+  //         type: 'polygon',
+  //         label: shape.label || 'Polígono sem nome',
+  //         id: shape.id,
+  //       });
 
-        const centroid = this.getPolygonCenter(polygon);
+  //       const centroid = this.getPolygonCenter(polygon);
 
-        const content = this.createInfoWindowContent(shape, () => {
-          polygon.setMap(null);
-          this.removeShape(polygon);
-        });
+  //       const content = this.createInfoWindowContent(shape, () => {
+  //         polygon.setMap(null);
+  //         this.removeShape(polygon);
+  //       });
 
-        const infoWindow = new google.maps.InfoWindow({
-          content,
-          position: centroid,
-        });
+  //       const infoWindow = new google.maps.InfoWindow({
+  //         content,
+  //         position: centroid,
+  //       });
 
-        polygon.addListener('mouseover', (e: google.maps.MapMouseEvent) => {
-          if (this.activeInfoWindow) {
-            this.activeInfoWindow.close();
-          }
+  //       polygon.addListener('mouseover', (e: google.maps.MapMouseEvent) => {
+  //         if (this.activeInfoWindow) {
+  //           this.activeInfoWindow.close();
+  //         }
           
-          infoWindow.setPosition(e.latLng);
-          infoWindow.open(this.map);
-          this.activeInfoWindow = infoWindow;
-        });
+  //         infoWindow.setPosition(e.latLng);
+  //         infoWindow.open(this.map);
+  //         this.activeInfoWindow = infoWindow;
+  //       });
 
-        polygon.addListener('mouseout', () => {
-          if (this.activeInfoWindow === infoWindow) {
-            infoWindow.close();
-            this.activeInfoWindow = null;
-          }
-        });
+  //       polygon.addListener('mouseout', () => {
+  //         if (this.activeInfoWindow === infoWindow) {
+  //           infoWindow.close();
+  //           this.activeInfoWindow = null;
+  //         }
+  //       });
 
-        polygon.addListener('click', () => {
-          this.clearHighlight();
+  //       polygon.addListener('click', () => {
+  //         this.clearHighlight();
 
-          this.setFocus(shape);
+  //         this.setFocus(shape);
 
-          this.setFocusByDrawing.emit(shape);
-        });
+  //         this.setFocusByDrawing.emit(shape);
+  //       });
         
-        polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
+  //       polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
 
-        polygon
-          .getPath()
-          .addListener('insert_at', () => this.emitCurrentShapes());
+  //       polygon
+  //         .getPath()
+  //         .addListener('insert_at', () => this.emitCurrentShapes());
 
-        polygon
-          .getPath()
-          .addListener('remove_at', () => this.emitCurrentShapes());
-      } else if (shape.type === 'marker') {
-        const pos = new google.maps.LatLng(
-          shape.coordinates[0].lat,
-          shape.coordinates[0].lng,
-        );
+  //       polygon
+  //         .getPath()
+  //         .addListener('remove_at', () => this.emitCurrentShapes());
+  //     } else if (shape.type === 'marker') {
+  //       const pos = new google.maps.LatLng(
+  //         shape.coordinates[0].lat,
+  //         shape.coordinates[0].lng,
+  //       );
 
-        const marker = new google.maps.Marker({
-          position: pos,
-          draggable: false,
-          map: this.map,
-        });
+  //       const marker = new google.maps.Marker({
+  //         position: pos,
+  //         draggable: false,
+  //         map: this.map,
+  //       });
 
-        this.drawnShapes.push({
-          mapObject: marker,
-          type: 'marker',
-          label: shape.label,
-          id: shape.id,
-        });
+  //       this.drawnShapes.push({
+  //         mapObject: marker,
+  //         type: 'marker',
+  //         label: shape.label,
+  //         id: shape.id,
+  //       });
 
-        const content = this.createInfoWindowContent(shape.label, () => {
-          marker.setMap(null);
-          this.removeShape(marker);
-        });
+  //       const content = this.createInfoWindowContent(shape.label, () => {
+  //         marker.setMap(null);
+  //         this.removeShape(marker);
+  //       });
 
-        const infoWindow = new google.maps.InfoWindow({
-          content,
-        });
+  //       const infoWindow = new google.maps.InfoWindow({
+  //         content,
+  //       });
 
-        marker.addListener('mouseover', () => {
-          if (this.activeInfoWindow) {
-            this.activeInfoWindow.close();
-          }
+  //       marker.addListener('mouseover', () => {
+  //         if (this.activeInfoWindow) {
+  //           this.activeInfoWindow.close();
+  //         }
 
-          infoWindow.open(this.map, marker);
+  //         infoWindow.open(this.map, marker);
 
-          this.activeInfoWindow = infoWindow;
-        });
+  //         this.activeInfoWindow = infoWindow;
+  //       });
 
-        marker.addListener('mouseout', () => {
-          if (this.activeInfoWindow === infoWindow) {
-            infoWindow.close();
-            this.activeInfoWindow = null;
-          }
-        });
+  //       marker.addListener('mouseout', () => {
+  //         if (this.activeInfoWindow === infoWindow) {
+  //           infoWindow.close();
+  //           this.activeInfoWindow = null;
+  //         }
+  //       });
 
-        marker.addListener('dragend', () => {
-          this.emitCurrentShapes();
+  //       marker.addListener('dragend', () => {
+  //         this.emitCurrentShapes();
 
-          const pos = marker.getPosition();
-          if (pos) {
-            this.emitCoords(pos.lat(), pos.lng());
-          }
-        });
-      }
-    });
+  //         const pos = marker.getPosition();
+  //         if (pos) {
+  //           this.emitCoords(pos.lat(), pos.lng());
+  //         }
+  //       });
+  //     }
+  //   });
 
-    this.map.addListener('click', (e: google.maps.MapMouseEvent) => {
-      this.clearHighlight();
-    });
+  //   this.map.addListener('click', (e: google.maps.MapMouseEvent) => {
+  //     this.clearHighlight();
+  //   });
 
-    this.emitCurrentShapes();
-    this.fitMapToShapes();
-  }
+  //   this.emitCurrentShapes();
+  //   this.fitMapToShapes();
+  // }
 
   public placeOrMoveMarker(lat: number, lng: number, emit = false) {
     const position = new google.maps.LatLng(lat, lng);
@@ -659,11 +692,11 @@ export class MapComponent implements AfterViewInit, OnChanges {
   }
 
   private fitMapToShapes(): void {
-    if (this.drawnShapes.length === 0) return;
+    if (this.elements.length === 0) return;
 
     const bounds = new google.maps.LatLngBounds();
 
-    this.drawnShapes.forEach(({ mapObject, type }) => {
+    this.elements.forEach(({ mapObject, type }) => {
       if (type === 'marker' && mapObject instanceof google.maps.Marker) {
         const pos = mapObject.getPosition();
         if (pos) bounds.extend(pos);
@@ -673,7 +706,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
       }
     });
 
-    if (this.drawnShapes.length === 1) {
+    if (this.elements.length === 1) {
       this.map.setCenter(bounds.getCenter());
 
       this.map.setZoom(15);
@@ -686,221 +719,232 @@ export class MapComponent implements AfterViewInit, OnChanges {
     this.router.navigate([`/app/diagnoses/diagnosis/${id}/result`]);
   }
 
-  setFocus(shape: LocationShapeData) {
-    const drawing = this.findDrawingByShape(shape);
+  setFocus(shape: MapElement) {
+  const drawing = shape.mapObject;
     if (!drawing) return;
 
     if (shape.type === 'polygon' && drawing instanceof google.maps.Polygon) {
       const bounds = new google.maps.LatLngBounds();
-      shape.coordinates.forEach(coord =>
-        bounds.extend(new google.maps.LatLng(coord.lat, coord.lng))
-      );
+
+      if (shape.info?.coordinates) {
+        shape.info.coordinates.forEach(coord =>
+          bounds.extend(new google.maps.LatLng(coord.lat, coord.lng))
+        );
+      }
 
       this.clearHighlight();
 
       this.highlightedPolygon = new google.maps.Polygon({
-        paths: drawing.getPath(),
-        strokeColor: '#00FF7F',      
+        paths: drawing.getPath(),  
+        strokeColor: '#00FF7F',
         strokeOpacity: 1,
-        strokeWeight: 4,             
-        fillOpacity: 0,              
-        zIndex: 9999,                
+        strokeWeight: 4,
+        fillOpacity: 0,
+        zIndex: 9999,
         map: this.map,
       });
 
       this.map.fitBounds(bounds);
-    } else if (shape.type === 'marker') {
-      const position = new google.maps.LatLng(shape.coordinates[0].lat, shape.coordinates[0].lng);
+    }
+
+    else if (shape.type === 'marker' && shape.info?.coordinates) {
+      const position = new google.maps.LatLng(
+        shape.info.coordinates[0].lat,
+        shape.info.coordinates[0].lng
+      );
+
       this.map.setCenter(position);
       this.map.setZoom(17);
     }
+    
   }
 
-  createDrawingManager({type, data}: {type?: 'farm' | 'plot' | 'diagnosis', data?: any} = {}) {
-    if(!this.creatable || !this.map) return;
 
-    const drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: null,
-      drawingControl: true,
-      drawingControlOptions: {
-        position: google.maps.ControlPosition.TOP_CENTER,
-        drawingModes: [
-          google.maps.drawing.OverlayType.MARKER,
-          google.maps.drawing.OverlayType.POLYGON,
-        ],
-      },
-      polygonOptions: {
-        fillColor: '#FF0000',
-        fillOpacity: 0.35,
-        strokeWeight: 2,
-        editable: false,
-        draggable: false,
-      },
-    });
+  // createDrawingManager({type, data}: {type?: 'farm' | 'plot' | 'diagnosis', data?: any} = {}) {
+  //   if(!this.creatable || !this.map) return;
 
-    this.drawingManager = drawingManager;
+  //   const drawingManager = new google.maps.drawing.DrawingManager({
+  //     drawingMode: null,
+  //     drawingControl: true,
+  //     drawingControlOptions: {
+  //       position: google.maps.ControlPosition.TOP_CENTER,
+  //       drawingModes: [
+  //         google.maps.drawing.OverlayType.MARKER,
+  //         google.maps.drawing.OverlayType.POLYGON,
+  //       ],
+  //     },
+  //     polygonOptions: {
+  //       fillColor: '#FF0000',
+  //       fillOpacity: 0.35,
+  //       strokeWeight: 2,
+  //       editable: false,
+  //       draggable: false,
+  //     },
+  //   });
 
-    drawingManager.setMap(this.map);
+  //   this.drawingManager = drawingManager;
 
-    const addShapeToList = (
-      shapeObj: google.maps.Polygon | google.maps.Marker,
-      type: string,
-      label: string,
-    ) => {
-      this.drawnShapes.push({ mapObject: shapeObj, type, label, id: this.generateId() });
-      this.emitCurrentShapes();
-    };
+  //   drawingManager.setMap(this.map);
 
-    function getPolygonCenter(
-      polygon: google.maps.Polygon,
-    ): google.maps.LatLng {
-      const bounds = new google.maps.LatLngBounds();
-      polygon.getPath().forEach((latLng) => bounds.extend(latLng));
-      return bounds.getCenter();
-    }
+  //   const addShapeToList = (
+  //     shapeObj: google.maps.Polygon | google.maps.Marker,
+  //     type: string,
+  //     label: string,
+  //   ) => {
+  //     this.drawnShapes.push({ mapObject: shapeObj, type, label, id: this.generateId() });
+  //     this.emitCurrentShapes();
+  //   };
 
-    // POLYGON
-    google.maps.event.addListener(
-      drawingManager,
-      'polygoncomplete',
-      (polygon: google.maps.Polygon) => {
-        const label =
-          prompt('Nome do polígono:', 'Polígono sem nome') ||
-          'Polígono sem nome';
+  //   function getPolygonCenter(
+  //     polygon: google.maps.Polygon,
+  //   ): google.maps.LatLng {
+  //     const bounds = new google.maps.LatLngBounds();
+  //     polygon.getPath().forEach((latLng) => bounds.extend(latLng));
+  //     return bounds.getCenter();
+  //   }
 
-        addShapeToList(polygon, 'polygon', label);
-        this.fitMapToShapes();
+  //   // POLYGON
+  //   google.maps.event.addListener(
+  //     drawingManager,
+  //     'polygoncomplete',
+  //     (polygon: google.maps.Polygon) => {
+  //       const label =
+  //         prompt('Nome do polígono:', 'Polígono sem nome') ||
+  //         'Polígono sem nome';
 
-        const centroid = getPolygonCenter(polygon);
-        const location: MapLocation = {
-          label,
-        };
-        const content = this.createInfoWindowContent(location, () => {
-          polygon.setMap(null);
-          this.removeShape(polygon);
-        });
+  //       addShapeToList(polygon, 'polygon', label);
+  //       this.fitMapToShapes();
+
+  //       const centroid = getPolygonCenter(polygon);
+  //       const location: MapLocation = {
+  //         label,
+  //       };
+  //       const content = this.createInfoWindowContent(location, () => {
+  //         polygon.setMap(null);
+  //         this.removeShape(polygon);
+  //       });
         
-        const infoWindow = new google.maps.InfoWindow({
-          content,
-          position: centroid,
-        });
+  //       const infoWindow = new google.maps.InfoWindow({
+  //         content,
+  //         position: centroid,
+  //       });
 
-        polygon.addListener('mouseover', (e: google.maps.MapMouseEvent) => {
-          if (this.activeInfoWindow) {
-            this.activeInfoWindow.close();
-          }
-          infoWindow.setPosition(e.latLng);
-          infoWindow.open(this.map);
-          this.activeInfoWindow = infoWindow;
-        });
+  //       polygon.addListener('mouseover', (e: google.maps.MapMouseEvent) => {
+  //         if (this.activeInfoWindow) {
+  //           this.activeInfoWindow.close();
+  //         }
+  //         infoWindow.setPosition(e.latLng);
+  //         infoWindow.open(this.map);
+  //         this.activeInfoWindow = infoWindow;
+  //       });
 
-        polygon.addListener('mouseout', () => {
-          if (this.activeInfoWindow === infoWindow) {
-            infoWindow.close();
-            this.activeInfoWindow = null;
-          }
-        });
+  //       polygon.addListener('mouseout', () => {
+  //         if (this.activeInfoWindow === infoWindow) {
+  //           infoWindow.close();
+  //           this.activeInfoWindow = null;
+  //         }
+  //       });
         
-        const shapeData: LocationShapeData = {
-          type: 'polygon',
-          label,
-          id: this.drawnShapes[this.drawnShapes.length -1].id,
-          info: {
-            farmId: type === 'farm' ? data.id : undefined,
-            plotId: type === 'plot' ? data.id : undefined,
-          },
-          coordinates: polygon.getPath().getArray().map(latLng => ({
-            lat: latLng.lat(),
-            lng: latLng.lng(),
-          })),
-        };
+  //       const shapeData: LocationShapeData = {
+  //         type: 'polygon',
+  //         label,
+  //         id: this.drawnShapes[this.drawnShapes.length -1].id,
+  //         info: {
+  //           farmId: type === 'farm' ? data.id : undefined,
+  //           plotId: type === 'plot' ? data.id : undefined,
+  //         },
+  //         coordinates: polygon.getPath().getArray().map(latLng => ({
+  //           lat: latLng.lat(),
+  //           lng: latLng.lng(),
+  //         })),
+  //       };
 
-        this.shapeCreated.emit(shapeData);
+  //       this.shapeCreated.emit(shapeData);
 
-        this.creatable = false;
-        this.destroyDrawingManager();
+  //       this.creatable = false;
+  //       this.destroyDrawingManager();
 
-        polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
-        polygon
-          .getPath()
-          .addListener('insert_at', () => this.emitCurrentShapes());
-        polygon
-          .getPath()
-          .addListener('remove_at', () => this.emitCurrentShapes());
-      },
-    );
+  //       polygon.getPath().addListener('set_at', () => this.emitCurrentShapes());
+  //       polygon
+  //         .getPath()
+  //         .addListener('insert_at', () => this.emitCurrentShapes());
+  //       polygon
+  //         .getPath()
+  //         .addListener('remove_at', () => this.emitCurrentShapes());
+  //     },
+  //   );
 
-    // MARKER
-    google.maps.event.addListener(
-      drawingManager,
-      'markercomplete',
-      (marker: google.maps.Marker) => {
-        if (this.marker) this.marker.setMap(null);
-        this.marker = marker;
-        this.marker.setDraggable(true);
+  //   // MARKER
+  //   google.maps.event.addListener(
+  //     drawingManager,
+  //     'markercomplete',
+  //     (marker: google.maps.Marker) => {
+  //       if (this.marker) this.marker.setMap(null);
+  //       this.marker = marker;
+  //       this.marker.setDraggable(true);
 
-        const label =
-          prompt('Nome do local ou ponto:', 'Ponto sem nome') ||
-          'Ponto sem nome';
+  //       const label =
+  //         prompt('Nome do local ou ponto:', 'Ponto sem nome') ||
+  //         'Ponto sem nome';
 
-        addShapeToList(marker, 'marker', label);
-        this.fitMapToShapes();
+  //       addShapeToList(marker, 'marker', label);
+  //       this.fitMapToShapes();
 
-        const location: MapLocation = {
-          label,
-        };
+  //       const location: MapLocation = {
+  //         label,
+  //       };
 
-        const content = this.createInfoWindowContent(location, () => {
-          marker.setMap(null);
-          this.removeShape(marker);
-        });
+  //       const content = this.createInfoWindowContent(location, () => {
+  //         marker.setMap(null);
+  //         this.removeShape(marker);
+  //       });
 
-        const infoWindow = new google.maps.InfoWindow({
-          content,
-        });
+  //       const infoWindow = new google.maps.InfoWindow({
+  //         content,
+  //       });
 
-        marker.addListener('mouseover', () => {
-          if (this.activeInfoWindow) {
-            this.activeInfoWindow.close();
-          }
-          infoWindow.open(this.map, marker);
-          this.activeInfoWindow = infoWindow;
-        });
+  //       marker.addListener('mouseover', () => {
+  //         if (this.activeInfoWindow) {
+  //           this.activeInfoWindow.close();
+  //         }
+  //         infoWindow.open(this.map, marker);
+  //         this.activeInfoWindow = infoWindow;
+  //       });
 
-        marker.addListener('mouseout', () => {
-          if (this.activeInfoWindow === infoWindow) {
-            infoWindow.close();
-            this.activeInfoWindow = null;
-          }
-        });
+  //       marker.addListener('mouseout', () => {
+  //         if (this.activeInfoWindow === infoWindow) {
+  //           infoWindow.close();
+  //           this.activeInfoWindow = null;
+  //         }
+  //       });
 
-        marker.addListener('dragend', () => {
-          this.emitCurrentShapes();
-          const pos = marker.getPosition();
-          if (pos) this.emitCoords(pos.lat(), pos.lng());
-        });
+  //       marker.addListener('dragend', () => {
+  //         this.emitCurrentShapes();
+  //         const pos = marker.getPosition();
+  //         if (pos) this.emitCoords(pos.lat(), pos.lng());
+  //       });
 
-        const shapeData: LocationShapeData = {
-          type: 'marker',
-          label,
-          id: this.drawnShapes[this.drawnShapes.length -1].id,
-          info: {
-            farmId: type === 'farm' ? data.farmId : undefined,
-            plotId: type === 'plot' ? data.plotId : undefined,
-          },
-          coordinates: [{
-            lat: marker.getPosition()?.lat() || 0,
-            lng: marker.getPosition()?.lng() || 0,
-          }],
-        };
+  //       const shapeData: LocationShapeData = {
+  //         type: 'marker',
+  //         label,
+  //         id: this.drawnShapes[this.drawnShapes.length -1].id,
+  //         info: {
+  //           farmId: type === 'farm' ? data.farmId : undefined,
+  //           plotId: type === 'plot' ? data.plotId : undefined,
+  //         },
+  //         coordinates: [{
+  //           lat: marker.getPosition()?.lat() || 0,
+  //           lng: marker.getPosition()?.lng() || 0,
+  //         }],
+  //       };
 
-        this.shapeCreated.emit(shapeData);
+  //       this.shapeCreated.emit(shapeData);
 
-        this.creatable = false;
-        this.destroyDrawingManager();
-      },
-    );
-  }
+  //       this.creatable = false;
+  //       this.destroyDrawingManager();
+  //     },
+  //   );
+  // }
 
   private destroyDrawingManager() {
     if(!this.map || !this.drawingManager) return;
@@ -920,7 +964,18 @@ export class MapComponent implements AfterViewInit, OnChanges {
     return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   }
 
-  findDrawingByShape(shape: LocationShapeData): google.maps.Polygon | google.maps.Marker | null {
+  findDrawingByShape(shape: MapElement): google.maps.Polygon | google.maps.Marker | null {
     return this.drawnShapes.find((s) => s.id === shape.id)?.mapObject || null;
   }
+
+  clearAllMapObjects() {
+    if (!this.elements) return;
+
+    this.elements.forEach(el => {
+      if (el.mapObject) {
+        el.mapObject.setMap(null);
+      }
+    });
+  }
+
 }
