@@ -1,0 +1,11 @@
+.custom-card-dialog .p-dialog {
+  background: #022c22 !important; /* bg-green-950 */
+  border: 1px solid var(--primary-border) !important;
+  border-radius: 8px !important;
+  padding: 2rem !important;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.4);
+}
+
+.custom-card-dialog .p-dialog-content {
+  background: transparent !important;
+}

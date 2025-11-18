@@ -8,19 +8,20 @@ import {
   MapComponent,
   CardComponent,
   MapLayersComponent,
+  EditElementDialogComponent
 } from '@farm/ui';
 import { FarmMapViewComponentFacade } from './farmMapView.facade';
 import { Diagnosis, 
   Farm, 
-  LocationShapeData, 
-  MapLocation, 
   Plot, 
   MapStateService,
   MapElement,
   GoogleMapsService
+  
 } from '@farm/core';
 import { combineLatest, Observable } from 'rxjs';
 import * as turf from '@turf/turf';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 
 const MapLayerColors = {
   farm: {
@@ -51,6 +52,7 @@ const MapLayerColors = {
   ],
   templateUrl: './farmMapView.html',
   styleUrls: ['./farmMapView.css'],
+  providers: [DialogService]
 })
 export class FarmMapView implements OnInit {
   loading: boolean = false;
@@ -71,8 +73,12 @@ export class FarmMapView implements OnInit {
   @ViewChild(MapComponent) map!: MapComponent;
   editingElementId$!: Observable<string | null>;
   creatingShape$!: Observable<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' } | null>;
+  private dialogRef?: DynamicDialogRef;
 
-  constructor(private facade: FarmMapViewComponentFacade, private mapState: MapStateService) {}
+
+  constructor(private facade: FarmMapViewComponentFacade, 
+    private mapState: MapStateService,
+    private dialogService: DialogService) {}
   
   ngAfterViewInit() {
     combineLatest([
@@ -143,7 +149,7 @@ export class FarmMapView implements OnInit {
             visible: true,
             editable: false,
             hideShapeOnly: false,
-            label: farm.name,
+            label: farm.locationShapes?.[0]?.label || farm.name,
             color: MapLayerColors.farm.fill,
             type: shape.type,
             children: [],
@@ -193,7 +199,7 @@ export class FarmMapView implements OnInit {
             visible: true,
             hideShapeOnly: false,
             editable: false,
-            label: plot.name,
+            label: plot.locationShapes?.[0]?.label || plot.name,
             color: MapLayerColors.plot.fill,
             type: shape.type,
             children: [],
@@ -236,7 +242,7 @@ export class FarmMapView implements OnInit {
   getDiagnosisShapes(diagnoses: Diagnosis[]): MapElement[] {
     return diagnoses.flatMap(d => {
       if (!d.locationShapes || d.locationShapes.length === 0) return [{
-        id: d.id,
+        id:  this.generateId(),
         class: 'diagnosis',
         hasShapes: false,
         visible: true,
@@ -257,7 +263,7 @@ export class FarmMapView implements OnInit {
       }];
 
       return d.locationShapes.map((shape: any) => ({
-        id: d.id,
+        id: this.generateId(),
         class: 'diagnosis',
         hasShapes: true,
         visible: true,
@@ -384,7 +390,6 @@ export class FarmMapView implements OnInit {
     });
   }
 
-
   generateId(): string {
     return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   }
@@ -409,4 +414,89 @@ export class FarmMapView implements OnInit {
 
     return areaHa;
   }
+
+  openEditPopup(element: MapElement) {
+    this.dialogRef = this.dialogService.open(EditElementDialogComponent, {
+      header: 'Editar elemento',
+      width: '90vw',
+      contentStyle: { 'max-height': '80vh', overflow: 'auto' },
+      data: element,
+      styleClass: 'custom-card-dialog'
+    });
+
+
+    this.dialogRef.onClose.subscribe((result: any) => {
+      if (result) {
+        this.onElementEdited(element, result); 
+      }
+    });
+  }
+
+  onElementEdited(element: MapElement, label: string = '') {
+    const id = element.info?.id;
+    if (!id || !label) return;
+
+    const currentElements = this.mapState.mapElements ? [...this.mapState.mapElements] : [];
+    const updatedElement = { ...element };
+
+    const objType = element.class;
+    if (!objType) return;
+
+    let update$: Observable<any> | null = null;
+
+    if (objType === 'farm') {
+      const farm = {} as Farm;
+
+      farm.id = id;
+      farm.name = label;
+      updatedElement.label = label;
+  
+      update$ = this.facade.updateFarm(farm);
+    }
+    
+    else if (objType === 'plot') {
+      const plot = {} as Plot;
+
+      plot.id = id;
+      plot.name = label;
+      updatedElement.label = label;
+
+      update$ = this.facade.updatePlot(plot);
+    }
+
+    else if (objType === 'diagnosis') {
+      const diagnosis = {} as Diagnosis;
+
+      diagnosis.id = id;
+
+      const allDiagnosisShapes = currentElements.filter(e => e.info?.id === element.info?.id);
+      
+      diagnosis.locationShapes = allDiagnosisShapes.map(s => (
+        { type: s.type, 
+          label: element.id === s.id ? label : s.label, 
+          coordinates: s.info?.coordinates || [] 
+        }));
+        
+      updatedElement.label = label;
+
+      update$ = this.facade.updateDiagnosis(diagnosis);
+    }
+
+    if (!update$) return;
+    
+    const index = this.mapState.mapElements ? this.mapState.mapElements.findIndex(s => s.id === element.id) : -1;
+
+    update$.subscribe(() => {
+      if (index !== -1) {
+        currentElements[index] = updatedElement; 
+        this.mapState.setMapElements([...currentElements]);
+      }
+
+    });
+  }
+
+  ngOnDestroy() {
+    this.dialogRef?.close();
+  }
+
 }

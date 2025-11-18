@@ -31,3 +31,4 @@ export * from './lib/modules/get-location/get-location.component';
 export * from './lib/modules/date-type-filter/date-type-filter.component';
 export * from './lib/modules/map-layers/map-layers.component';
 export * from './lib/modules/map/map-component';
+export * from './lib/modules/edit-element-dialog/edit-element-dialog.component';

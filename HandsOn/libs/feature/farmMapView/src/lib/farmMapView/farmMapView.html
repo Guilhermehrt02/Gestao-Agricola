@@ -40,5 +40,6 @@
         [editingElementId]="editingElementId$ | async"
         [creatingShape]="creatingShape$ | async"
         (shapeChanged)="onShapeEdited($event)"
+        (editElement)="openEditPopup($event)"
     ></lib-map-component>
 </lib-card>

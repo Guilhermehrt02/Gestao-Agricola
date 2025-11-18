@@ -61,7 +61,7 @@
               <button
                 *ngIf="layer.data?.hasShapes"
                 pButton
-                [icon]="layer.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                [icon]="layer.data.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Mostrar/ocultar apenas o desenho da fazenda"
                 (click)="onToggleOnlyFarmOrPlotShape(layer)"
@@ -130,7 +130,7 @@
               <button
                 *ngIf="sub.data?.hasShapes"
                 pButton
-                [icon]="sub.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                [icon]="sub.data.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Mostrar/ocultar apenas o desenho do talhão"
                 (click)="onToggleOnlyFarmOrPlotShape(sub)"
@@ -211,7 +211,7 @@
                         icon="pi pi-pencil"
                         class="p-button-rounded p-button-text p-button-sm text-white"
                         title="Editar desenho"
-                        (click)="onEditShape(child.data.info.id)"
+                        (click)="onEditShape(child.data.id)"
                       ></button>
                   </div>
               </div>

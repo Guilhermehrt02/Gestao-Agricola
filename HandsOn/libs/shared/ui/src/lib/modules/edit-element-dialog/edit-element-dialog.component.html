@@ -1,0 +1,20 @@
+<div class="flex flex-col gap-3 p-3">
+  <lib-input
+    label="Nome"
+    [(ngModel)]="data.label"
+  ></lib-input>
+
+  <lib-input
+    label="Doença"
+    [(ngModel)]="data.info.diseaseName"
+  ></lib-input>
+
+  <lib-input type="date"
+    label="Data"
+    [(ngModel)]="data.info.date"
+  ></lib-input>
+
+  <button class="bg-green-700 text-white p-2 rounded" (click)="save()">
+    Salvar
+  </button>
+</div>

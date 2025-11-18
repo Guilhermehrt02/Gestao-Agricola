@@ -43,7 +43,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
 
   @Output() setFocusByDrawing = new EventEmitter<google.maps.Marker | google.maps.Polygon>();
   @Output() shapeChanged = new EventEmitter<MapElement>();
-  
+  @Output() editElement = new EventEmitter<MapElement>();
+
   constructor(
       private router: Router,
       private mapState: MapStateService
@@ -64,7 +65,6 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
   private drawingEditing: MapElement | null = null;
   private drawingCreating: MapElement | null = null;
   private originalCoordinates: { lat: number; lng: number }[] | null = null;
-  private creationOverlayListener: google.maps.MapsEventListener | null = null;
   private drawingManager: google.maps.drawing.DrawingManager | null = null;
 
   private mapReadySubject = new BehaviorSubject<boolean>(false);
@@ -286,6 +286,13 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
     title.style.color = '#1a4d2e';
     content.appendChild(title);
 
+    const footer = document.createElement('div');
+    footer.style.display = 'flex';
+    footer.style.justifyContent = 'space-between';
+    footer.style.alignItems = 'center';
+    footer.style.marginTop = '8px';
+    footer.style.gap = '6px';
+
     if (info) {
       const infoList = document.createElement('div');
       infoList.style.display = 'flex';
@@ -312,14 +319,22 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
       addLine('Foto', info.photoUrl ? `<img src="${info.photoUrl}" alt="Foto" style="max-width: 100%; height: auto; border-radius: 4px;">` : undefined);
 
       content.appendChild(infoList);
-    }
 
-    const footer = document.createElement('div');
-    footer.style.display = 'flex';
-    footer.style.justifyContent = 'space-between';
-    footer.style.alignItems = 'center';
-    footer.style.marginTop = '8px';
-    footer.style.gap = '6px';
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Editar ✍️';
+      editBtn.style.backgroundColor = '#f6ad55'; 
+      editBtn.style.color = 'white';
+      editBtn.style.border = 'none';
+      editBtn.style.borderRadius = '4px';
+      editBtn.style.padding = '4px 8px';
+      editBtn.style.fontSize = '12px';
+      editBtn.style.cursor = 'pointer';
+      editBtn.style.flexGrow = '1'; 
+      editBtn.onclick = () => {
+        this.editElement.emit(location);
+      };
+      footer.appendChild(editBtn);
+    }
 
     if (info?.status === 'Processed' && info.id) {
       const viewBtn = document.createElement('button');
