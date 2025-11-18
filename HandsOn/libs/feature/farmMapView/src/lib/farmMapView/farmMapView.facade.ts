@@ -71,26 +71,37 @@ export class FarmMapViewComponentFacade {
   }
 
 
-  updateFarm(farm: Farm) {
+  updateFarm(farm: Farm): Observable<Farm> {
     this.loadingSubject.next(true);
 
-    this.farmFacade.updateFarm(farm).subscribe(() => {
-      this.loadingSubject.next(false);
-    });
+    return this.farmFacade.updateFarm(farm).pipe(
+      tap({
+        next: () => this.loadingSubject.next(false),
+        error: () => this.loadingSubject.next(false)
+      })
+    );
   }
 
-  updatePlot(plot: any) {
+
+  updatePlot(plot: any): Observable<Plot> {
     this.loadingSubject.next(true);
 
-    this.farmFacade.updatePlot(plot).subscribe(() => {
-      this.loadingSubject.next(false);
-    });
+    return this.farmFacade.updatePlot(plot).pipe(
+      tap({
+        next: () => this.loadingSubject.next(false),
+        error: () => this.loadingSubject.next(false)
+      })
+    );
   }
 
-  updateDiagnosis(diagnosis: Diagnosis) {
+  updateDiagnosis(diagnosis: Diagnosis): Observable<Diagnosis> {
     this.loadingSubject.next(true);
-    this.diagnosisFacade.updateDiagnosis(diagnosis).subscribe(() => {
-      this.loadingSubject.next(false);
-    });
+    
+    return this.diagnosisFacade.updateDiagnosis(diagnosis).pipe(
+      tap({
+        next: () => this.loadingSubject.next(false),
+        error: () => this.loadingSubject.next(false)
+      })
+    );
   }
 }

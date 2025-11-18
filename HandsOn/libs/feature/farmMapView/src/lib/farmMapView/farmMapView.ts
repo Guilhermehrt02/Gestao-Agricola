@@ -61,6 +61,7 @@ export class FarmMapView implements OnInit {
   farmsShapes: MapElement[] = [];
   plotsShapes: MapElement[] = [];
   diagnosisShapes: MapElement[] = [];
+  shapes: MapElement[] = [];
 
   loadedFarms: boolean = false;
   loadedPlots: boolean = false;
@@ -277,7 +278,8 @@ export class FarmMapView implements OnInit {
           harvestName: d.harvest?.name,
           status: d.status,
           coordinates: shape.coordinates,
-          date: d.createdAt
+          date: d.createdAt,
+          photoUrl: d.photoUrl
         } 
       }));
     });
@@ -322,54 +324,66 @@ export class FarmMapView implements OnInit {
     const id = updatedShape.info.id;     
     const coords = updatedShape.info.coordinates;
     const objType = updatedShape.class;
-
     if (!objType) return;
 
-    if(objType === 'farm' ) {
+    let update$: Observable<any> | null = null;
+
+    if (objType === 'farm') {
       const farm = {} as Farm;
 
       farm.id = id;
       farm.locationShapes = [
-        {
-          type: updatedShape.type,
-          label: updatedShape.label ?? '',
-          coordinates: coords
-        }
-      ];
-      this.facade.updateFarm(farm);
-      return;
+        { type: updatedShape.type, 
+          label: updatedShape.info?.name || updatedShape.label || '', 
+          coordinates: coords 
+        }];
+        
+      update$ = this.facade.updateFarm(farm);
     }
-
-    if (objType === 'plot') {
+    
+    else if (objType === 'plot') {
       const plot = {} as Plot;
-
       plot.id = id;
       plot.locationShapes = [
         {
           type: updatedShape.type,
-          label: updatedShape.label ?? '',
+          label: updatedShape.info?.name || updatedShape.label || '',
           coordinates: coords
         }
-      ];
-      this.facade.updatePlot(plot);
-      return;
+      ]
+      update$ = this.facade.updatePlot(plot);
     }
 
-    if (objType === 'diagnosis') {
+    else if (objType === 'diagnosis') {
       const diagnosis = {} as Diagnosis;
-
       diagnosis.id = id;
       diagnosis.locationShapes = [
         {
-          type: updatedShape.type,
-          label: updatedShape.label ?? '',
-          coordinates: coords
-        }
-      ];
-      this.facade.updateDiagnosis(diagnosis);
-      return;
+            type: updatedShape.type,
+            label: updatedShape.info?.name || updatedShape.label || '',
+            coordinates: coords
+          }
+        ];
+      update$ = this.facade.updateDiagnosis(diagnosis);
     }
+
+    if (!update$) return;
+
+    update$.subscribe(() => {
+      const copy = this.mapState.mapElements ? [...this.mapState.mapElements] : [];
+
+      const index = copy.findIndex(s => s.id === updatedShape.id);
+
+      if (index !== -1) {
+        copy[index] = updatedShape; 
+      } else {
+        copy.push(updatedShape);   
+      }
+
+      this.mapState.setMapElements([...copy]);
+    });
   }
+
 
   generateId(): string {
     return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);

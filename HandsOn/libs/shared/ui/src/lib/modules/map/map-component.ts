@@ -309,6 +309,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
       const statusName = info.status === 'Processing' ? 'Em processamento' : info.status === 'Processed' ? 'Processado' : 'Desconhecido';
       addLine('Status', statusName);
       addLine('Coordenadas', info.coordinates ? info.coordinates.map(c => `(${c.lat.toFixed(4)}, ${c.lng.toFixed(4)})`).join('; ') : undefined);
+      addLine('Foto', info.photoUrl ? `<img src="${info.photoUrl}" alt="Foto" style="max-width: 100%; height: auto; border-radius: 4px;">` : undefined);
 
       content.appendChild(infoList);
     }
