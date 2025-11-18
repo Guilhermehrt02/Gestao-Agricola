@@ -19,7 +19,8 @@ import { Diagnosis,
   MapElement,
   GoogleMapsService
 } from '@farm/core';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
+import * as turf from '@turf/turf';
 
 const MapLayerColors = {
   farm: {
@@ -52,30 +53,26 @@ const MapLayerColors = {
   styleUrls: ['./farmMapView.css'],
 })
 export class FarmMapView implements OnInit {
-  loading = false;
-  editable = false;
-
+  loading: boolean = false;
   diagnoses: Diagnosis[] = [];
   farms: Farm[] = [];
   plots: Plot[] = [];
   
-  locationShapes: any[] = [];
   farmsShapes: MapElement[] = [];
   plotsShapes: MapElement[] = [];
   diagnosisShapes: MapElement[] = [];
 
-  focusedLocationShape: any;
-  creatable: boolean = false;
-  createTarget: { type: 'farm' | 'plot' | 'diagnosis'; data: any } = { type: 'farm', data: null };
   loadedFarms: boolean = false;
   loadedPlots: boolean = false;
   loadedDiagnoses: boolean = false;
 
   @ViewChild('mapContainer', { read: ElementRef }) mapContainerRef!: ElementRef;
   @ViewChild(MapComponent) map!: MapComponent;
+  editingElementId$!: Observable<string | null>;
+  creatingShape$!: Observable<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' } | null>;
 
   constructor(private facade: FarmMapViewComponentFacade, private mapState: MapStateService) {}
-
+  
   ngAfterViewInit() {
     combineLatest([
       this.map.mapReady$,
@@ -105,6 +102,9 @@ export class FarmMapView implements OnInit {
   }
 
   ngOnInit() {
+    this.editingElementId$ = this.mapState.editingElementId$;
+    this.creatingShape$ = this.mapState.creatingShape$;
+
     this.facade.loading$.subscribe(v => this.loading = v);
 
     combineLatest([
@@ -112,7 +112,6 @@ export class FarmMapView implements OnInit {
       this.facade.plots$,
       this.facade.diagnoses$
     ]).subscribe(([farms, plots, diagnoses]) => {
-
       const farmsShapes = this.getFarmsShapes(farms);
       const plotsShapes = this.getPlotsShapes(plots);
       const diagnosisShapes = this.getDiagnosisShapes(diagnoses);
@@ -129,20 +128,21 @@ export class FarmMapView implements OnInit {
     this.facade.load();
   }
 
-
   getFarmsShapes(farms: Farm[]): MapElement[] {
     const shapes: MapElement[] = [];
 
     farms.forEach(farm => {
       // Verifica se a fazenda tem shapes
       if (farm.locationShapes && farm.locationShapes.length > 0) {
-        farm.locationShapes.forEach(shape => {
+        farm.locationShapes.forEach((shape: any) => {
           shapes.push({
-            id: this.generateId(),
+            id: farm.id,
             class: 'farm',
             hasShapes: true,
             visible: true,
-            label: shape.label,
+            editable: false,
+            hideShapeOnly: false,
+            label: farm.name,
             color: MapLayerColors.farm.fill,
             type: shape.type,
             children: [],
@@ -150,7 +150,8 @@ export class FarmMapView implements OnInit {
             info: {
               id: farm.id,
               name: farm.name,
-              totalArea: farm.totalArea,
+              coordinates: shape.coordinates, 
+              totalArea: shape.coordinates.length ? this.calculateArea(shape.coordinates) : 0,
               affectedArea: farm.affectedArea,
               date: farm.createdAt
             }
@@ -158,10 +159,11 @@ export class FarmMapView implements OnInit {
         });
       } else {
         shapes.push({
-          id: this.generateId(),
+          id: farm.id,
             class: 'farm',
             hasShapes: false,
             visible: true,
+            label: farm.name,
             info: {
               id: farm.id,
               name: farm.name,
@@ -182,13 +184,15 @@ export class FarmMapView implements OnInit {
     plots.forEach(plot => {
       // Verifica se a fazenda tem shapes
       if (plot.locationShapes && plot.locationShapes.length > 0) {
-        plot.locationShapes.forEach(shape => {
+        plot.locationShapes.forEach((shape: any) => {
           shapes.push({
-            id: this.generateId(),
+            id: plot.id,
             class: 'plot',
             hasShapes: true,
             visible: true,
-            label: shape.label,
+            hideShapeOnly: false,
+            editable: false,
+            label: plot.name,
             color: MapLayerColors.plot.fill,
             type: shape.type,
             children: [],
@@ -198,7 +202,8 @@ export class FarmMapView implements OnInit {
               name: plot.name,
               farmName: this.farms.find(f => f.id === plot.farmId)?.name || '',
               farmId: plot.farmId,
-              totalArea: plot.totalArea,
+              coordinates: shape.coordinates,
+              totalArea: shape.coordinates.length ? this.calculateArea(shape.coordinates) : 0,
               affectedArea: plot.affectedArea,
               date: plot.createdAt
             }
@@ -206,10 +211,11 @@ export class FarmMapView implements OnInit {
         });
       } else {
         shapes.push({
-          id: this.generateId(),
+          id: plot.id,
             class: 'plot',
             hasShapes: false,
             visible: true,
+            label: plot.name,
             info: {
               id: plot.id,
               name: plot.name,
@@ -229,10 +235,11 @@ export class FarmMapView implements OnInit {
   getDiagnosisShapes(diagnoses: Diagnosis[]): MapElement[] {
     return diagnoses.flatMap(d => {
       if (!d.locationShapes || d.locationShapes.length === 0) return [{
-        id: this.generateId(),
+        id: d.id,
         class: 'diagnosis',
         hasShapes: false,
         visible: true,
+        editable: false,
         info: {
           id: d.id,
           name: d.result?.imageSimilarities?.[0]?.disease?.name || 'Diagnóstico',
@@ -249,10 +256,11 @@ export class FarmMapView implements OnInit {
       }];
 
       return d.locationShapes.map((shape: any) => ({
-        id: this.generateId(),
+        id: d.id,
         class: 'diagnosis',
         hasShapes: true,
         visible: true,
+        editable: false,
         label: shape.label,
         color: MapLayerColors.diagnosis.fill,
         type: shape.type,
@@ -275,62 +283,116 @@ export class FarmMapView implements OnInit {
     });
   }
 
-  private updateVisibilityInLocationShapes(id: string, visible: boolean) {
-    const index = this.locationShapes.findIndex(s => s.id === id);
-    if (index !== -1) {
-      this.locationShapes[index].visible = visible;
-    }
-    this.locationShapes = [...this.locationShapes];
+  onEditShape(id: string) {
+    this.mapState.startEditing(id);
+
+    this.mapContainerRef?.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
   }
 
-  onCreateShape(type: 'farm' | 'plot' | 'diagnosis', data: any) {
-    this.creatable = !this.creatable;
-    this.createTarget = { type, data };
+  onCreateShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis') {
+    this.mapState.startCreatingShape(id, classType);
 
-    if (this.creatable && this.mapContainerRef?.nativeElement) {
-      this.mapContainerRef.nativeElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-    }
+    this.mapContainerRef?.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
   }
 
-  onEditShape(type: 'farm' | 'plot' | 'diagnosis', data: any) {
-    this.creatable = !this.creatable;
-    this.createTarget = { type, data };
-    if (this.creatable && this.mapContainerRef?.nativeElement) {
-      this.mapContainerRef.nativeElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-    }
+  onSaveEditing() {
+    this.map.saveEditing();
+    this.mapState.stopEditing();
   }
 
-  onSetFocusByDrawing(shape: any) {
-    this.focusedLocationShape = shape;
+  onCancel() {
+    this.map.cancelEditing();
+    this.mapState.stopEditing();
   }
 
-  onShapeCreated(shape: LocationShapeData) {
-    const farm = this.farms.find(f => f.id === shape.info?.farmId);
-    const plot = this.plots.find(p => p.id === shape.info?.plotId);
+  onCancelCreate() {
+    this.map.cancelCreating();
+    this.mapState.stopCreatingShape();
+  }
 
-    if (farm) {
+  onShapeEdited(updatedShape: MapElement) {
+    if (!updatedShape.info?.id || !updatedShape.info?.coordinates) return;
+
+    const id = updatedShape.info.id;     
+    const coords = updatedShape.info.coordinates;
+    const objType = updatedShape.class;
+
+    if (!objType) return;
+
+    if(objType === 'farm' ) {
+      const farm = {} as Farm;
+
+      farm.id = id;
+      farm.locationShapes = [
+        {
+          type: updatedShape.type,
+          label: updatedShape.label ?? '',
+          coordinates: coords
+        }
+      ];
       this.facade.updateFarm(farm);
+      return;
     }
-    if (plot) {
+
+    if (objType === 'plot') {
+      const plot = {} as Plot;
+
+      plot.id = id;
+      plot.locationShapes = [
+        {
+          type: updatedShape.type,
+          label: updatedShape.label ?? '',
+          coordinates: coords
+        }
+      ];
       this.facade.updatePlot(plot);
+      return;
     }
-  }  
 
-  onToggleOnlyFarmShape(event: { id: string; hide: boolean }) {
-    this.updateVisibilityInLocationShapes(event.id, !event.hide);
-  }
+    if (objType === 'diagnosis') {
+      const diagnosis = {} as Diagnosis;
 
-  onToggleOnlyPlotShape(event: { id: string; hide: boolean }) {
-    this.updateVisibilityInLocationShapes(event.id, !event.hide);
+      diagnosis.id = id;
+      diagnosis.locationShapes = [
+        {
+          type: updatedShape.type,
+          label: updatedShape.label ?? '',
+          coordinates: coords
+        }
+      ];
+      this.facade.updateDiagnosis(diagnosis);
+      return;
+    }
   }
 
   generateId(): string {
     return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+  }
+
+  calculateArea(coords: { lat: number; lng: number }[]) {
+    if (!coords || coords.length < 3) return 0;
+
+    const points = coords.map(c => [c.lng, c.lat]) as [number, number][];
+
+    // Fecha o polígono caso não esteja fechado
+    const first = points[0];
+    const last = points[points.length - 1];
+
+    if (first[0] !== last[0] || first[1] !== last[1]) {
+      points.push(first);
+    }
+
+    const polygon = turf.polygon([points]);
+    
+    const areaM2 = turf.area(polygon);
+    const areaHa = areaM2 / 10000;
+
+    return areaHa;
   }
 }

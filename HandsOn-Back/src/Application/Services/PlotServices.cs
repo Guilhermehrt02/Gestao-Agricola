@@ -72,7 +72,8 @@ namespace Application.Services
                 inputModel.Area,
                 inputModel.Description,
                 inputModel.Latitude,
-                inputModel.Longitude
+                inputModel.Longitude,
+                locationShapes
             );
 
             await _plotRepository.UpdateAsync(plot);

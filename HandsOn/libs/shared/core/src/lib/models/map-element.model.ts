@@ -5,6 +5,7 @@ export interface MapElement {
     hasShapes?: boolean;
     color?: string;
     visible?: boolean;
+    editable?: boolean;
     children?: MapElement[];
     hideShapeOnly?: boolean;
     type?: 'polygon' | 'marker' | null;

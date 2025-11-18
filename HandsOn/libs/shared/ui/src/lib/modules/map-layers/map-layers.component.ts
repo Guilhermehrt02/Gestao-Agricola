@@ -35,17 +35,8 @@ interface MapLayer {
   styleUrls: ['./map-layers.component.css'],
 })
 export class MapLayersComponent implements OnInit, OnDestroy {
-  @Output() addLayer = new EventEmitter<string>();
-  @Output() createShape = new EventEmitter<{ type: 'farm' | 'plot' | 'diagnosis'; data: any }>();
-  @Output() editShape = new EventEmitter<{ type: 'farm' | 'plot' | 'diagnosis'; data: any }>();
-  @Output() toggleOnlyFarmShape = new EventEmitter<{
-    id: string;
-    hide: boolean;
-  }>();
-  @Output() toggleOnlyPlotShape = new EventEmitter<{
-    id: string;
-    hide: boolean;
-  }>();
+  @Output() createShape = new EventEmitter<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' }>();
+  @Output() editShape = new EventEmitter<string>();
 
   private sub = new Subscription();
   layers: MapLayer[] = [];
@@ -124,7 +115,6 @@ export class MapLayersComponent implements OnInit, OnDestroy {
     this.layers = Object.values(farmsMap);
   }
 
-
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
@@ -133,7 +123,7 @@ export class MapLayersComponent implements OnInit, OnDestroy {
     const idsToUpdate = this.collectIds(layer);
     const newVisibility = layer.visible || false;
 
-    this.mapState.updateVisibility(idsToUpdate, newVisibility);
+    this.mapState.updateVisibilities(idsToUpdate, newVisibility);
   }
 
   onFocus(layer: MapLayer) {
@@ -146,34 +136,20 @@ export class MapLayersComponent implements OnInit, OnDestroy {
     this.showLayerList = !this.showLayerList;
   }
 
-  onCreateShape(type: 'farm' | 'plot' | 'diagnosis', data: any) {
-    this.createShape.emit({ type, data });
+  onEditShape(id: string) {
+    this.editShape.emit(id);
   }
 
-  onEditShape(type: 'farm' | 'plot' | 'diagnosis', data: any) {
-    this.editShape.emit({ type, data });
+  onCreateShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis') {
+    this.createShape.emit({ id, classType });
   }
 
-  onToggleOnlyFarmShape(layer: MapLayer) {
+  onToggleOnlyFarmOrPlotShape(layer: MapLayer) {
     if (!layer.data?.hasShapes) return;
+    layer.data.hideShapeOnly = !layer.data.hideShapeOnly;
+    const newHideShape = layer.data.hideShapeOnly || false;
 
-    layer.hideShapeOnly = !layer.hideShapeOnly;
-
-    this.toggleOnlyFarmShape.emit({
-      id: layer.data.info.id,
-      hide: layer.hideShapeOnly
-    });
-  }
-
-  onToggleOnlyPlotShape(layer: MapLayer) {
-    if (!layer.data?.hasShapes) return;
-
-    layer.hideShapeOnly = !layer.hideShapeOnly;
-
-    this.toggleOnlyPlotShape.emit({
-      id: layer.data.info.id,
-      hide: layer.hideShapeOnly
-    });
+    this.mapState.updateVisibility(layer.data.id, newHideShape);
   }
 
   private collectIds(layer: MapLayer): string[] {
@@ -191,5 +167,4 @@ export class MapLayersComponent implements OnInit, OnDestroy {
 
     return ids;
   }
-
 }

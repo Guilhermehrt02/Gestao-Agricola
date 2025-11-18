@@ -50,7 +50,10 @@
                 "
                 (click)="layer.data?.hasShapes ? onFocus(layer) : null"
               >
-                {{ layer.label }}
+                {{ layer.data?.info?.totalArea 
+                  ? `${layer.label} (${layer.data.info.totalArea.toFixed(2)} ha)` 
+                  : layer.label }}
+
               </span>
             </div>
 
@@ -61,7 +64,7 @@
                 [icon]="layer.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Mostrar/ocultar apenas o desenho da fazenda"
-                (click)="onToggleOnlyFarmShape(layer)"
+                (click)="onToggleOnlyFarmOrPlotShape(layer)"
               ></button>
               <!-- Mostrar botão de criar se não tiver shape -->
               <button
@@ -72,7 +75,7 @@
                 icon="pi pi-plus"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Criar desenho"
-                (click)="onCreateShape('farm', layer.data.info)"
+                (click)="onCreateShape(layer.data.info.id, 'farm')"
               ></button>
 
               <button
@@ -83,7 +86,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Editar desenho"
-                (click)="onEditShape('farm', layer.data.info)"
+                (click)="onEditShape(layer.data.info.id)"
               ></button>
             </div>
       </div>
@@ -116,7 +119,10 @@
                 "
                 (click)="sub.data?.hasShapes ? onFocus(sub) : null"
               >
-                {{ sub.label }}
+                {{ sub.data?.info?.totalArea 
+                  ? `${sub.label} (${sub.data.info.totalArea.toFixed(2)} ha)` 
+                  : sub.label }}
+
               </span>
             </div>
 
@@ -127,7 +133,7 @@
                 [icon]="sub.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Mostrar/ocultar apenas o desenho do talhão"
-                (click)="onToggleOnlyPlotShape(sub)"
+                (click)="onToggleOnlyFarmOrPlotShape(sub)"
               ></button>
 
               <button
@@ -138,7 +144,7 @@
                 icon="pi pi-plus"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Criar desenho"
-                (click)="onCreateShape('plot', sub.data.info)"
+                (click)="onCreateShape(sub.data.info.id, 'plot')"
               ></button>
 
               <button
@@ -149,7 +155,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Editar desenho"
-                (click)="onEditShape('plot', sub.data.info)"
+                (click)="onEditShape(sub.data.info.id)"
               ></button>
             </div>
           </div>
@@ -195,7 +201,7 @@
                       icon="pi pi-plus"
                       class="p-button-rounded p-button-text p-button-sm text-white"
                       title="Criar desenho"
-                      (click)="onCreateShape('diagnosis', child.data.info)"
+                      (click)="onCreateShape(child.data.info.id, 'diagnosis')"
                     ></button>
                       <button
                         *ngIf="
@@ -205,7 +211,7 @@
                         icon="pi pi-pencil"
                         class="p-button-rounded p-button-text p-button-sm text-white"
                         title="Editar desenho"
-                        (click)="onEditShape('diagnosis', child.data.info)"
+                        (click)="onEditShape(child.data.info.id)"
                       ></button>
                   </div>
               </div>

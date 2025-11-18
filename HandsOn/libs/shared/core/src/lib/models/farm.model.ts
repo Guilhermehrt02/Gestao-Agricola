@@ -7,5 +7,5 @@ export interface Farm {
     location?: string;
     createdAt: Date;
     updatedAt: Date;
-    locationShapes?: any[];
+    locationShapes?: any;
 }

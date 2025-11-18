@@ -7,7 +7,8 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "preserve"
+    "module": "preserve",
+    "types":["google.maps"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

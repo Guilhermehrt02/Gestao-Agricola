@@ -6,21 +6,39 @@
     ></lib-date-type-filter> -->
 
     <lib-map-layers
-        (createShape)="onCreateShape($event.type, $event.data)"
-        (editShape)="onEditShape($event.type, $event.data)"
-        (toggleOnlyFarmShape)="onToggleOnlyFarmShape($event)"
-        (toggleOnlyPlotShape)="onToggleOnlyPlotShape($event)"
+        (editShape)="onEditShape($event)"
+        (createShape)="onCreateShape($event.id, $event.classType)"
     ></lib-map-layers>
+
+    <div class="flex justify-end gap-4 my-3"
+            *ngIf="editingElementId$ | async as editingId">
+        <button
+            class="px-4 py-2 bg-blue-600 text-white rounded"
+            (click)="onSaveEditing()">
+            Salvar
+        </button>
+
+        <button
+            class="px-4 py-2 bg-gray-500 text-white rounded"
+            (click)="onCancel()">
+            Cancelar
+        </button>
+    </div>
+
+    <div class="flex justify-end gap-4 my-3"
+            *ngIf="creatingShape$ | async as creatingId">
+
+        <button
+            class="px-4 py-2 bg-gray-500 text-white rounded"
+            (click)="onCancelCreate()">
+            Cancelar
+        </button>
+    </div>
 
     <lib-map-component
         #mapContainer
-        [editable]="editable"
-        [creatable]="creatable"
-        [createTarget]="createTarget"
-        [clearAllDrawings]="false"
-        [setShapesFromParent]="locationShapes"
-        [setFocusFromParent]="focusedLocationShape"
-        (setFocusByDrawing)="onSetFocusByDrawing($event)"
-        (shapeCreated)="onShapeCreated($event)"
+        [editingElementId]="editingElementId$ | async"
+        [creatingShape]="creatingShape$ | async"
+        (shapeChanged)="onShapeEdited($event)"
     ></lib-map-component>
 </lib-card>

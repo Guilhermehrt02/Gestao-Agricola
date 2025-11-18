@@ -86,4 +86,11 @@ export class FarmMapViewComponentFacade {
       this.loadingSubject.next(false);
     });
   }
+
+  updateDiagnosis(diagnosis: Diagnosis) {
+    this.loadingSubject.next(true);
+    this.diagnosisFacade.updateDiagnosis(diagnosis).subscribe(() => {
+      this.loadingSubject.next(false);
+    });
+  }
 }
