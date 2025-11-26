@@ -16,6 +16,7 @@ import {
   MapElement,
   MapStateService
 } from '@farm/core';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 interface MapLayer {
   label: string;
@@ -25,18 +26,26 @@ interface MapLayer {
   children?: MapLayer[];
   data?: any;
   hideShapeOnly?: boolean;
+  showMenu?: boolean;
+  showItems?: boolean;
 }
 
 @Component({
   selector: 'lib-map-layers',
   standalone: true,
-  imports: [CommonModule, CheckboxModule, FormsModule, ButtonModule],
+  imports: [CommonModule, 
+    CheckboxModule, 
+    FormsModule, 
+    ButtonModule, 
+    OverlayPanelModule,
+  ],
   templateUrl: './map-layers.component.html',
   styleUrls: ['./map-layers.component.css'],
 })
 export class MapLayersComponent implements OnInit, OnDestroy {
   @Output() createShape = new EventEmitter<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' }>();
   @Output() editShape = new EventEmitter<string>();
+  @Output() deleteShape = new EventEmitter<string>();
 
   private sub = new Subscription();
   layers: MapLayer[] = [];
@@ -67,6 +76,8 @@ export class MapLayersComponent implements OnInit, OnDestroy {
           focusable: true,
           data: item,
           children: [],
+          showMenu: false,
+          showItems: true,
         };
       }
     }
@@ -82,6 +93,8 @@ export class MapLayersComponent implements OnInit, OnDestroy {
           focusable: true,
           data: item,
           children: [],
+          showMenu: false,
+          showItems: true,
         };
 
         if (farmId && farmsMap[farmId]) {
@@ -140,11 +153,15 @@ export class MapLayersComponent implements OnInit, OnDestroy {
     this.editShape.emit(id);
   }
 
+  onDeleteShape(id: string) {
+    this.deleteShape.emit(id);
+  }
+
   onCreateShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis') {
     this.createShape.emit({ id, classType });
   }
 
-  onToggleOnlyFarmOrPlotShape(layer: MapLayer) {
+  onToggleOnlyOneShape(layer: MapLayer) {
     if (!layer.data?.hasShapes) return;
     layer.data.hideShapeOnly = !layer.data.hideShapeOnly;
     const newHideShape = layer.data.hideShapeOnly || false;

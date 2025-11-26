@@ -13,9 +13,7 @@ export class MapStateService {
   /** Observable para os componentes escutarem */
   readonly mapElements$ = this._mapElements$.asObservable();
   focusElementId$ = this._focusElementId$.asObservable();
-
   editingElementId$ = this._editingElementId$.asObservable();
-
   creatingShape$ = this._creatingShape$.asObservable();
 
   get mapElements(): MapElement[] | null {
@@ -53,6 +51,14 @@ export class MapStateService {
 
   stopEditing() {
     this._editingElementId$.next(null);
+  }
+
+  deleteShape(id: string) {
+    const current = this.mapElements;
+    if (!current) return;
+
+    const updated = current.filter(e => e.id !== id);
+    this._mapElements$.next(updated);
   }
 
   focusElement(id: string) {

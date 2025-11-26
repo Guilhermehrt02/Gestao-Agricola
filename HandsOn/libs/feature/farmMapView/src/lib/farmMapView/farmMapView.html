@@ -1,14 +1,25 @@
 <lib-card>
     <h2 class="text-xl text-center font-semibold mb-4">Mapa das propriedades</h2>
-    <!-- <lib-date-type-filter
-        [diagnoses]="data"
-        (locationShapesFiltered)="onLocationShapesFiltered($event)"
-    ></lib-date-type-filter> -->
+    <button
+        class="flex justify-end gap-2 px-3 py-2 bg-gray-900 text-white rounded shadow"
+        (click)="sidebarOpen = !sidebarOpen"
+    >
+        <i class="pi pi-list"></i>
+        <span>Gerenciar mapa</span>
+    </button>
+    <p-sidebar 
+        #sidebarRef [(visible)]="sidebarOpen" 
+        position="left"
+    >
+        <ng-template pTemplate="headless">
+            <lib-map-layers
+                (editShape)="onEditShape($event)"
+                (deleteShape)="onDeleteShape($event)"
+                (createShape)="onCreateShape($event.id, $event.classType)"
+            ></lib-map-layers>
+        </ng-template>
+    </p-sidebar>
 
-    <lib-map-layers
-        (editShape)="onEditShape($event)"
-        (createShape)="onCreateShape($event.id, $event.classType)"
-    ></lib-map-layers>
 
     <div class="flex justify-end gap-4 my-3"
             *ngIf="editingElementId$ | async as editingId">

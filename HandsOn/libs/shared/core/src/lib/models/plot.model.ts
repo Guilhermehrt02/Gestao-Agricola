@@ -11,4 +11,5 @@ export interface Plot {
     locationShapes?: any;
     totalArea?: number;
     affectedArea?: number;
+    perimeter?: number;
 }

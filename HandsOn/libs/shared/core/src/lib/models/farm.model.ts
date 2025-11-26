@@ -4,6 +4,7 @@ export interface Farm {
     name: string;
     totalArea?: number;
     affectedArea?: number;
+    perimeter?: number;
     location?: string;
     createdAt: Date;
     updatedAt: Date;

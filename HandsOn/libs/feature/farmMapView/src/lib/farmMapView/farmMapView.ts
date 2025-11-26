@@ -22,6 +22,7 @@ import { Diagnosis,
 import { combineLatest, Observable } from 'rxjs';
 import * as turf from '@turf/turf';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { SidebarModule } from 'primeng/sidebar';
 
 const MapLayerColors = {
   farm: {
@@ -49,6 +50,7 @@ const MapLayerColors = {
     MapComponent,
     CardComponent,
     MapLayersComponent,
+    SidebarModule
   ],
   templateUrl: './farmMapView.html',
   styleUrls: ['./farmMapView.css'],
@@ -68,6 +70,8 @@ export class FarmMapView implements OnInit {
   loadedFarms: boolean = false;
   loadedPlots: boolean = false;
   loadedDiagnoses: boolean = false;
+  sidebarOpen = window.innerWidth > 768; // desktop aberto, mobile fechado
+  // sidebarOpen = true;
 
   @ViewChild('mapContainer', { read: ElementRef }) mapContainerRef!: ElementRef;
   @ViewChild(MapComponent) map!: MapComponent;
@@ -159,6 +163,7 @@ export class FarmMapView implements OnInit {
               name: farm.name,
               coordinates: shape.coordinates, 
               totalArea: shape.coordinates.length ? this.calculateArea(shape.coordinates) : 0,
+              perimeter: shape.coordinates.length ? this.calculatePerimeter(shape.coordinates) : 0,
               affectedArea: farm.affectedArea,
               date: farm.createdAt
             }
@@ -175,6 +180,7 @@ export class FarmMapView implements OnInit {
               id: farm.id,
               name: farm.name,
               totalArea: farm.totalArea,
+              perimeter: farm.perimeter,
               affectedArea: farm.affectedArea,
               date: farm.createdAt
             }
@@ -211,6 +217,7 @@ export class FarmMapView implements OnInit {
               farmId: plot.farmId,
               coordinates: shape.coordinates,
               totalArea: shape.coordinates.length ? this.calculateArea(shape.coordinates) : 0,
+              perimeter: shape.coordinates.length ? this.calculatePerimeter(shape.coordinates) : 0,
               affectedArea: plot.affectedArea,
               date: plot.createdAt
             }
@@ -230,6 +237,7 @@ export class FarmMapView implements OnInit {
               farmId: plot.farmId,
               totalArea: plot.totalArea,
               affectedArea: plot.affectedArea,
+              perimeter: plot.perimeter,
               date: plot.createdAt
             }
         });
@@ -293,6 +301,15 @@ export class FarmMapView implements OnInit {
 
   onEditShape(id: string) {
     this.mapState.startEditing(id);
+
+    this.mapContainerRef?.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+  }
+
+  onDeleteShape(id: string) {
+    this.mapState.deleteShape(id);
 
     this.mapContainerRef?.nativeElement.scrollIntoView({
       behavior: 'smooth',
@@ -413,6 +430,21 @@ export class FarmMapView implements OnInit {
     const areaHa = areaM2 / 10000;
 
     return areaHa;
+  }
+
+  calculatePerimeter(coords: { lat: number; lng: number }[]) {
+    if (!coords || coords.length < 2) return 0;
+    const points = coords.map(c => [c.lng, c.lat]) as [number, number][];
+
+    // Fecha o polígono caso não esteja fechado
+    const first = points[0];
+    const last = points[points.length - 1];
+    if (first[0] !== last[0] || first[1] !== last[1]) {
+      points.push(first);
+    }
+    const line = turf.lineString(points);
+    const lengthMeters = turf.length(line, { units: 'meters' });
+    return lengthMeters;
   }
 
   openEditPopup(element: MapElement) {

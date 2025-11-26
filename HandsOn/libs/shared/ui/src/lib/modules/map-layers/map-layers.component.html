@@ -4,7 +4,7 @@
 <!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
 <!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
 <div
-  class="p-4 bg-gray-900 border border-green-700 rounded-md shadow-md space-y-4 mb-4"
+  class="p-1 h-full bg-gray-900 border border-green-700 rounded-md shadow-md space-y-4 mb-4"
 >
   <!-- Cabeçalho -->
   <div class="flex justify-between items-center">
@@ -18,7 +18,7 @@
       }"
       (click)="toggleLayerList()"
     >
-      <i class="pi pi-angle-down"></i>
+      <i class="pi pi-plus"></i>
     </button>
   </div>
 
@@ -30,65 +30,88 @@
     >
       <div class="flex justify-between items-center">
         <div class="flex items-center space-x-2">
-              <p-checkbox
-                [(ngModel)]="layer.visible"
-                binary="true"
-                inputId="{{ layer.label }}"
-                (onChange)="onToggle(layer)"
-              >
-              </p-checkbox>
+          <p-checkbox
+            [(ngModel)]="layer.visible"
+            binary="true"
+            inputId="{{ layer.label }}"
+            (onChange)="onToggle(layer)"
+          >
+          </p-checkbox>
 
-              <span
-                class="text-gray-300 cursor-pointer hover:text-green-400 transition"
-                [ngClass]="{
-                  'cursor-not-allowed opacity-50': !layer.data?.hasShapes
-                }"
-                [title]="
-                  layer.data?.hasShapes
-                    ? 'Focar no mapa'
-                    : 'Sem desenho disponível'
-                "
-                (click)="layer.data?.hasShapes ? onFocus(layer) : null"
-              >
-                {{ layer.data?.info?.totalArea 
-                  ? `${layer.label} (${layer.data.info.totalArea.toFixed(2)} ha)` 
-                  : layer.label }}
+          <span
+            class="text-gray-300 cursor-pointer hover:text-green-400 transition"
+            [ngClass]="{
+              'cursor-not-allowed opacity-50': !layer.data?.hasShapes
+            }"
+            [title]="
+              layer.data?.hasShapes ? 'Focar no mapa' : 'Sem desenho disponível'
+            "
+            (click)="layer.data?.hasShapes ? onFocus(layer) : null"
+          >
+            {{
+              layer.data?.info?.totalArea
+                ? `${layer.label} (${layer.data.info.totalArea.toFixed(2)} ha | ${layer.data.info.perimeter.toFixed(2)} m)`
+                : layer.label
+            }}
+          </span>
+        </div>
 
-              </span>
-            </div>
+        <div class="flex items-center">
+          <!-- Mostrar/Ocultar forma -->
+          <button
+            *ngIf="layer.data?.hasShapes"
+            pButton
+            [icon]="layer.data.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
+            class="p-button-rounded p-button-text p-button-sm text-white"
+            title="Mostrar/ocultar o desenho"
+            (click)="onToggleOnlyOneShape(layer)"
+          ></button>
 
-            <div class="flex items-center space-x-1">
-              <button
-                *ngIf="layer.data?.hasShapes"
-                pButton
-                [icon]="layer.data.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
-                class="p-button-rounded p-button-text p-button-sm text-white"
-                title="Mostrar/ocultar apenas o desenho da fazenda"
-                (click)="onToggleOnlyFarmOrPlotShape(layer)"
-              ></button>
-              <!-- Mostrar botão de criar se não tiver shape -->
-              <button
-                *ngIf="
-                  !layer.data?.hasShapes
-                "
-                pButton
-                icon="pi pi-plus"
-                class="p-button-rounded p-button-text p-button-sm text-white"
-                title="Criar desenho"
-                (click)="onCreateShape(layer.data.info.id, 'farm')"
-              ></button>
+          <button
+            *ngIf="!layer.data?.hasShapes"
+            pButton
+            icon="pi pi-plus"
+            class="p-button-rounded p-button-text p-button-sm text-white"
+            title="Criar desenho"
+            (click)="onCreateShape(layer.data.info.id, 'plot')"
+          ></button>
 
-              <button
-                *ngIf="
-                  layer.data?.hasShapes
-                "
-                pButton
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-text p-button-sm text-white"
-                title="Editar desenho"
-                (click)="onEditShape(layer.data.info.id)"
-              ></button>
-            </div>
+          <button
+            *ngIf="layer.data?.hasShapes"
+            pButton
+            icon="pi pi-ellipsis-v"
+            class="p-button-rounded p-button-text p-button-sm text-white"
+            title="Mais opções"
+            (click)="onEditShape(layer.data.info.id)"
+           ></button>
+          <!--
+          <button
+            *ngIf="layer.data?.hasShapes"
+            pButton
+            icon="pi pi-palette"
+            class="p-button-rounded p-button-text p-button-sm text-white"
+            title="Alterar cor"
+            (click)="onEditShape(layer.data.info.id)"
+           ></button>
+
+          <button
+            *ngIf="layer.data?.hasShapes"
+            pButton
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-text p-button-sm text-white"
+            title="Editar desenho"
+            (click)="onEditShape(layer.data.info.id)"
+          ></button>
+
+          <button
+            *ngIf="layer.data?.hasShapes"
+            pButton
+            icon="pi pi-times"
+            class="p-button-rounded p-button-text p-button-sm text-white"
+            title="Excluir desenho"
+            (click)="onDeleteShape(layer.data.info.id)"
+          ></button> -->
+        </div>
       </div>
 
       <!-- Subcamadas -->
@@ -120,26 +143,35 @@
                 (click)="sub.data?.hasShapes ? onFocus(sub) : null"
               >
                 {{ sub.data?.info?.totalArea 
-                  ? `${sub.label} (${sub.data.info.totalArea.toFixed(2)} ha)` 
-                  : sub.label }}
-
+                  ? `${sub.label} (${sub.data.info.totalArea.toFixed(2)} ha | ${sub.data.info.perimeter.toFixed(2)} m)` 
+                  : sub.label
+                }}
               </span>
             </div>
 
-            <div class="flex items-center space-x-1">
+            <div class="flex items-center">
               <button
                 *ngIf="sub.data?.hasShapes"
                 pButton
-                [icon]="sub.data.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                [icon]="
+                  sub.data.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'
+                "
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Mostrar/ocultar apenas o desenho do talhão"
-                (click)="onToggleOnlyFarmOrPlotShape(sub)"
+                (click)="onToggleOnlyOneShape(sub)"
               ></button>
 
               <button
-                *ngIf="
-                  !sub.data?.hasShapes
-                "
+              *ngIf="sub.data?.hasShapes"
+              pButton
+              icon="pi pi-ellipsis-v"
+              class="p-button-rounded p-button-text p-button-sm text-white"
+              title="Mais opções"
+              (click)="onEditShape(sub.data.info.id)"
+            ></button>
+
+              <!-- <button
+                *ngIf="!sub.data?.hasShapes"
                 pButton
                 icon="pi pi-plus"
                 class="p-button-rounded p-button-text p-button-sm text-white"
@@ -148,21 +180,37 @@
               ></button>
 
               <button
-                *ngIf="
-                  sub.data?.hasShapes
-                "
+                *ngIf="sub.data?.hasShapes"
+                pButton
+                icon="pi pi-palette"
+                class="p-button-rounded p-button-text p-button-sm text-white"
+                title="Alterar cor"
+                (click)="onEditShape(sub.data.info.id)"
+              ></button>
+
+              <button
+                *ngIf="sub.data?.hasShapes"
                 pButton
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Editar desenho"
                 (click)="onEditShape(sub.data.info.id)"
               ></button>
+
+              <button
+                *ngIf="sub.data?.hasShapes"
+                pButton
+                icon="pi pi-times"
+                class="p-button-rounded p-button-text p-button-sm text-white"
+                title="Excluir desenho"
+                (click)="onDeleteShape(sub.data.info.id)"
+              ></button> -->
             </div>
           </div>
 
           <!-- Sub-subcamadas -->
           <ul
-            *ngIf="sub.children?.length"
+            *ngIf="sub.children?.length && sub.showItems"
             class="ml-4 mt-1 space-y-1 border-l border-gray-700 pl-3"
           >
             <li *ngFor="let child of sub.children">
@@ -183,37 +231,70 @@
                     />
                   </span>
 
-
                   <label
                     class="text-gray-400 text-sm cursor-pointer hover:text-green-200 transition"
                     (click)="onFocus(child)"
-                    title="Focar no mapa">
+                    title="Focar no mapa"
+                  >
                     {{ child.label }}
                   </label>
                 </div>
+                <div class="flex items-center">
+                  <button
+                    *ngIf="child.data?.hasShapes"
+                    pButton
+                    [icon]="
+                      child.data.hideShapeOnly ? 'pi pi-eye-slash' : 'pi pi-eye'
+                    "
+                    class="p-button-rounded p-button-text p-button-sm text-white"
+                    title="Mostrar/ocultar apenas o desenho da fazenda"
+                    (click)="onToggleOnlyOneShape(child)"
+                  ></button>
 
-                  <div class="flex items-center space-x-1">
-                    <button
-                      *ngIf="
-                        child.data?.hasShapes === false
-                      "
-                      pButton
-                      icon="pi pi-plus"
-                      class="p-button-rounded p-button-text p-button-sm text-white"
-                      title="Criar desenho"
-                      (click)="onCreateShape(child.data.info.id, 'diagnosis')"
-                    ></button>
-                      <button
-                        *ngIf="
-                          child.data?.hasShapes
-                        "
-                        pButton
-                        icon="pi pi-pencil"
-                        class="p-button-rounded p-button-text p-button-sm text-white"
-                        title="Editar desenho"
-                        (click)="onEditShape(child.data.id)"
-                      ></button>
-                  </div>
+                  <button
+                    *ngIf="child.data?.hasShapes"
+                    pButton
+                    icon="pi pi-ellipsis-v"
+                    class="p-button-rounded p-button-text p-button-sm text-white"
+                    title="Mais opções"
+                    (click)="onEditShape(child.data.info.id)"
+                  ></button>
+                  <!-- <button
+                    *ngIf="child.data?.hasShapes === false"
+                    pButton
+                    icon="pi pi-plus"
+                    class="p-button-rounded p-button-text p-button-sm text-white"
+                    title="Criar desenho"
+                    (click)="onCreateShape(child.data.info.id, 'diagnosis')"
+                  ></button>
+
+                  <button
+                    *ngIf="child.data?.hasShapes"
+                    pButton
+                    icon="pi pi-palette"
+                    class="p-button-rounded p-button-text p-button-sm text-white"
+                    title="Alterar cor"
+                    (click)="onEditShape(child.data.id)"
+                  ></button>
+
+                  <button
+                    *ngIf="child.data?.hasShapes"
+                    pButton
+                    icon="pi pi-pencil"
+                    class="p-button-rounded p-button-text p-button-sm text-white"
+                    title="Editar desenho"
+                    (click)="onEditShape(child.data.id)"
+                  ></button>
+
+                  <button
+                    *ngIf="child.data?.hasShapes"
+                    pButton
+                    icon="pi pi-times"
+                    class="p-button-rounded p-button-text p-button-sm text-white"
+                    title="Excluir desenho"
+                    (click)="onDeleteShape(child.data.id)"
+                  ></button> -->
+                </div>
               </div>
             </li>
           </ul>

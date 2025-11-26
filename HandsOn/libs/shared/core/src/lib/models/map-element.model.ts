@@ -25,6 +25,7 @@ export interface MapElement {
         date?: Date;
         affectedArea?: number;
         totalArea?: number;
+        perimeter?: number;
         photoUrl?: string;
     };
 }
