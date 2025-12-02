@@ -76,22 +76,22 @@
             (click)="onCreateShape(layer.data.info.id, 'plot')"
           ></button>
 
-          <button
+          <!-- <button
             *ngIf="layer.data?.hasShapes"
             pButton
             icon="pi pi-ellipsis-v"
             class="p-button-rounded p-button-text p-button-sm text-white"
             title="Mais opções"
             (click)="onEditShape(layer.data.info.id)"
-           ></button>
-          <!--
+           ></button> -->
+          
           <button
             *ngIf="layer.data?.hasShapes"
             pButton
             icon="pi pi-palette"
             class="p-button-rounded p-button-text p-button-sm text-white"
-            title="Alterar cor"
-            (click)="onEditShape(layer.data.info.id)"
+            title="Alterar estilo"
+            (click)="onChangeStyle(layer.data.info.id)"
            ></button>
 
           <button
@@ -110,7 +110,7 @@
             class="p-button-rounded p-button-text p-button-sm text-white"
             title="Excluir desenho"
             (click)="onDeleteShape(layer.data.info.id)"
-          ></button> -->
+          ></button>
         </div>
       </div>
 
@@ -161,16 +161,16 @@
                 (click)="onToggleOnlyOneShape(sub)"
               ></button>
 
-              <button
+              <!-- <button
               *ngIf="sub.data?.hasShapes"
               pButton
               icon="pi pi-ellipsis-v"
               class="p-button-rounded p-button-text p-button-sm text-white"
               title="Mais opções"
               (click)="onEditShape(sub.data.info.id)"
-            ></button>
+            ></button> -->
 
-              <!-- <button
+              <button
                 *ngIf="!sub.data?.hasShapes"
                 pButton
                 icon="pi pi-plus"
@@ -184,8 +184,8 @@
                 pButton
                 icon="pi pi-palette"
                 class="p-button-rounded p-button-text p-button-sm text-white"
-                title="Alterar cor"
-                (click)="onEditShape(sub.data.info.id)"
+                title="Alterar estilo"
+                (click)="onChangeStyle(sub.data.info.id)"
               ></button>
 
               <button
@@ -204,7 +204,7 @@
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Excluir desenho"
                 (click)="onDeleteShape(sub.data.info.id)"
-              ></button> -->
+              ></button>
             </div>
           </div>
 
@@ -251,15 +251,15 @@
                     (click)="onToggleOnlyOneShape(child)"
                   ></button>
 
-                  <button
+                  <!-- <button
                     *ngIf="child.data?.hasShapes"
                     pButton
                     icon="pi pi-ellipsis-v"
                     class="p-button-rounded p-button-text p-button-sm text-white"
                     title="Mais opções"
                     (click)="onEditShape(child.data.info.id)"
-                  ></button>
-                  <!-- <button
+                  ></button> -->
+                  <button
                     *ngIf="child.data?.hasShapes === false"
                     pButton
                     icon="pi pi-plus"
@@ -273,8 +273,8 @@
                     pButton
                     icon="pi pi-palette"
                     class="p-button-rounded p-button-text p-button-sm text-white"
-                    title="Alterar cor"
-                    (click)="onEditShape(child.data.id)"
+                    title="Alterar estilo"
+                    (click)="onChangeStyle(child.data.id)"
                   ></button>
 
                   <button
@@ -293,7 +293,7 @@
                     class="p-button-rounded p-button-text p-button-sm text-white"
                     title="Excluir desenho"
                     (click)="onDeleteShape(child.data.id)"
-                  ></button> -->
+                  ></button>
                 </div>
               </div>
             </li>

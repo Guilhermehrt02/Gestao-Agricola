@@ -1,3 +1,6 @@
+<!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
+<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
+<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
 <lib-card>
     <h2 class="text-xl text-center font-semibold mb-4">Mapa das propriedades</h2>
     <button
@@ -16,10 +19,58 @@
                 (editShape)="onEditShape($event)"
                 (deleteShape)="onDeleteShape($event)"
                 (createShape)="onCreateShape($event.id, $event.classType)"
+                (changeStyle)="openStyleEditor($event)"
             ></lib-map-layers>
         </ng-template>
     </p-sidebar>
 
+
+    <div class="flex justify-end gap-4 my-3"
+            *ngIf="editingShapeStyle">
+        <div class="p-4 bg-slate-500 rounded shadow w-64">
+            <!-- Seletor de cor -->
+            <label class="block font-semibold mb-2">Cor</label>
+            <div class="grid grid-cols-8 gap-1 mb-4">
+                <div
+                    *ngFor="let c of colorPalette"
+                    class="w-6 h-6 rounded cursor-pointer border"
+                    [style.backgroundColor]="c"
+                    (click)="onChangeColor(c)"
+                    [class.ring-2]="tempStyle.fillColor === c"
+                    [class.ring-blue-500]="tempStyle.fillColor === c">
+                </div>
+            </div>
+
+            <!-- Transparência -->
+            <label class="block font-semibold mb-1">Transparência</label>
+            <input type="range" min="0" max="1" step="0.05"
+                class="w-full mb-4"
+                [value]="tempStyle.fillOpacity"
+                (input)="tempStyle.fillOpacity = $any($event.target).valueAsNumber">
+
+            <!-- Espessura da borda -->
+            <label class="block font-semibold mb-1">Largura da borda</label>
+            <input type="range" min="1" max="10" step="1"
+                class="w-full mb-4"
+                [value]="tempStyle.strokeWeight"
+                (input)="tempStyle.strokeWeight = $any($event.target).valueAsNumber">
+
+            <!-- Botões -->
+            <div class="flex justify-end gap-3 mt-4">
+                <button
+                    class="px-3 py-1 bg-blue-600 text-white rounded"
+                    (click)="onSaveChangingStyle()">
+                    Aplicar
+                </button>
+
+                <button
+                    class="px-3 py-1 bg-gray-600 text-white rounded"
+                    (click)="onCancelChangingStyle()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div class="flex justify-end gap-4 my-3"
             *ngIf="editingElementId$ | async as editingId">

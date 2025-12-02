@@ -1,9 +1,18 @@
+export interface ShapeStyle {
+  strokeColor?: string;     
+  strokeOpacity?: number;   
+  strokeWeight?: number;    
+  fillColor?: string;       
+  fillOpacity?: number;     
+}
+
+
 export interface MapElement {
     id: string;
     class?: 'farm' | 'plot' | 'diagnosis' | null;
     label?: string;
     hasShapes?: boolean;
-    color?: string;
+    style?: ShapeStyle;
     visible?: boolean;
     editable?: boolean;
     children?: MapElement[];

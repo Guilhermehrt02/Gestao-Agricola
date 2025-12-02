@@ -8,12 +8,14 @@ export class MapStateService {
   private _mapElements$ = new BehaviorSubject<MapElement[] | null>(null);
   private _focusElementId$ = new BehaviorSubject<string | null>(null);
   private _editingElementId$ = new BehaviorSubject<string | null>(null);
+  private _changingStyle$ = new BehaviorSubject<string | null>(null);
   private _creatingShape$ = new BehaviorSubject<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' } | null>(null);
   
   /** Observable para os componentes escutarem */
   readonly mapElements$ = this._mapElements$.asObservable();
   focusElementId$ = this._focusElementId$.asObservable();
   editingElementId$ = this._editingElementId$.asObservable();
+  changingStyle$ = this._changingStyle$.asObservable();
   creatingShape$ = this._creatingShape$.asObservable();
 
   get mapElements(): MapElement[] | null {
@@ -51,6 +53,14 @@ export class MapStateService {
 
   stopEditing() {
     this._editingElementId$.next(null);
+  }
+
+  startChangingStyle(id: string) {
+    this._changingStyle$.next(id);
+  }
+
+  stopChangingStyle() {
+    this._changingStyle$.next(null);
   }
 
   deleteShape(id: string) {

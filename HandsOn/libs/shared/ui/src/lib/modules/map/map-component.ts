@@ -130,9 +130,11 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
 
         const polygon = new google.maps.Polygon({
           paths: path,
-          fillColor: shape.color || '#FF0000',
-          fillOpacity: 0.35,
-          strokeWeight: 2,
+          fillColor: shape.style?.fillColor || '#FF0000',
+          fillOpacity: shape.style?.fillOpacity || 0.35,
+          strokeWeight: shape.style?.strokeWeight || 2,
+          strokeColor: shape.style?.strokeColor || '#FF0000',
+          strokeOpacity: shape.style?.strokeOpacity || 1.0,
           editable: shape.editable,
           draggable: false,
           map: this.map,

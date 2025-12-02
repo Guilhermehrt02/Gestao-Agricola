@@ -8,7 +8,7 @@ import {
   MapComponent,
   CardComponent,
   MapLayersComponent,
-  EditElementDialogComponent
+  EditElementDialogComponent,
 } from '@farm/ui';
 import { FarmMapViewComponentFacade } from './farmMapView.facade';
 import { Diagnosis, 
@@ -23,22 +23,29 @@ import { combineLatest, Observable } from 'rxjs';
 import * as turf from '@turf/turf';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SidebarModule } from 'primeng/sidebar';
+import { style } from '@angular/animations';
 
 const MapLayerColors = {
   farm: {
-    fill: '#1b5e20',
-    stroke: '#4caf50',
-    label: '#a5d6a7'
+    fillColor: '#1b5e20',
+    strokeColor: '#66bb6a',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
   },
   plot: {
-    fill: '#0d47a1',
-    stroke: '#42a5f5',
-    label: '#90caf9'
+    fillColor: '#0d47a1',
+    strokeColor: '#42a5f5',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
   },
   diagnosis: {
-    fill: '#b71c1c',
-    stroke: '#ef5350',
-    label: '#ffcdd2'
+    fillColor: '#b71c1c',
+    strokeColor: '#ef5350',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
   }
 } as const;
 
@@ -70,15 +77,33 @@ export class FarmMapView implements OnInit {
   loadedFarms: boolean = false;
   loadedPlots: boolean = false;
   loadedDiagnoses: boolean = false;
-  sidebarOpen = window.innerWidth > 768; // desktop aberto, mobile fechado
-  // sidebarOpen = true;
+  sidebarOpen = true;
+  changingStyleShape: MapElement | null = null;
 
   @ViewChild('mapContainer', { read: ElementRef }) mapContainerRef!: ElementRef;
   @ViewChild(MapComponent) map!: MapComponent;
   editingElementId$!: Observable<string | null>;
+  changingStyleId$!: Observable<string | null>;
   creatingShape$!: Observable<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' } | null>;
   private dialogRef?: DynamicDialogRef;
+  
+  tempStyle: any = {
+    fillColor: '#00FF00',
+    strokeColor: '#66bb6a',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
+  };
 
+  originalStyle: any = null;
+
+  editingShapeStyle: any = null;
+
+  colorPalette = [
+    '#FF0000', '#FF6600', '#FFFF00', '#66FF00', '#00FF00',
+    '#00FF66', '#00FFFF', '#0066FF', '#0000FF', '#6600FF',
+    '#FF00FF', '#663300', '#333333', '#000000'
+  ];
 
   constructor(private facade: FarmMapViewComponentFacade, 
     private mapState: MapStateService,
@@ -115,6 +140,7 @@ export class FarmMapView implements OnInit {
   ngOnInit() {
     this.editingElementId$ = this.mapState.editingElementId$;
     this.creatingShape$ = this.mapState.creatingShape$;
+    this.changingStyleId$ = this.mapState.changingStyle$;
 
     this.facade.loading$.subscribe(v => this.loading = v);
 
@@ -154,7 +180,13 @@ export class FarmMapView implements OnInit {
             editable: false,
             hideShapeOnly: false,
             label: farm.locationShapes?.[0]?.label || farm.name,
-            color: MapLayerColors.farm.fill,
+            style: {
+              fillColor: MapLayerColors.farm.fillColor,
+              strokeColor: MapLayerColors.farm.strokeColor,
+              strokeWeight: MapLayerColors.farm.strokeWeight,
+              fillOpacity: MapLayerColors.farm.fillOpacity,
+              strokeOpacity: MapLayerColors.farm.strokeOpacity
+            },
             type: shape.type,
             children: [],
             mapObject: null,
@@ -206,7 +238,13 @@ export class FarmMapView implements OnInit {
             hideShapeOnly: false,
             editable: false,
             label: plot.locationShapes?.[0]?.label || plot.name,
-            color: MapLayerColors.plot.fill,
+            style: {
+              fillColor: MapLayerColors.plot.fillColor,
+              strokeColor: MapLayerColors.plot.strokeColor,
+              strokeWeight: MapLayerColors.plot.strokeWeight,
+              fillOpacity: MapLayerColors.plot.fillOpacity,
+              strokeOpacity: MapLayerColors.plot.strokeOpacity
+            },
             type: shape.type,
             children: [],
             mapObject: null,
@@ -277,7 +315,13 @@ export class FarmMapView implements OnInit {
         visible: true,
         editable: false,
         label: shape.label,
-        color: MapLayerColors.diagnosis.fill,
+        style: {
+          fillColor: MapLayerColors.diagnosis.fillColor,
+          strokeColor: MapLayerColors.diagnosis.strokeColor,
+          strokeWeight: MapLayerColors.diagnosis.strokeWeight,
+          fillOpacity: MapLayerColors.diagnosis.fillOpacity,
+          strokeOpacity: MapLayerColors.diagnosis.strokeOpacity
+        },
         type: shape.type,
         children: [],
         mapObject: null,
@@ -308,6 +352,25 @@ export class FarmMapView implements OnInit {
     });
   }
 
+  openStyleEditor(id: string) {
+   const shape = this.mapState.mapElements?.find(s => s.id === id);
+    if (!shape || !shape.style) return;
+
+    this.editingShapeStyle = shape;
+    this.mapState.focusElement(id);
+    this.originalStyle = {
+      ...shape.style
+    };
+
+    this.tempStyle = {
+      ...shape.style
+    };
+  }
+
+  onChangeColor(color: string) {
+    this.tempStyle.fillColor = color;
+  }
+
   onDeleteShape(id: string) {
     this.mapState.deleteShape(id);
 
@@ -331,9 +394,33 @@ export class FarmMapView implements OnInit {
     this.mapState.stopEditing();
   }
 
+  onSaveChangingStyle() {
+    if (!this.editingShapeStyle) return;
+
+    this.editingShapeStyle.style = this.tempStyle;
+
+    const index = this.mapState.mapElements ? this.mapState.mapElements.findIndex(s => s.id === this.editingShapeStyle?.id) : -1;
+
+    if (index !== -1 && this.editingShapeStyle) {
+      const copy = this.mapState.mapElements ? [...this.mapState.mapElements] : [];
+      copy[index] = this.editingShapeStyle; 
+      this.mapState.setMapElements([...copy]);
+    }
+
+    this.editingShapeStyle = null;
+    this.originalStyle = null;
+    this.tempStyle = null;
+  }
+
   onCancel() {
     this.map.cancelEditing();
     this.mapState.stopEditing();
+  }
+
+  onCancelChangingStyle() {
+    this.editingShapeStyle = null;
+    this.originalStyle = null;
+    this.tempStyle = null;
   }
 
   onCancelCreate() {

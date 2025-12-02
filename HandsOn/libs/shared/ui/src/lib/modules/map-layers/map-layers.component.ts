@@ -45,7 +45,9 @@ interface MapLayer {
 export class MapLayersComponent implements OnInit, OnDestroy {
   @Output() createShape = new EventEmitter<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' }>();
   @Output() editShape = new EventEmitter<string>();
+  @Output() changeStyle = new EventEmitter<string>();
   @Output() deleteShape = new EventEmitter<string>();
+
 
   private sub = new Subscription();
   layers: MapLayer[] = [];
@@ -151,6 +153,10 @@ export class MapLayersComponent implements OnInit, OnDestroy {
 
   onEditShape(id: string) {
     this.editShape.emit(id);
+  }
+
+  onChangeStyle(id: string) {
+    this.changeStyle.emit(id);
   }
 
   onDeleteShape(id: string) {
