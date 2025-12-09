@@ -46,6 +46,13 @@ const MapLayerColors = {
     strokeWeight: 2,
     fillOpacity: 0.6,
     strokeOpacity: 1.0
+  },
+  temporary: {
+    fillColor: '#FADA5E',
+    strokeColor: '#66bb6a',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
   }
 } as const;
 
@@ -84,7 +91,7 @@ export class FarmMapView implements OnInit {
   @ViewChild(MapComponent) map!: MapComponent;
   editingElementId$!: Observable<string | null>;
   changingStyleId$!: Observable<string | null>;
-  creatingShape$!: Observable<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' } | null>;
+  creatingShape$!: Observable<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary' } | null>;
   private dialogRef?: DynamicDialogRef;
   
   tempStyle: any = {
@@ -147,16 +154,19 @@ export class FarmMapView implements OnInit {
     combineLatest([
       this.facade.farms$,
       this.facade.plots$,
-      this.facade.diagnoses$
-    ]).subscribe(([farms, plots, diagnoses]) => {
+      this.facade.diagnoses$,
+      this.facade.temporaries$
+    ]).subscribe(([farms, plots, diagnoses, temporaries]) => {
       const farmsShapes = this.getFarmsShapes(farms);
       const plotsShapes = this.getPlotsShapes(plots);
       const diagnosisShapes = this.getDiagnosisShapes(diagnoses);
+      const temporaryShapes = this.getTemporaryShapes(temporaries);
 
       const mapElements = [
         ...farmsShapes,
         ...plotsShapes,
-        ...diagnosisShapes
+        ...diagnosisShapes,
+        ...temporaryShapes
       ];
 
       this.mapState.setMapElements(mapElements);
@@ -343,6 +353,63 @@ export class FarmMapView implements OnInit {
     });
   }
 
+  getTemporaryShapes(temporaries: any[]): MapElement[] {
+    const shapes: MapElement[] = [];
+
+    temporaries.forEach(temp => {
+      const locShapes = temp.locationShapes || [];
+
+      if (locShapes.length > 0) {
+        locShapes.forEach((shape: any) => {
+          shapes.push({
+            id: this.generateId(),
+            class: 'temporary',
+            hasShapes: true,
+            visible: true,
+            hideShapeOnly: false,
+            editable: false,
+            label: shape.label || 'Desenho temporário',
+            style: {
+              fillColor: MapLayerColors.temporary.fillColor,
+              strokeColor: MapLayerColors.temporary.strokeColor,
+              strokeWeight: MapLayerColors.temporary.strokeWeight,
+              fillOpacity: MapLayerColors.temporary.fillOpacity,
+              strokeOpacity: MapLayerColors.temporary.strokeOpacity
+            },
+            type: shape.type, 
+            children: [],
+            mapObject: null,
+            info: {
+              id: temp.id,
+              name: shape.label || 'Desenho temporário',
+              coordinates: shape.coordinates, 
+              totalArea: shape?.coordinates.length ? this.calculateArea(shape.coordinates) : 0,
+              perimeter: shape?.coordinates.length ? this.calculatePerimeter(shape.coordinates) : 0,
+              date: temp.date
+            }
+          });
+        });
+      } else {
+        shapes.push({
+          id: this.generateId(),
+          class: 'temporary',
+          hasShapes: false,
+          visible: true,
+          editable: false,
+          label: temp.label || 'Desenho temporário',
+          info: {
+            id: temp.id,
+            name: temp.label || 'Desenho temporário',
+            date: temp.date
+          }
+        });
+      }
+    });
+
+    return shapes;
+  }
+
+
   onEditShape(id: string) {
     this.mapState.startEditing(id);
 
@@ -372,7 +439,7 @@ export class FarmMapView implements OnInit {
   }
 
   onDeleteShape(id: string) {
-    this.mapState.deleteShape(id);
+    this.deleteElementShape(id);
 
     this.mapContainerRef?.nativeElement.scrollIntoView({
       behavior: 'smooth',
@@ -380,7 +447,7 @@ export class FarmMapView implements OnInit {
     });
   }
 
-  onCreateShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis') {
+  onCreateShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary') {
     this.mapState.startCreatingShape(id, classType);
 
     this.mapContainerRef?.nativeElement.scrollIntoView({
@@ -477,6 +544,21 @@ export class FarmMapView implements OnInit {
       update$ = this.facade.updateDiagnosis(diagnosis);
     }
 
+    else if (objType === 'temporary') {
+      const temporary = {} as any;
+
+      temporary.id = updatedShape.id;
+      temporary.locationShapes = [
+        {
+            type: updatedShape.type,
+            label: updatedShape.info?.name || updatedShape.label || '',
+            coordinates: coords
+          }
+        ];
+
+      update$ = this.facade.saveTemporaryShapes(temporary);
+    }
+
     if (!update$) return;
 
     update$.subscribe(() => {
@@ -491,6 +573,55 @@ export class FarmMapView implements OnInit {
       }
 
       this.mapState.setMapElements([...copy]);
+    });
+  }
+
+  deleteElementShape(id: string) {
+    const currentElements = this.mapState.mapElements ? [...this.mapState.mapElements] : [];
+    const elementToDelete = currentElements.find(e => e.id === id);
+    if (!elementToDelete) return;
+    
+    const objType = elementToDelete.class;
+    if (!objType) return;
+
+    let delete$: Observable<any> | null = null;
+
+    if (objType === 'farm') {
+      const farm = {} as Farm;
+
+      farm.id = elementToDelete.info?.id || '';
+
+      delete$ = this.facade.updateFarm(farm);
+    }
+    else if (objType === 'plot') {
+      const plot = {} as Plot;
+
+      plot.id = elementToDelete.info?.id || '';
+
+      delete$ = this.facade.updatePlot(plot);
+    }
+    else if (objType === 'diagnosis') {
+      const diagnosis = {} as Diagnosis;
+      diagnosis.id = elementToDelete.info?.id || '';
+
+      const updatedDiagnosisShapes = currentElements.filter(e => e.info?.id === elementToDelete.info?.id && e.id !== id);
+
+      diagnosis.locationShapes = updatedDiagnosisShapes.map(s => (
+        { type: s.type, 
+          label: s.label, 
+          coordinates: s.info?.coordinates || [] 
+        }));
+
+      delete$ = this.facade.updateDiagnosis(diagnosis);
+    }else if (objType === 'temporary') {
+      delete$ = this.facade.deleteTemporaryShapes(elementToDelete.info?.id || '');
+    }
+
+    if (!delete$) return;
+
+    delete$.subscribe(() => {
+      const updatedElements = this.mapState.mapElements ? this.mapState.mapElements.filter(e => e.id !== id) : [];
+      this.mapState.setMapElements(updatedElements);
     });
   }
 
@@ -539,17 +670,39 @@ export class FarmMapView implements OnInit {
       header: 'Editar elemento',
       width: '90vw',
       contentStyle: { 'max-height': '80vh', overflow: 'auto' },
-      data: element,
+      data: { 
+        label: element.label,
+        mode: 'edit'
+      },
       styleClass: 'custom-card-dialog'
     });
 
-
-    this.dialogRef.onClose.subscribe((result: any) => {
+    this.dialogRef.onClose.subscribe(result => {
       if (result) {
-        this.onElementEdited(element, result); 
+        this.onElementEdited(element, result.value);
       }
     });
   }
+
+
+  // openCreatePopup() {
+  //   this.dialogRef = this.dialogService.open(EditElementDialogComponent, {
+  //     header: 'Criar novo elemento',
+  //     width: '90vw',
+  //     contentStyle: { 'max-height': '80vh', overflow: 'auto' },
+  //     data: { 
+  //       mode: 'create'
+  //     },
+  //     styleClass: 'custom-card-dialog'
+  //   });
+
+  //   this.dialogRef.onClose.subscribe(result => {
+  //     if (result) {
+  //       //this.onElementCreated(result.value);
+  //     }
+  //   });
+  // }
+
 
   onElementEdited(element: MapElement, label: string = '') {
     const id = element.info?.id;

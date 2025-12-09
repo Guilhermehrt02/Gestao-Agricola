@@ -16,7 +16,7 @@
         'bg-green-900 text-white border-blue-500': showLayerList,
         'bg-gray-700 text-white border-gray-600': !showLayerList
       }"
-      (click)="toggleLayerList()"
+      (click)="onAddElement()"
     >
       <i class="pi pi-plus"></i>
     </button>
@@ -106,10 +106,10 @@
           <button
             *ngIf="layer.data?.hasShapes"
             pButton
-            icon="pi pi-times"
+            icon="pi pi-trash"
             class="p-button-rounded p-button-text p-button-sm text-white"
             title="Excluir desenho"
-            (click)="onDeleteShape(layer.data.info.id)"
+            (click)="onDeleteShape(layer.data.id)"
           ></button>
         </div>
       </div>
@@ -200,10 +200,10 @@
               <button
                 *ngIf="sub.data?.hasShapes"
                 pButton
-                icon="pi pi-times"
+                icon="pi pi-trash"
                 class="p-button-rounded p-button-text p-button-sm text-white"
                 title="Excluir desenho"
-                (click)="onDeleteShape(sub.data.info.id)"
+                (click)="onDeleteShape(sub.data.id)"
               ></button>
             </div>
           </div>
@@ -289,7 +289,7 @@
                   <button
                     *ngIf="child.data?.hasShapes"
                     pButton
-                    icon="pi pi-times"
+                    icon="pi pi-trash"
                     class="p-button-rounded p-button-text p-button-sm text-white"
                     title="Excluir desenho"
                     (click)="onDeleteShape(child.data.id)"

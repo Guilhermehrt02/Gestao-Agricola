@@ -25,6 +25,39 @@ import { GoogleMapsService,
 import { Router } from '@angular/router';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Marker } from 'leaflet';
+import * as turf from '@turf/turf';
+
+const MapLayerColors = {
+  farm: {
+    fillColor: '#1b5e20',
+    strokeColor: '#66bb6a',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
+  },
+  plot: {
+    fillColor: '#0d47a1',
+    strokeColor: '#42a5f5',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
+  },
+  diagnosis: {
+    fillColor: '#b71c1c',
+    strokeColor: '#ef5350',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
+  },
+  temporary: {
+    fillColor: '#FADA5E',
+    strokeColor: '#66bb6a',
+    strokeWeight: 2,
+    fillOpacity: 0.6,
+    strokeOpacity: 1.0
+  }
+} as const;
+
 
 @Component({
   selector: 'lib-map-component',
@@ -37,7 +70,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
   private activeInfoWindow: google.maps.InfoWindow | null = null;
   @Input() mapElements?: MapElement[];
   @Input() editingElementId: string | null = null;
-  @Input() creatingShape: { id: string; classType?: 'farm' | 'plot' | 'diagnosis' } | null = null;
+  @Input() creatingShape: { id?: string; classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary' } | null = null;
 
   @ViewChild('mapContainer', { static: false }) mapElementRef!: ElementRef;
 
@@ -524,7 +557,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
     }
   }
 
-  private applyCreatingMode(creating: { id: string; classType?: 'farm' | 'plot' | 'diagnosis' } | null) {
+  private applyCreatingMode(creating: { id: string; classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary' } | null) {
     if (!this.map) return;
 
     if (this.drawingCreating) {
@@ -536,7 +569,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
       return;
     }
 
-    this.enableDrawingManager(creating.id, creating.classType);
+    this.enableDrawingManager(creating?.id, creating?.classType);
   }
 
   private finishEditing(saved: boolean) {
@@ -622,7 +655,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
     this.finishEditing(false);
   }
 
-  private enableDrawingManager(creatingId: string, classType?: 'farm' | 'plot' | 'diagnosis') {
+  private enableDrawingManager(creatingId: string, classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary') {
     this.destroyDrawingManager();
 
     const drawingManager = new google.maps.drawing.DrawingManager({
@@ -656,17 +689,22 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
           prompt('Nome do polígono:', 'Polígono sem nome') ||
           'Polígono sem nome';
 
+        const coordinates = polygon.getPath().getArray().map(latLng => ({
+              lat: latLng.lat(),
+              lng: latLng.lng(),
+            }));
+
         const shapeData: MapElement = {
-          id: creatingId,
+          id: this.generateId(),
           type: 'polygon',
           label,
           class: classType,
+          style: MapLayerColors[classType || 'temporary'],
           info: {
             id: creatingId,
-            coordinates: polygon.getPath().getArray().map(latLng => ({
-              lat: latLng.lat(),
-              lng: latLng.lng(),
-            })),
+            coordinates: coordinates,
+            totalArea: coordinates.length ? this.calculateArea(coordinates) : 0,
+            perimeter: coordinates.length ? this.calculatePerimeter(coordinates) : 0,
           },
         };
 
@@ -676,7 +714,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
       },
     );
 
-    if (classType === 'diagnosis'){
+    if (classType === 'diagnosis' || classType === 'temporary') {
       google.maps.event.addListener(
         drawingManager,
         'markercomplete',
@@ -686,9 +724,9 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
             'Ponto sem nome';
   
           const shapeData: MapElement = {
-            id: creatingId,
+            id: this.generateId(),
             type: 'marker',
-            class: 'diagnosis',
+            class: classType,
             label,
             info: {
               id: creatingId,
@@ -722,6 +760,42 @@ export class MapComponent implements AfterViewInit, OnChanges, OnInit, OnDestroy
     }
     this.mapState.stopCreatingShape();
     this.destroyDrawingManager();
+  }
+
+  calculateArea(coords: { lat: number; lng: number }[]) {
+    if (!coords || coords.length < 3) return 0;
+
+    const points = coords.map(c => [c.lng, c.lat]) as [number, number][];
+
+    // Fecha o polígono caso não esteja fechado
+    const first = points[0];
+    const last = points[points.length - 1];
+
+    if (first[0] !== last[0] || first[1] !== last[1]) {
+      points.push(first);
+    }
+
+    const polygon = turf.polygon([points]);
+    
+    const areaM2 = turf.area(polygon);
+    const areaHa = areaM2 / 10000;
+
+    return areaHa;
+  }
+
+  calculatePerimeter(coords: { lat: number; lng: number }[]) {
+    if (!coords || coords.length < 2) return 0;
+    const points = coords.map(c => [c.lng, c.lat]) as [number, number][];
+
+    // Fecha o polígono caso não esteja fechado
+    const first = points[0];
+    const last = points[points.length - 1];
+    if (first[0] !== last[0] || first[1] !== last[1]) {
+      points.push(first);
+    }
+    const line = turf.lineString(points);
+    const lengthMeters = turf.length(line, { units: 'meters' });
+    return lengthMeters;
   }
 
 }

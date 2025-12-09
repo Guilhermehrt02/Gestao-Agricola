@@ -9,7 +9,7 @@ export interface ShapeStyle {
 
 export interface MapElement {
     id: string;
-    class?: 'farm' | 'plot' | 'diagnosis' | null;
+    class?: 'farm' | 'plot' | 'diagnosis' | 'temporary' | null;
     label?: string;
     hasShapes?: boolean;
     style?: ShapeStyle;

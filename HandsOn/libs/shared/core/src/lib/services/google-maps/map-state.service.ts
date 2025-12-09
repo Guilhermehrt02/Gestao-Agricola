@@ -9,7 +9,7 @@ export class MapStateService {
   private _focusElementId$ = new BehaviorSubject<string | null>(null);
   private _editingElementId$ = new BehaviorSubject<string | null>(null);
   private _changingStyle$ = new BehaviorSubject<string | null>(null);
-  private _creatingShape$ = new BehaviorSubject<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' } | null>(null);
+  private _creatingShape$ = new BehaviorSubject<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary' } | null>(null);
   
   /** Observable para os componentes escutarem */
   readonly mapElements$ = this._mapElements$.asObservable();
@@ -17,6 +17,7 @@ export class MapStateService {
   editingElementId$ = this._editingElementId$.asObservable();
   changingStyle$ = this._changingStyle$.asObservable();
   creatingShape$ = this._creatingShape$.asObservable();
+  
 
   get mapElements(): MapElement[] | null {
     return this._mapElements$.value;
@@ -63,19 +64,11 @@ export class MapStateService {
     this._changingStyle$.next(null);
   }
 
-  deleteShape(id: string) {
-    const current = this.mapElements;
-    if (!current) return;
-
-    const updated = current.filter(e => e.id !== id);
-    this._mapElements$.next(updated);
-  }
-
   focusElement(id: string) {
     this._focusElementId$.next(id);
   }
 
-  startCreatingShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis') {
+  startCreatingShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary') {
     this._creatingShape$.next({ id, classType });
   }
 

@@ -43,7 +43,8 @@ interface MapLayer {
   styleUrls: ['./map-layers.component.css'],
 })
 export class MapLayersComponent implements OnInit, OnDestroy {
-  @Output() createShape = new EventEmitter<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' }>();
+  @Output() createShape = new EventEmitter<{ id: string; classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary'}>();
+  @Output() addElement = new EventEmitter<void>();
   @Output() editShape = new EventEmitter<string>();
   @Output() changeStyle = new EventEmitter<string>();
   @Output() deleteShape = new EventEmitter<string>();
@@ -51,7 +52,6 @@ export class MapLayersComponent implements OnInit, OnDestroy {
 
   private sub = new Subscription();
   layers: MapLayer[] = [];
-  adding = false;
   newLayerName = '';
   showLayerList = true;
   constructor(private mapState: MapStateService) {}
@@ -66,6 +66,7 @@ export class MapLayersComponent implements OnInit, OnDestroy {
 
   private buildLayerGroups(elements: MapElement[]) {
     const farmsMap: { [farmId: string]: MapLayer } = {};
+    const temporaryMap: { [tempId: string]: MapLayer } = {};
 
     for (const item of elements) {
       if (item.class === 'farm' && item.info?.id) {
@@ -74,6 +75,23 @@ export class MapLayersComponent implements OnInit, OnDestroy {
         farmsMap[farmId] = {
           label: item.label || item.info?.name || 'Fazenda sem nome',
           class: 'farm',
+          visible: item.visible,
+          focusable: true,
+          data: item,
+          children: [],
+          showMenu: false,
+          showItems: true,
+        };
+      }
+    }
+
+    for (const item of elements) {
+      if (item.class === 'temporary' && item.hasShapes) {
+        const tempId =  item.id;
+
+        temporaryMap[tempId] = {
+          label: item.label || item.info?.name || 'Desenho temporário',
+          class: 'temporary',
           visible: item.visible,
           focusable: true,
           data: item,
@@ -127,11 +145,15 @@ export class MapLayersComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.layers = Object.values(farmsMap);
+    this.layers = Object.values(farmsMap).concat(Object.values(temporaryMap));
   }
 
   ngOnDestroy() {
     this.sub.unsubscribe();
+  }
+
+  onAddElement() {
+    this.createShape.emit({ id: this.generateId(), classType: 'temporary' });
   }
 
   onToggle(layer: MapLayer) {
@@ -163,7 +185,7 @@ export class MapLayersComponent implements OnInit, OnDestroy {
     this.deleteShape.emit(id);
   }
 
-  onCreateShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis') {
+  onCreateShape(id: string, classType?: 'farm' | 'plot' | 'diagnosis' | 'temporary') {
     this.createShape.emit({ id, classType });
   }
 
@@ -189,5 +211,9 @@ export class MapLayersComponent implements OnInit, OnDestroy {
     }
 
     return ids;
+  }
+
+  generateId(): string {
+    return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
+import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import {
   Diagnosis,
@@ -9,6 +9,7 @@ import {
   Farm,
   FarmFacade,
   Plot,
+  TemporaryLocalService
 } from '@farm/core';
 
 @Injectable({ providedIn: 'root' })
@@ -17,6 +18,7 @@ export class FarmMapViewComponentFacade {
   private diagnosisSubject = new BehaviorSubject<Diagnosis[]>([]);
   private farmsSubject = new BehaviorSubject<Farm[]>([]);
   private plotsSubject = new BehaviorSubject<Plot[]>([]);
+  private temporarySubject = new BehaviorSubject<any[]>([]);
 
   userId: string | undefined;
 
@@ -24,11 +26,13 @@ export class FarmMapViewComponentFacade {
   diagnoses$: Observable<Diagnosis[]> = this.diagnosisSubject.asObservable();
   farms$: Observable<Farm[]> = this.farmsSubject.asObservable();
   plots$: Observable<Plot[]> = this.plotsSubject.asObservable();
+  temporaries$: Observable<any[]> = this.temporarySubject.asObservable();
 
   constructor(
     private diagnosisFacade: DiagnosisFacade,
     private authFacade: AuthFacade,
     private farmFacade: FarmFacade,
+    private temporaryLocalService: TemporaryLocalService
   ) {}
 
   load() {
@@ -39,6 +43,8 @@ export class FarmMapViewComponentFacade {
 
     const farms$ = this.farmFacade.getFarms();
     const diagnoses$ = this.diagnosisFacade.getAllDiagnoses(this.userId);
+    const temporaries = this.temporaryLocalService.load();
+    this.temporarySubject.next(temporaries);
 
     const plots$ = farms$.pipe(
       switchMap((farms) => {
@@ -82,7 +88,6 @@ export class FarmMapViewComponentFacade {
     );
   }
 
-
   updatePlot(plot: any): Observable<Plot> {
     this.loadingSubject.next(true);
 
@@ -104,4 +109,28 @@ export class FarmMapViewComponentFacade {
       })
     );
   }
+
+  saveTemporaryShapes(temporaries: any): Observable<any> {
+    const currentTemporaries = this.temporaryLocalService.load();
+
+    const updated = [
+      ...currentTemporaries.filter(t => t.id !== temporaries.id),
+      temporaries
+    ];
+
+    this.temporaryLocalService.save(updated);
+    this.temporarySubject.next(updated);
+
+    return of(updated);
+  }
+
+  deleteTemporaryShapes(tempId: string): Observable<any> {
+    const currentTemporaries = this.temporaryLocalService.load();
+    const updated = currentTemporaries.filter(t => t.id !== tempId);
+
+    this.temporaryLocalService.save(updated);
+    this.temporarySubject.next(updated);
+    return of(updated);
+  }
+
 }

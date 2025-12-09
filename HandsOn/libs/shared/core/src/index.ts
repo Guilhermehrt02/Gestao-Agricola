@@ -34,7 +34,9 @@ export * from './lib/services/revenue/revenue.service';
 export * from './lib/services/reports/report.service';
 export * from './lib/services/diagnosis/diagnosis.service';
 export * from './lib/services/google-maps/google-maps.service';
-export * from './lib/services/google-maps/Map-state.service';
+export * from './lib/services/google-maps/map-state.service';
+export * from './lib/services/farm/temporary.service';
+
 
 
 // facades
