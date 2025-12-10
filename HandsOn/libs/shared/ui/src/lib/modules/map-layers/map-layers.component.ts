@@ -191,6 +191,7 @@ export class MapLayersComponent implements OnInit, OnDestroy {
 
   onToggleOnlyOneShape(layer: MapLayer) {
     if (!layer.data?.hasShapes) return;
+    
     layer.data.hideShapeOnly = !layer.data.hideShapeOnly;
     const newHideShape = layer.data.hideShapeOnly || false;
 

@@ -672,7 +672,8 @@ export class FarmMapView implements OnInit {
       contentStyle: { 'max-height': '80vh', overflow: 'auto' },
       data: { 
         label: element.label,
-        mode: 'edit'
+        mode: 'edit',
+        type: element.class || 'temporary'
       },
       styleClass: 'custom-card-dialog'
     });

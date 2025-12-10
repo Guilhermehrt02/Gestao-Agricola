@@ -25,6 +25,15 @@ import { FormsModule } from '@angular/forms';
             <div class="flex flex-col gap-1">
               <label for="label">Nome</label>
               <input id="label" pInputText [(ngModel)]="value" placeholder="Digite o nome..." />
+
+              <label *ngIf="class === 'temporary'" for="class">Tipo:</label>
+              <select id="class" pInputText [(ngModel)]="type" placeholder="Selecione o tipo">
+                <option value="farm">Fazenda</option>
+                <option value="plot">Talhão</option>
+                <option value="diagnosis">Diagnóstico</option>
+                <option value="temporary">Temporário</option>
+              </select>
+
             </div>
           </ng-container>
 
@@ -33,13 +42,9 @@ import { FormsModule } from '@angular/forms';
             <div class="flex flex-col gap-1">
               <label for="label">Nome do novo elemento:</label>
               <input id="label" pInputText [(ngModel)]="value" placeholder="Ex: Novo talhão" />
-            </div>
 
-            <!-- Se quiser adicionar novos campos para criação -->
-            <!-- <div class="flex flex-col gap-1">
-              <label>Tipo:</label>
-              <select [(ngModel)]="type"> ... </select>
-            </div> -->
+              
+            </div>
           </ng-container>
 
         </ng-container>
@@ -63,7 +68,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class EditElementDialogComponent {
   value = '';
+  type = '';
   mode: 'edit' | 'create' = 'edit';
+  class: 'farm' | 'plot' | 'diagnosis' | 'temporary' = 'temporary';
 
   constructor(
     public ref: DynamicDialogRef,
@@ -71,10 +78,11 @@ export class EditElementDialogComponent {
   ) {
     this.mode = config.data?.mode ?? 'edit';
     this.value = config.data?.label ?? '';
+    this.class = config.data?.type ?? 'temporary';
   }
 
   save() {
-    this.ref.close({ value: this.value, mode: this.mode });
+    this.ref.close({ value: this.value, mode: this.mode, type: this.type });
   }
 
   cancel() {

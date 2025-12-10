@@ -216,7 +216,6 @@
             <li *ngFor="let child of sub.children">
               <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                  <!-- Ícone do tipo (MOSTRAR SÓ SE hasShapes = true) -->
                   <span *ngIf="child.data?.hasShapes">
                     <img
                       *ngIf="child.data?.type === 'polygon'"
